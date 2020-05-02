@@ -32,7 +32,7 @@ docker image build --tag osproject:latest .
 **Run container** from previously built image:
 
 - `rm` deletes the container once closed
-- `/home/marco/projects/ProgettoSistemiOperativi` is the local folder
+- `$(pwd)` is the local folder
 - `/home` is the folder inside the docker instance
 
 ``` Docker
@@ -41,7 +41,7 @@ docker container run \
 --interactive \
 --tty \
 --rm \
---volume /home/marco/projects/ProgettoSistemiOperativi:/home \
+--volume $(pwd):/home \
 osproject:latest
 ```
 
