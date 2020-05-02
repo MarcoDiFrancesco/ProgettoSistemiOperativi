@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Check if docker is running
 if ! [[ $(systemctl status docker.service | grep 'active (running)') ]]; then
