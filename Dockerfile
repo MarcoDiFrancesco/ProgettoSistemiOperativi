@@ -1,9 +1,13 @@
-FROM ubuntu:bionic
+FROM ubuntu:18.04
 
 WORKDIR /home
 
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN apt-get -y install build-essential
+# RUN runs on docker build
+# CMD runs on docker run
+RUN apt-get update && apt-get install -y \
+    build-essential
 
-# COPY . /home
+# Copy files when NOT mounting volume
+#COPY . /home
+
+CMD /bin/bash

@@ -1,0 +1,6 @@
+Operative systems projects, version 1.0
+Usage:  make [option]
+
+Options:
+    build   Builds program
+    clean   Removes unused binary files
