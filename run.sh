@@ -22,12 +22,6 @@ fi
 if [[ $(docker container ls --filter "status=running" | grep osproject) ]]; then
     docker exec --interactive --tty osproject bash
 else
-    docker container run \
-    --name osproject \
-    --interactive \
-    --tty \
-    --rm \
-    --volume $(pwd):/home \
-    osproject:latest
+    docker container run --name osproject --interactive --tty --rm --volume $(pwd):/home osproject:latest
 fi
 
