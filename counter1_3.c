@@ -16,6 +16,9 @@ int N=3;
 int M=4;
 int CLUSTER=5;
 
+char* readAndWait(int pipe[], pid_t son);
+int writePipe(int pipe[],string msg);
+
 int main(int argc,string argv[]){
     int return_value;
     string toRead=argv[1];
@@ -31,7 +34,9 @@ int main(int argc,string argv[]){
 
     for(i=0;i<N;i++){
         //creo N processi di tipo P
-        int c_son=fork();
+        //creo pipe fra C e P
+        pipe(p_c[i]);
+        pid_t c_son=fork();
         if(c_son==-1){
             printf("error occurred at line 35\n");
             return_value=35;
@@ -42,6 +47,9 @@ int main(int argc,string argv[]){
 
                 //creo M processi di tipo Q
                 for(j=0;j<M;j++){
+
+                    //creo la pipe fra P e Q
+                    pipe(q_p[j]);
                     int p_son=fork();
                     if(p_son==-1){
                         printf("error occurred at line 46\n");
@@ -69,4 +77,24 @@ int main(int argc,string argv[]){
         }
     }
     return return_value;
+}
+
+
+char* readAndWait(int pipe[], pid_t son){
+    close(pipe[WRITE]);
+    char msg[MAXLEN];
+    int rd=read(pipe[READ],msg, MAXLEN);
+    close(pipe[READ]);
+    waitpid(son,NULL,0);
+    string ret;
+    strcpy(ret, msg);
+    return ret;
+}
+
+int writePipe(int pipe[],string msg){
+    int ret=0;//per eventuali errori
+    close(pipe[READ]);
+    write(pipe[WRITE],msg,strlen(msg)+1);
+    close(pipe[WRITE]);
+    return ret;
 }
