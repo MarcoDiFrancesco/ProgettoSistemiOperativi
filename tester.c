@@ -16,7 +16,7 @@ int N=3;
 int M=4;
 int CLUSTER=5;
 
-void readAndWait(int pipe[], pid_t son);
+string readAndWait(int pipe[], pid_t son);
 int writePipe(int pipe[],string msg);
 
 int main(int argc,string argv[]){
@@ -24,7 +24,7 @@ int main(int argc,string argv[]){
     pipe(p);
     int f=fork();
     if(f>0){
-        readAndWait(p,f);
+        printf("%s",readAndWait(p,f));
 
     }else{
         writePipe(p,"fra\n");
@@ -32,13 +32,14 @@ int main(int argc,string argv[]){
 }
 
 
-void readAndWait(int pipe[], pid_t son){
+string readAndWait(int pipe[], pid_t son){
     close(pipe[WRITE]);
-    char msg[MAXLEN];
+    string msg;
+    msg=malloc(MAXLEN);
     int rd=read(pipe[READ],msg, MAXLEN);
     close(pipe[READ]);
     int err=waitpid(son,NULL,0);
-    printf("%s",msg);
+    return msg;
 }
 
 int writePipe(int pipe[],string msg){

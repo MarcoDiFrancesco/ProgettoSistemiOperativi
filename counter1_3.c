@@ -66,7 +66,7 @@ int main(int argc,string argv[]){
                         }else{
                             //successive parti del processo P
                             string qTop=readAndWait(q_p[j],p_son);
-                            printf("\t\tq mi ha mandato =%s",qTop);
+                            printf("\t\tq mi ha mandato =%s\n",qTop);
                             //waitpid(p_son,NULL,0);
                         }
                         
@@ -84,15 +84,14 @@ int main(int argc,string argv[]){
 }
 
 
-char* readAndWait(int pipe[], pid_t son){
+string readAndWait(int pipe[], pid_t son){
     close(pipe[WRITE]);
-    char msg[MAXLEN];
+    string msg;
+    msg=malloc(MAXLEN);
     int rd=read(pipe[READ],msg, MAXLEN);
     close(pipe[READ]);
     int err=waitpid(son,NULL,0);
-    string ret;
-    strcpy(ret, msg);
-    return ret;
+    return msg;
 }
 
 int writePipe(int pipe[],string msg){
