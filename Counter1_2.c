@@ -31,34 +31,32 @@ int main(int argc,string argv[]){
     //creo N processi figli con cui stabilisco un pipe
     int i;
     int j;
-
+    printf("C created\n");
     for(j=0;j<N;j++){
         pipe(p_c[j]);
-        int pson=fork();
+        pid_t pson=fork();
         if(pson<0){
             printf("Errore di creazione figlio\n");
             exit(2);
         }
         if(pson>0){
             //processo C
-            printf("C created\n");
             close(p_c[j][WRITE]);
             char msgPC[MAXLEN];
             int rd=read(q_p[i][READ],msgPC, MAXLEN);
             //printf("mess%d=%s\n",i,msgPC);
             close(p_c[j][READ]);
             wait(NULL);
-            printf("Q=%d p=%d\n",q,p);
+            //printf("Q=%d p=%d\n",q,p);
         }else{
             //PROCESSO P
-            //printf("P created\n");
-            p++;
+            printf("P created\n");
             for(i=0;i<M;i++){
                 pipe(q_p[i]);
-                int qson=fork();
+                pid_t qson=fork();
                 if(qson<0){
                     printf("Errore di creazione figlio\n");
-                    exit(2);
+                    exit(202);
                 }
                 if(qson>0){
                     //dialogo con Q
@@ -75,15 +73,20 @@ int main(int argc,string argv[]){
                     close(p_c[j][WRITE]);
                 }else{
                     //PROCESSO Q
-                    //printf("Q created\n");
-                    q++;
+                    printf("Q created\n");
                     close(q_p[i][READ]);
                     string msgQP="La puttna della mamma";
                     write(q_p[i][WRITE],msgQP,strlen(msgQP)+1);
                     close(q_p[i][WRITE]);
+                    printf("q closed\n");
+                    exit(1);
                 }
             }
         }
+        if(pson==0){
+            printf("papp \n");
+            exit(33);
+        }        
     }
 
     
