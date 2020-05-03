@@ -12,8 +12,8 @@
 
 typedef char * string;
 
-int N=3;
-int M=4;
+int N=2;
+int M=2;
 int CLUSTER=5;
 //test
 //debug
@@ -31,7 +31,7 @@ int main(int argc,string argv[]){
     //creo N processi figli con cui stabilisco un pipe
     int i;
     int j;
-    printf("C created\n");
+    printf("C created pid=%d\n",getpid());
     for(j=0;j<N;j++){
         pipe(p_c[j]);
         pid_t pson=fork();
@@ -47,11 +47,13 @@ int main(int argc,string argv[]){
             //printf("mess%d=%s\n",i,msgPC);
             close(p_c[j][READ]);
             wait(NULL);
+            printf("aaa");
             //printf("Q=%d p=%d\n",q,p);
         }else{
             //PROCESSO P
-            printf("P created\n");
+            printf("\t P created pid=%d  ppid=%d\n",getpid(),getppid());
             for(i=0;i<M;i++){
+                //printf("Cacca\n");
                 pipe(q_p[i]);
                 pid_t qson=fork();
                 if(qson<0){
@@ -59,13 +61,13 @@ int main(int argc,string argv[]){
                     exit(202);
                 }
                 if(qson>0){
-                    //dialogo con Q
+                    //P parla con Q
                     close(q_p[i][WRITE]);
                     char msgQP[MAXLEN];
                     int rd=read(q_p[i][READ],msgQP, MAXLEN);
                     //printf("mess%d=%s\n",i,msgQP);
                     close(q_p[i][READ]);
-                    wait(NULL);
+                    //waitpid(qson,NULL,NULL);
                     //diaologo con C
                     close(p_c[j][READ]);
                     string msgPC="La puttna della zia";
@@ -73,22 +75,20 @@ int main(int argc,string argv[]){
                     close(p_c[j][WRITE]);
                 }else{
                     //PROCESSO Q
-                    printf("Q created\n");
+                    printf("Q created ppid=%d\n",getppid());
                     close(q_p[i][READ]);
                     string msgQP="La puttna della mamma";
                     write(q_p[i][WRITE],msgQP,strlen(msgQP)+1);
                     close(q_p[i][WRITE]);
-                    printf("q closed\n");
                     exit(1);
                 }
             }
         }
         if(pson==0){
-            printf("papp \n");
+            printf("\tp closed \n");
             exit(33);
         }        
     }
 
-    
     return 0;
 }
