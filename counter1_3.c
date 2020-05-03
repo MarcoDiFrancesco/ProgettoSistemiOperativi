@@ -55,6 +55,7 @@ int main(int argc,string argv[]){
                             exit(0);
                         }else{
                             //successive parti del processo P
+                            waitpid(p_son,NULL,0);
                         }
                         
                     }
@@ -63,6 +64,7 @@ int main(int argc,string argv[]){
                 exit(0);
             }else{
                 //successive parti del processo C
+                waitpid(c_son,NULL,0);
             }
         }
     }
