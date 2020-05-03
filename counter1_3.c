@@ -60,10 +60,14 @@ int main(int argc,string argv[]){
                             printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
 
                             //logica processo  q
+                            //qui funzione per calcolare
+                            int err=writePipe(q_p[j],"Calcutta");
                             exit(0);
                         }else{
                             //successive parti del processo P
-                            waitpid(p_son,NULL,0);
+                            string qTop=readAndWait(q_p[j],p_son);
+                            printf("\t\tq mi ha mandato =%s",qTop);
+                            //waitpid(p_son,NULL,0);
                         }
                         
                     }
@@ -85,7 +89,7 @@ char* readAndWait(int pipe[], pid_t son){
     char msg[MAXLEN];
     int rd=read(pipe[READ],msg, MAXLEN);
     close(pipe[READ]);
-    waitpid(son,NULL,0);
+    int err=waitpid(son,NULL,0);
     string ret;
     strcpy(ret, msg);
     return ret;
