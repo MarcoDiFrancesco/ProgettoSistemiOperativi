@@ -16,11 +16,11 @@ int readFile(char* filename, char* filedata, int start, int stop){
 }
 
 void countLetters(int dim, char* s, int* counter){
-    printf("testo cont: ");
+    //printf("testo cont: ");
     int i = dim-1;
     for(i; i>=0; i--){
         
-        printf("%c\t", s[i]);
+        //printf("%c\t", s[i]);
         if(s[i]>='a' && s[i]<='z' || s[i]>='A' && s[i]<='Z'){
             //lettera maiuscola o minuscola
             counter[0]++;
@@ -69,5 +69,33 @@ int* processoQ(int from, int to, char* fname){
     if(i==0)
         return stats;
     else 
-        return -1;
+        return (int *)-1;
+}
+
+int* processoQ_n(int from, int to, char** fname, int n){
+    char* testo;
+    int* stats;
+    int i,j, 
+        inizio = from, 
+        fine = to;
+
+    testo = malloc(fine*sizeof(char));
+    stats = malloc(5*sizeof(int));
+    i = 0;
+
+    for(i; i<5; i++){
+        stats[i] = 0;
+    }
+
+    for(j=0; j<n; j++){      
+        i = readFile(fname[j], testo, inizio, fine);
+        countLetters(fine-inizio, testo, stats);
+        if(i<0) break;
+    }
+
+
+    if(i==0)
+        return stats;
+    else 
+        return (int *)-1;
 }

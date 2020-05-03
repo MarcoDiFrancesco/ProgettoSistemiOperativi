@@ -17,3 +17,5 @@ int readFile(char* filename, char* filedata, int start, int stop);
 void countLetters(int dim, char* s, int* counter);
 
 int* processoQ(int from, int to, char* fname);
+
+int* processoQ_n(int from, int to, char** fname, int n);
