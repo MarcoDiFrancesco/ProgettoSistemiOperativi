@@ -27,4 +27,44 @@ int main(int argc,string argv[]){
     int q_p[M][2];
     //counters
     int i,j;
+    printf("Process C pid=%d\n",getpid());
+
+    for(i=0;i<N;i++){
+        //creo N processi di tipo P
+        int c_son=fork();
+        if(c_son==-1){
+            printf("error occurred at line 35\n");
+            return_value=35;
+        }else{
+            if(c_son==0){
+                //processo P
+                printf("P created pid=%d ppid=%d\n",getpid(),getppid());
+
+                //creo M processi di tipo Q
+                for(j=0;j<M;j++){
+                    int p_son=fork();
+                    if(p_son==-1){
+                        printf("error occurred at line 46\n");
+                        return_value=46;
+                    }else{
+                        if(p_son==0){
+                            //processo Q
+                            printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
+
+                            //logica processo  q
+                            exit(0);
+                        }else{
+                            //successive parti del processo P
+                        }
+                        
+                    }
+                }
+                //potenziale uscita del processo P
+                exit(0);
+            }else{
+                //successive parti del processo C
+            }
+        }
+    }
+    return return_value;
 }
