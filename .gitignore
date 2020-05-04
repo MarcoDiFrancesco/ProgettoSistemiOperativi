@@ -1,2 +1,4 @@
 # Binary compiled files
+.vscode/
 bin/
+test/

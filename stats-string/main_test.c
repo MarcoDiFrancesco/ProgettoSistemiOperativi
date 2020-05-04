@@ -16,16 +16,6 @@ char **toString(int *values){
     return str;
 }
 
-int *getValuesFromString(char **str){
-    int *values = (int *)malloc(5 * sizeof(int));
-    
-    for(int i = 0; i < 5; ++i){
-        values[i] = atoi(str[i]);
-    }
-
-    return values;
-}
-
 int main(int argc, char *argv[]){
 
 

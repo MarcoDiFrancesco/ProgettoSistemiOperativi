@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # Check if docker is running
 if ! [[ $(systemctl status docker.service | grep 'active (running)') ]]; then
@@ -24,4 +24,3 @@ if [[ $(docker container ls --filter "status=running" | grep osproject) ]]; then
 else
     docker container run --name osproject --interactive --tty --rm --volume $(pwd):/home osproject:latest
 fi
-
