@@ -3,4 +3,4 @@
  
  char **statsToString(int *values);
 
- int *getValuesFromString(char **string);
+ int *getValuesFromString(char **str);
