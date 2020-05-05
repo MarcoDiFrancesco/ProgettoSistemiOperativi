@@ -22,7 +22,7 @@ int writePipe(int pipe[],string msg){
     return ret;
 }
 
-//---------------------------ric functions----
+//---------------------------ric functions------------------------------------
 
 int readFile(char* filename, char* filedata, int start, int stop){
     int sk, rd;
