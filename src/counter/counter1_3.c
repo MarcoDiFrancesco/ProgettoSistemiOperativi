@@ -18,7 +18,7 @@ int main(int argc,string argv[]){
     //tmp
     int fp=open(toRead,O_RDONLY);
     int dim = lseek(fp,0,SEEK_END);
-    int part=dim/N;
+    int part=dim/M;
     //pipes
     int p_c[N][2];
     int q_p[M][2];
@@ -54,12 +54,10 @@ int main(int argc,string argv[]){
                             printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
 
                             //logica processo  q
-                            int* counter;
-                            counter=processoQ(part*j,part*(j+1),files[0]);
-                            string *message;
-                            message=statsToString(counter);
-                            printf("%s \n",message[1]);
-                            //qui funzione per calcolare
+                            int* counter=processoQ(part*j,part*(j+1),files[0]);
+                            printf("iniz=%d fin=%d",part*j,part*(j+1));
+                            string *message=statsToString(counter);
+                            printf("%s \n",message[0]);
                             int err=writePipe(q_p[j],message);
                             exit(0);
                         }else{

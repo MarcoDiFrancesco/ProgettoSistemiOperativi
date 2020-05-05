@@ -41,8 +41,6 @@ int readFile(char* filename, char* filedata, int start, int stop){
             rd = read(file, filedata, stop-start);
         }
     }
-
-    lseek(file, 0, SEEK_END);
     if(file>=0 && sk>=0 && rd>=0) return 0;
     else return -1;
 }
@@ -81,9 +79,9 @@ void countLetters(int dim, char* s, int* counter){
 int* processoQ(int from, int to, char* fname){
     char* testo;
     int* stats;
-    int i, 
-        inizio = from, 
-        fine = to;
+    int i;
+    int inizio = from;
+    int fine = to;
     int size;
 
     testo = malloc(fine*sizeof(char));
@@ -97,6 +95,7 @@ int* processoQ(int from, int to, char* fname){
     i = readFile(fname, testo, inizio, fine);
 
     countLetters(size-inizio, testo, stats);
+
 
     if(i==0)
         return stats;
