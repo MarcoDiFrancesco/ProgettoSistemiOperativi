@@ -124,4 +124,33 @@ int* processoQ_n(int from, int to, char** fname, int n){
         return (int *)-1;
 }
 
+
+//---------------------------phil functions------------------------------------
+
+
+ char **statsToString(int *values){
+
+    char **str = (char **)malloc(CLUSTER * sizeof(char *));
+    for(int i = 0; i < CLUSTER; ++i){
+        str[i] = (char *)malloc(12 * sizeof(int));
+    }
+
+    for(int i = 0; i < CLUSTER; ++i){
+        sprintf(str[i], "%d", values[i]);
+    }
+
+    return str;
+}
+
+
+int *getValuesFromString(char **str){
+    int *values = (int *)malloc(CLUSTER * sizeof(int));
+    
+    for(int i = 0; i < CLUSTER; ++i){
+        values[i] = atoi(str[i]);
+    }
+
+    return values;
+}
+
 #endif

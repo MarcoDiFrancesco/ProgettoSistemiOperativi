@@ -56,6 +56,7 @@ int main(int argc,string argv[]){
                             //logica processo  q
                             int* counter;
                             counter=processoQ_n(part*j,part*(j+1),files,1);
+                            statsToString(counter);
                             //qui funzione per calcolare
                             int err=writePipe(q_p[j],"Calcutta");
                             exit(0);
