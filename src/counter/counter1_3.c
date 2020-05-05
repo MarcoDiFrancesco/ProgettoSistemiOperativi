@@ -12,7 +12,7 @@ int main(int argc,string argv[]){
     //temporaneo per testare 
     string files[argc-1];
     int i;
-    for(i=1;i<argc-1;i++){
+    for(i=1;i<argc;i++){
         files[i-1]=argv[i];
     }
     //tmp
@@ -55,21 +55,21 @@ int main(int argc,string argv[]){
 
                             //logica processo  q
                             int* counter;
-                            counter=processoQ_n(part*j,part*(j+1),files,1);
+                            counter=processoQ(part*j,part*(j+1),files[0]);
                             string *message;
                             message=statsToString(counter);
-
+                            printf("%s \n",message[1]);
                             //qui funzione per calcolare
                             int err=writePipe(q_p[j],message);
                             exit(0);
                         }else{
                             //successive parti del processo P
-                            string *qTop=readAndWait(q_p[j],p_son);
-                            for(i=0;i<CLUSTER;i++){
-                                printf("%s ",qTop[i]);
-                            }
-                            fflush(stdout);
-                            //waitpid(p_son,NULL,0);
+                            //string *qTop=readAndWait(q_p[j],p_son);
+                            //for(i=0;i<CLUSTER;i++){
+                            //    printf("%s a",qTop[i]);
+                            //}
+                            //fflush(stdout);
+                            waitpid(p_son,NULL,0);
                         }
                         
                     }

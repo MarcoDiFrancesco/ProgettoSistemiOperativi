@@ -11,7 +11,8 @@ string *readAndWait(int pipe[], pid_t son){
     int rd;
     for(i=0;i<CLUSTER;i++){
         msg[i]=malloc(MAXLEN);
-        rd=read(pipe[READ],msg, MAXLEN);
+        rd=read(pipe[READ],msg, 1);
+        msg[rd]=0;
     }
     close(pipe[READ]);
     int err=waitpid(son,NULL,0);
