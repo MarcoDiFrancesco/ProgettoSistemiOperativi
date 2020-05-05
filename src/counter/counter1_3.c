@@ -1,14 +1,7 @@
 #include "counter.h"
 
-#define READ 0
-#define WRITE 1
-#define MAXLEN 100
-
-typedef char * string;
-
 int N=3;
 int M=4;
-int CLUSTER=5;
 
 char* readAndWait(int pipe[], pid_t son);
 int writePipe(int pipe[],string msg);
@@ -16,6 +9,13 @@ int writePipe(int pipe[],string msg);
 int main(int argc,string argv[]){
     int return_value;
     string toRead=argv[1];
+    //temporaneo per testare 
+    string files[argc-1];
+    int i;
+    for(i=1;i<argc-1;i++){
+        files[i-1]=argv[i];
+    }
+    //tmp
     int fp=open(toRead,O_RDONLY);
     int dim = lseek(fp,0,SEEK_END);
     int part=dim/N;
@@ -23,7 +23,7 @@ int main(int argc,string argv[]){
     int p_c[N][2];
     int q_p[M][2];
     //counters
-    int i,j;
+    int j;
     printf("Process C pid=%d\n",getpid());
 
     for(i=0;i<N;i++){
@@ -54,6 +54,8 @@ int main(int argc,string argv[]){
                             printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
 
                             //logica processo  q
+                            int* counter;
+                            counter=processoQ_n(part*j,part*(j+1),files,1);
                             //qui funzione per calcolare
                             int err=writePipe(q_p[j],"Calcutta");
                             exit(0);

@@ -82,7 +82,7 @@ int* processoQ(int from, int to, char* fname){
     stats = malloc(5*sizeof(int));
     i = 0;
 
-    for(i; i<5; i++){
+    for(i; i<CLUSTER; i++){
         stats[i] = 0;
     }
 
@@ -107,7 +107,7 @@ int* processoQ_n(int from, int to, char** fname, int n){
     stats = malloc(5*sizeof(int));
     i = 0;
 
-    for(i; i<5; i++){
+    for(i; i<CLUSTER; i++){
         stats[i] = 0;
     }
 

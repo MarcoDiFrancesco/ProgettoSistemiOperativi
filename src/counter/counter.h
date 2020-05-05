@@ -11,6 +11,8 @@
 #define READ 0
 #define WRITE 1
 #define MAXLEN 100
+#define CLUSTER 5
+
 #define BOOL char
 #define FALSE 0
 #define TRUE 1
