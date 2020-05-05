@@ -82,7 +82,6 @@ int* processoQ(int from, int to, char* fname){
     int i;
     int inizio = from;
     int fine = to;
-    int size;
 
     testo = malloc(fine*sizeof(char));
     stats = malloc(5*sizeof(int));
@@ -94,7 +93,7 @@ int* processoQ(int from, int to, char* fname){
 
     i = readFile(fname, testo, inizio, fine);
 
-    countLetters(size-inizio, testo, stats);
+    countLetters(fine-inizio, testo, stats);
 
 
     if(i==0)
