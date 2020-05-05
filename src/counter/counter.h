@@ -10,7 +10,7 @@
 
 #define READ 0
 #define WRITE 1
-#define MAXLEN 100
+#define MAXLEN 12*sizeof(int)
 #define CLUSTER 5
 
 #define BOOL char
@@ -20,8 +20,8 @@
 
 typedef char * string;
 
-int writePipe(int pipe[],string msg);
-string readAndWait(int pipe[], pid_t son);
+int writePipe(int pipe[],string *msg);
+string *readAndWait(int pipe[], pid_t son);
 
 //funzioni di ric
 

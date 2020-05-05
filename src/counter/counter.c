@@ -4,20 +4,27 @@
 #include "counter.h"
 
 
-string readAndWait(int pipe[], pid_t son){
+string *readAndWait(int pipe[], pid_t son){
     close(pipe[WRITE]);
-    string msg;
-    msg=malloc(MAXLEN);
-    int rd=read(pipe[READ],msg, MAXLEN);
+    string *msg;
+    int i;
+    int rd;
+    for(i=0;i<CLUSTER;i++){
+        msg[i]=malloc(MAXLEN);
+        rd=read(pipe[READ],msg, MAXLEN);
+    }
     close(pipe[READ]);
     int err=waitpid(son,NULL,0);
     return msg;
 }
 
-int writePipe(int pipe[],string msg){
+int writePipe(int pipe[],string *msg){
     int ret=0;//per eventuali errori
     close(pipe[READ]);
-    write(pipe[WRITE],msg,strlen(msg)+1);
+    int i;
+    for(i=0;i<CLUSTER;i++){
+        write(pipe[WRITE],msg[i],strlen(msg[i])+1);
+    }
     close(pipe[WRITE]);
     return ret;
 }
@@ -131,11 +138,12 @@ int* processoQ_n(int from, int to, char** fname, int n){
  char **statsToString(int *values){
 
     char **str = (char **)malloc(CLUSTER * sizeof(char *));
-    for(int i = 0; i < CLUSTER; ++i){
+    int i;
+    for(i = 0; i < CLUSTER; ++i){
         str[i] = (char *)malloc(12 * sizeof(int));
     }
-
-    for(int i = 0; i < CLUSTER; ++i){
+    
+    for( i = 0; i < CLUSTER; ++i){
         sprintf(str[i], "%d", values[i]);
     }
 
@@ -145,8 +153,8 @@ int* processoQ_n(int from, int to, char** fname, int n){
 
 int *getValuesFromString(char **str){
     int *values = (int *)malloc(CLUSTER * sizeof(int));
-    
-    for(int i = 0; i < CLUSTER; ++i){
+    int i;
+    for( i = 0; i < CLUSTER; ++i){
         values[i] = atoi(str[i]);
     }
 

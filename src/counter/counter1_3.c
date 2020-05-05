@@ -3,8 +3,8 @@
 int N=3;
 int M=4;
 
-char* readAndWait(int pipe[], pid_t son);
-int writePipe(int pipe[],string msg);
+string *readAndWait(int pipe[], pid_t son);
+int writePipe(int pipe[],string *msg);
 
 int main(int argc,string argv[]){
     int return_value;
@@ -56,14 +56,19 @@ int main(int argc,string argv[]){
                             //logica processo  q
                             int* counter;
                             counter=processoQ_n(part*j,part*(j+1),files,1);
-                            statsToString(counter);
+                            string *message;
+                            message=statsToString(counter);
+
                             //qui funzione per calcolare
-                            int err=writePipe(q_p[j],"Calcutta");
+                            int err=writePipe(q_p[j],message);
                             exit(0);
                         }else{
                             //successive parti del processo P
-                            string qTop=readAndWait(q_p[j],p_son);
-                            printf("\t\tq mi ha mandato =%s\n",qTop);
+                            string *qTop=readAndWait(q_p[j],p_son);
+                            for(i=0;i<CLUSTER;i++){
+                                printf("%s ",qTop[i]);
+                            }
+                            fflush(stdout);
                             //waitpid(p_son,NULL,0);
                         }
                         
