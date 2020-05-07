@@ -55,19 +55,19 @@ int main(int argc,string argv[]){
 
                             //logica processo  q
                             int* counter=processoQ(part*j,part*(j+1),files[0]);
-                            printf("iniz=%d fin=%d",part*j,part*(j+1));
+                            //printf("iniz=%d fin=%d",part*j,part*(j+1));
                             string *message=statsToString(counter);
-                            printf("%s \n",message[0]);
+                            //printf("%s \n",message[0]);
                             int err=writePipe(q_p[j],message);
                             exit(0);
                         }else{
                             //successive parti del processo P
-                            //string *qTop=readAndWait(q_p[j],p_son);
-                            //for(i=0;i<CLUSTER;i++){
-                            //    printf("%s a",qTop[i]);
-                            //}
-                            //fflush(stdout);
-                            waitpid(p_son,NULL,0);
+                            string *qTop=readAndWait(q_p[j],p_son);
+                            for(i=0;i<CLUSTER;i++){
+                                printf("%s a",qTop[i]);
+                            }
+                            fflush(stdout);
+                            //waitpid(p_son,NULL,0);
                         }
                         
                     }

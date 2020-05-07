@@ -12,6 +12,7 @@
 #define WRITE 1
 #define MAXLEN 12*sizeof(int)
 #define CLUSTER 5
+// CLUSTER è il numero di categorie di caratteri che distinguiamo + 1
 
 #define BOOL char
 #define FALSE 0

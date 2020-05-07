@@ -6,12 +6,12 @@
 
 string *readAndWait(int pipe[], pid_t son){
     close(pipe[WRITE]);
-    string *msg;
+    string msg[CLUSTER];
     int i;
     int rd;
     for(i=0;i<CLUSTER;i++){
         msg[i]=malloc(MAXLEN);
-        rd=read(pipe[READ],msg, 1);
+        rd=read(pipe[READ],msg, MAXLEN);
         msg[rd]=0;
     }
     close(pipe[READ]);
