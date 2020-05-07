@@ -40,4 +40,4 @@ int* processoQ_n(int from, int to, char** fname, int n);
 
  int *getValuesFromString(char **str);
 
- void printError(int code)
+ void printError(int code);
