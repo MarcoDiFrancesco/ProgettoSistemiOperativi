@@ -16,7 +16,7 @@ enum simboli{lettere, numeri, spazi, punteggiatura, altro};
 
 typedef char * string;
 
-void read_result(int cluster, string results);
+void read_result(int cluster, string *results);
 
 void print_values(int cluster, int* results);
 
@@ -25,5 +25,7 @@ void print_percentual(int cluster, int* results);
 string print_type(int n);
 
 //phil functions
+
+string *statsToString(int *values);
 
 int *getValuesFromString(char **str);

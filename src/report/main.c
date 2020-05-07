@@ -1,8 +1,16 @@
-#include <stdio.h>
 #include "result.h"
 
-int main() {
-    printf("This is my main\n");
-    read_result(5, "10 40 10 20 20");
+int main(int argc, char *argv[]) {
+    int *stats = malloc(CLUSTER*sizeof(int));
+
+    stats[0] = 12;
+    stats[1] = 5;
+    stats[2] = 3;
+    stats[3] = 0;
+    stats[4] = 1;
+
+    string *str = statsToString(stats);
+
+    read_result(5, str);
     return 0;
 }
