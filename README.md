@@ -2,7 +2,7 @@
 
 PROGETTO II LabSO1 - AA 2019-2020 -- 202343, 202369, 202351, 204679
 
-Gruppo: riccardo.parola@studenti.unitn.it - Variante "U"
+Gruppo: `riccardo.parola@studenti.unitn.it - Variante "U"`
 
 Componenti del gruppo:
 
@@ -13,9 +13,13 @@ Marco Di Francesco  202351  marco.difrancesco@studenti.unitn.it  00000003
 Filippo Daniotti    204679  filippo.daniotti@unitn.it            00000004  
 ```
 
+## How to use
+
+Run `run.sh` to run all these commands in once.
+
 ## Docker commands
 
-Run docker (if not enabled):
+**Run** docker (if not enabled):
 
 ``` Docker
 sudo systemctl start docker
@@ -32,7 +36,7 @@ docker image build --tag osproject:latest .
 **Run container** from previously built image:
 
 - `rm` deletes the container once closed
-- `$(pwd)` is the local folder
+- `$(pwd)` mount volume in the local folder
 - `/home` is the folder inside the docker instance
 
 ``` Docker
@@ -55,6 +59,6 @@ docker exec --interactive --tty osproject bash
 
 Compile (inside the continer):
 
-``` C
+``` shell
 make build
 ```
