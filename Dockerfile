@@ -9,5 +9,5 @@ RUN apt-get update && apt-get install -y \
 
 # Copy files when NOT mounting volume
 #COPY . /home
-
-CMD /bin/bash
+ 
+CMD ["/bin/bash"]

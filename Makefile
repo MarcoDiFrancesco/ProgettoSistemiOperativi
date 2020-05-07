@@ -20,9 +20,9 @@ ADEPS=src/analyzer/test.c src/analyzer/test.h
 bin/analyzer: src/analyzer/main.c $(ADEPS)
 	gcc -o $@ $< $(ADEPS) $(FLAGS)
 
-CDEPS=
-bin/createfile: src/createfile/main.cpp $(CDEPS)
-	g++ -o $@ $<
+# CDEPS=
+# bin/createfile: src/createfile/main.cpp $(CDEPS)
+# 	g++ -o $@ $<
 
 MDEPS=
 bin/main: src/main/main.c $(MDEPS)

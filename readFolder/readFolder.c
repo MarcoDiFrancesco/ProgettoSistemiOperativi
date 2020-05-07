@@ -53,12 +53,22 @@ int is_folder(char *folder) {
     return (stat(folder, &sb) == 0 && S_ISDIR(sb.st_mode));
 }
 
+// https://stackoverflow.com/a/8465083/7924557
+char *concat(const char *s1, const char *s2, const char *s3) {
+    char *result = malloc(strlen(s1) + strlen(s2) + strlen(s3) + 1);  // +1 for the null-terminator
+    strcpy(result, s1);
+    strcat(result, s2);
+    strcat(result, s3);
+    return result;
+}
+
 node listFiles(char *path) {
     node files_list = createNode();  // Tail of the list
     node head = files_list;
-
     FILE *fp;
-    fp = popen("find . -type f", "r");  // Open pointer to command output
+
+    char *command = concat("find ", path, " -type f");
+    fp = popen(command, "r");  // Open pointer to command output
     if (fp == NULL) {
         printf("Failed to run command");
         return files_list;
@@ -76,12 +86,12 @@ node listFiles(char *path) {
 int main() {
     // TODO: check priviledges
     int res;
-    char *path = "run.sh";
+    char *path = "test";
     if (file_exists(path))
-        if (is_folder(path)){
+        if (is_folder(path)) {
             node file_list = listFiles(path);
             while (file_list != NULL) {
-                printf("%s", file_list->str); // Just for demonstration
+                printf("%s", file_list->str);  // Just for demonstration
                 file_list = file_list->next;
             }
         } else {
@@ -89,6 +99,5 @@ int main() {
         }
     else
         printf("no file nor folder found\n");
-
     return 0;
 }
