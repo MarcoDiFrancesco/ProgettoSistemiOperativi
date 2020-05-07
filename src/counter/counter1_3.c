@@ -7,6 +7,13 @@ string *readAndWait(int pipe[], pid_t son);
 int writePipe(int pipe[],string *msg);
 
 int main(int argc,string argv[]){
+    //tester
+    int tt=open("log.txt",O_WRONLY);
+    int tt2[2];
+    tt2[1]=tt;
+    //tester
+
+
     int return_value;
     string toRead=argv[1];
     //temporaneo per testare 
@@ -58,14 +65,17 @@ int main(int argc,string argv[]){
                             //printf("iniz=%d fin=%d",part*j,part*(j+1));
                             string *message=statsToString(counter);
                             //printf("%s \n",message[0]);
-                            int err=writePipe(q_p[j],message);
+                            //int err=writePipe(q_p[j],message);
+                            int err=writePipe(tt2,message);
+                            printf("??? %d %s", errno, strerror(errno));
                             exit(0);
                         }else{
                             //successive parti del processo P
                             string *qTop=readAndWait(q_p[j],p_son);
                             for(i=0;i<CLUSTER;i++){
-                                printf("%s a",qTop[i]);
+                                printf("%s ",qTop[i]);
                             }
+                            printf("\n");
                             fflush(stdout);
                             //waitpid(p_son,NULL,0);
                         }

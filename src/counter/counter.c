@@ -6,25 +6,35 @@
 
 string *readAndWait(int pipe[], pid_t son){
     close(pipe[WRITE]);
-    string msg[CLUSTER];
+    string *msg;
+    msg=malloc(CLUSTER*sizeof(char*));
     int i;
     int rd;
+    int err=0;
     for(i=0;i<CLUSTER;i++){
         msg[i]=malloc(MAXLEN);
         rd=read(pipe[READ],msg, MAXLEN);
+        if(rd==-1){
+            err=rd;
+        }
         msg[rd]=0;
     }
+    printf("(read)ERR=%d",err);
     close(pipe[READ]);
-    int err=waitpid(son,NULL,0);
+    waitpid(son,NULL,0);
     return msg;
 }
 
 int writePipe(int pipe[],string *msg){
     int ret=0;//per eventuali errori
-    close(pipe[READ]);
-    int i;
+    //close(pipe[READ]);
+    int i,err;
+    
     for(i=0;i<CLUSTER;i++){
-        write(pipe[WRITE],msg[i],strlen(msg[i])+1);
+        err=write(pipe[WRITE],msg[i],strlen(msg[i])+1);
+        if(err!=0){
+            ret=err;
+        }
     }
     close(pipe[WRITE]);
     return ret;
