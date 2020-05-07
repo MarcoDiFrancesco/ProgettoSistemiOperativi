@@ -160,4 +160,10 @@ int *getValuesFromString(char **str){
     return values;
 }
 
+void printError(int code){
+    printf("\n\n----------------------\n\n");
+    printf("ERRNO = %d, error description = %s", code, strerror(code));
+    printf("\n\n----------------------\n\n");
+}
+
 #endif

@@ -39,3 +39,5 @@ int* processoQ_n(int from, int to, char** fname, int n);
  char **statsToString(int *values);
 
  int *getValuesFromString(char **str);
+
+ void printError(int code)
