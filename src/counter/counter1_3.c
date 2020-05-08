@@ -65,12 +65,13 @@ int main(int argc,string argv[]){
                             //printf("iniz=%d fin=%d",part*j,part*(j+1));
                             string *message=statsToString(counter);
                             //printf("%s \n",message[0]);
-                            //int err=writePipe(q_p[j],message);
-                            int err=writePipe(tt2,message);
-                            printf("??? %d %s", errno, strerror(errno));
+                            int err=writePipe(q_p[j],message);
+                            //int err=writePipe(tt2,message);
+                            //printf("??? %d %s", errno, strerror(errno));
                             exit(0);
                         }else{
                             //successive parti del processo P
+                            printf("\t");
                             string *qTop=readAndWait(q_p[j],p_son);
                             for(i=0;i<CLUSTER;i++){
                                 printf("%s ",qTop[i]);

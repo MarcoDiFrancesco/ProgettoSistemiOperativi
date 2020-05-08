@@ -13,13 +13,13 @@ string *readAndWait(int pipe[], pid_t son){
     int err=0;
     for(i=0;i<CLUSTER;i++){
         msg[i]=malloc(MAXLEN);
-        rd=read(pipe[READ],msg, MAXLEN);
+        rd=read(pipe[READ],msg[i], MAXLEN);
         if(rd==-1){
             err=rd;
         }
-        msg[rd]=0;
+        msg[i][rd]=0;
     }
-    printf("(read)ERR=%d",err);
+    //printf("(read)ERR=%d",err);
     close(pipe[READ]);
     waitpid(son,NULL,0);
     return msg;
@@ -31,7 +31,7 @@ int writePipe(int pipe[],string *msg){
     int i,err;
     
     for(i=0;i<CLUSTER;i++){
-        err=write(pipe[WRITE],msg[i],strlen(msg[i])+1);
+        err=write(pipe[WRITE],msg[i],MAXLEN);
         if(err!=0){
             ret=err;
         }
