@@ -24,6 +24,11 @@ int main(int argc,string argv[]){
     int q_p[M][2];
     //counters
     int j;
+    int data[CLUSTER];
+    int g;
+    for(g=0;g<CLUSTER;g++){
+        data[g]=0;
+    }
     printf("Process C pid=%d\n",getpid());
 
     for(i=0;i<N;i++){
@@ -39,7 +44,6 @@ int main(int argc,string argv[]){
                 //processo P
                 string *qTop[M];
                 int dataCollected[CLUSTER];
-                int g;
                 for(g=0;g<CLUSTER;g++){
                     dataCollected[g]=0;
                 }
@@ -76,14 +80,26 @@ int main(int argc,string argv[]){
                     }
                 }
                 //potenziale uscita del processo P
-                
+                writePipe(p_c[i],statsToString(dataCollected));
                 exit(0);
             }else{
                 //successive parti del processo C
-
-                waitpid(c_son,NULL,0);
+                string * buffer=readAndWait(p_c[i],c_son);
+                int *tmp=getValuesFromString(buffer);
+                    for(g=0;g<CLUSTER;g++){
+                        data[g]+=tmp[g];
+                    }
             }
         }
     }
+    printf("Printing data....\n");
+    printf("Numero di lettere calcolato= %d\n",data[0]);
+    printf("Numero di numeri calcolato= %d\n",data[1]);
+    printf("Numero di spazi calcolato= %d\n",data[2]);
+    printf("Numero di punteggiatura calcolato= %d\n",data[3]);
+    printf("Numero di altro calcolato= %d\n",data[4]);
+
+
+
     return return_value;
 }
