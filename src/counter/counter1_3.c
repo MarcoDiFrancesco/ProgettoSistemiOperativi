@@ -16,6 +16,13 @@ int main(int argc,string argv[]){
     }
     //tmp
 
+    if(argc-1<N){
+        N=argc-1;
+    }
+
+
+    int file_per_p = ((argc - 1)/N) + 1;
+
     int fp=open(toRead,O_RDONLY);
     int dim = lseek(fp,0,SEEK_END);
     int part=dim/M;
@@ -48,6 +55,13 @@ int main(int argc,string argv[]){
                     dataCollected[g]=0;
                 }
                 printf("P created pid=%d ppid=%d\n",getpid(),getppid());
+                /*
+                int k = 0;
+                string file_list_this[file_per_p];
+                while(k < file_per_p && (file_per_p * i) + k < argc - 1){
+                    file_list_this[k] = files[file_per_p*i];
+                    ++k;
+                }*/
 
                 //creo M processi di tipo Q
                 for(j=0;j<M;j++){
