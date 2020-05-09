@@ -3,7 +3,7 @@
 int N=3;
 int M=4;
 
-int main(int argc,string argv[]){
+int main(int argc, string argv[]){
 
     int return_value;
     string toRead=argv[1];
@@ -55,13 +55,16 @@ int main(int argc,string argv[]){
                     dataCollected[g]=0;
                 }
                 printf("P created pid=%d ppid=%d\n",getpid(),getppid());
-                /*
+
+                
                 int k = 0;
-                string file_list_this[file_per_p];
+                string file_P[file_per_p];
+                int f_Psize=0;
                 while(k < file_per_p && (file_per_p * i) + k < argc - 1){
-                    file_list_this[k] = files[file_per_p*i];
+                    file_P[k] = files[file_per_p*i];
                     ++k;
-                }*/
+                    f_Psize++;
+                }
 
                 //creo M processi di tipo Q
                 for(j=0;j<M;j++){
@@ -78,7 +81,7 @@ int main(int argc,string argv[]){
                             printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
 
                             //logica processo  q
-                            int* counter=processoQ(part*j,part*(j+1),files[0]);
+                            int* counter=processoQ_n(part*j,part*(j+1),file_P,f_Psize);
                             string *message=statsToString(counter);
                             int err=writePipe(q_p[j],message);
                             exit(0);
@@ -112,8 +115,6 @@ int main(int argc,string argv[]){
     printf("Numero di spazi calcolato= %d\n",data[2]);
     printf("Numero di punteggiatura calcolato= %d\n",data[3]);
     printf("Numero di altro calcolato= %d\n",data[4]);
-
-
 
     return return_value;
 }
