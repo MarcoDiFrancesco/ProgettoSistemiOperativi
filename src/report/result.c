@@ -9,10 +9,10 @@ void read_result(int cluster, string *results){
         *nval = getValuesFromString(results);
     char input;
 
-    printf("Which result format: values[v] percentage[p] both[a]");
+    printf("Choose your result format: values[v] percentage[p] both[a]");
     scanf("%c", &input);
     while(!(input != 'v' || input != 'p' || input != 'a')){
-        printf("insert only [v] [p] or [a]");
+        printf("Insert only [v], [p] or [a]");
         scanf("%c", &input);
     }
 
@@ -35,7 +35,7 @@ void print_values(int cluster, int* results){
     int i = 0;
 
     for(i=0; i<cluster; i++){
-        printf("\n> numero di %s: %d", print_type(i), results[i]);
+        printf("\n> Numero di %s: %d", print_type(i), results[i]);
     }
 }
 
@@ -49,6 +49,7 @@ void print_percentual(int cluster, int* results){
     for(i=0; i<cluster; i++){
         printf("\n> percentuale di %s: %0.2f percento", print_type(i), ((float)results[i]/((float)dim))*100.0 );
     }
+    printf("\n");
 }
 
 string print_type(int n){
@@ -65,12 +66,13 @@ string print_type(int n){
 
 char **statsToString(int *values){
 
+    int i;
     char **str = (char **)malloc(5 * sizeof(char *));
-    for(int i = 0; i < 5; ++i){
+    for(i = 0; i < 5; ++i){
         str[i] = (char *)malloc(12 * sizeof(int));
     }
 
-    for(int i = 0; i < 5; ++i){
+    for(i = 0; i < 5; ++i){
         sprintf(str[i], "%d", values[i]);
     }
 
@@ -80,7 +82,7 @@ char **statsToString(int *values){
 int *getValuesFromString(char **str){
     int *values = (int *)malloc(CLUSTER * sizeof(int));
     int i;
-    for( i = 0; i < CLUSTER; ++i){
+    for(i = 0; i < CLUSTER; ++i){
         values[i] = atoi(str[i]);
     }
 
