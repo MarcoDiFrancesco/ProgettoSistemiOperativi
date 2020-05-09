@@ -40,6 +40,21 @@ int writePipe(int pipe[],string *msg){
     return ret;
 }
 
+int * filesDim(string *files,int num,int M){
+    int i;
+    string toRead;
+    int fp,dim;
+    int *ret;
+    ret=malloc(num*sizeof(int));
+    for(i=0;i<num;i++){
+        toRead=files[i];
+        fp=open(toRead,O_RDONLY);
+        dim = lseek(fp,0,SEEK_END);
+        ret[i]=dim/M;
+    }
+    return ret;
+}
+
 //---------------------------ric functions------------------------------------
 
 int readFile(char* filename, char* filedata, int start, int stop){

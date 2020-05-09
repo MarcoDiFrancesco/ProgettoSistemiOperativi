@@ -23,6 +23,7 @@ typedef char * string;
 
 int writePipe(int pipe[],string *msg);
 string *readAndWait(int pipe[], pid_t son);
+int * filesDim(string *files,int num,int M);
 
 //funzioni di ric
 
