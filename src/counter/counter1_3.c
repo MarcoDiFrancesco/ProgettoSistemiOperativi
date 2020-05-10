@@ -6,7 +6,7 @@ int M=4;
 int main(int argc, string argv[]){
 
     int return_value;
-    string toRead=argv[1];
+    //string toRead=argv[1];
 
     //temporaneo per testare 
     string files[argc-1];
@@ -16,16 +16,23 @@ int main(int argc, string argv[]){
     }
     //tmp
 
+
+    int file_per_p = ((argc - 1)/N) + 1;
+    /*if(N == argc - 1){
+        file_per_p = 1;
+    } else {
+        file_per_p = ((argc - 1)/N) + 1;
+    }*/
+
     if(argc-1<N){
         N=argc-1;
     }
 
-
-    int file_per_p = ((argc - 1)/N) + 1;
-
+    int *part = filesDim(files, argc-1,M);
+    /*
     int fp=open(toRead,O_RDONLY);
     int dim = lseek(fp,0,SEEK_END);
-    int part=dim/M;
+    int part=dim/M;*/
     //pipes
     int p_c[N][2];
     int q_p[M][2];
@@ -60,10 +67,15 @@ int main(int argc, string argv[]){
                 int k = 0;
                 string file_P[file_per_p];
                 int f_Psize=0;
-                while(k < file_per_p && (file_per_p * i) + k < argc - 1){
-                    file_P[k] = files[file_per_p*i];
+                while(k < file_per_p){
+                    if((file_per_p * i) + k < argc - 1){
+                        file_P[k] = files[(file_per_p * i) + k];
+                        f_Psize++;
+                    }
+                    if((file_per_p * i) + k == argc - 1){
+                        file_P[k] = 0;
+                    }
                     ++k;
-                    f_Psize++;
                 }
 
                 //creo M processi di tipo Q
@@ -81,7 +93,7 @@ int main(int argc, string argv[]){
                             printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
 
                             //logica processo  q
-                            int* counter=processoQ_n(part*j,part*(j+1),file_P,f_Psize);
+                            int* counter=processoQ_n(part,file_P,f_Psize,j,file_per_p*i);
                             string *message=statsToString(counter);
                             int err=writePipe(q_p[j],message);
                             exit(0);

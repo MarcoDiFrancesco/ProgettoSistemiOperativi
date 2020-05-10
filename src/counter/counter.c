@@ -51,6 +51,7 @@ int * filesDim(string *files,int num,int M){
         fp=open(toRead,O_RDONLY);
         dim = lseek(fp,0,SEEK_END);
         ret[i]=dim/M;
+        close(fp);
     }
     return ret;
 }
@@ -127,14 +128,18 @@ int* processoQ(int from, int to, char* fname){
         return (int *)-1;
 }
 
-int* processoQ_n(int from, int to, char** fname, int n){
+int* processoQ_n(int *range, char** fname, int n, int q_loop, int index){
     char* testo;
     int* stats;
-    int i,j, 
-        inizio = from, 
-        fine = to;
+    int i,j, inizio[n], fine[n];
+    i = 0;
+    for(j=index; j<(index+n); j++){ 
+        inizio[i] = range[j]*q_loop;
+        fine[i] = range[j]*(q_loop+1);
+        ++i;
+    }
 
-    testo = malloc(fine*sizeof(char));
+    testo = malloc(MAXLEN*sizeof(char));
     stats = malloc(5*sizeof(int));
     i = 0;
 
@@ -142,9 +147,10 @@ int* processoQ_n(int from, int to, char** fname, int n){
         stats[i] = 0;
     }
 
-    for(j=0; j<n; j++){      
-        i = readFile(fname[j], testo, inizio, fine);
-        countLetters(fine-inizio, testo, stats);
+    for(j=0; j<n; j++){  
+        i = readFile(fname[j], testo, inizio[j], fine[j]);
+        //printf("\t%s\n",testo);
+        countLetters(fine[j]-inizio[j], testo, stats);
         if(i<0) break;
     }
 
