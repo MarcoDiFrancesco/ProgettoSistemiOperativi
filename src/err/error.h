@@ -11,4 +11,4 @@
 int set_error(int *ret, int value);
 
 //esegue la funzone set_error e stampa la stringa passata come argomento
-int set_error_msg(int *ret, int value, char* msg);
+int set_err_msg(int *ret, int value, char* msg);
