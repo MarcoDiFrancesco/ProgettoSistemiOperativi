@@ -66,7 +66,7 @@ void c(int argc, string argv[], int N, int M){
     printf("Numero di altro calcolato= %d\n",data[4]);
 }
 
-p(int M, int pipePQ[][2], int pipeCP[][2], int n_proc, int dimpart, string files[]){
+int p(int M, int pipePQ[][2], int pipeCP[][2], int n_proc, int dimpart, string files[]){
     //processo P
     printf("P created pid=%d ppid=%d\n",getpid(),getppid());
 
@@ -109,7 +109,7 @@ p(int M, int pipePQ[][2], int pipeCP[][2], int n_proc, int dimpart, string files
     return ret;
 }
 
-q(int pipePQ[][2], int dimpart, int section, string files[]){
+int q(int pipePQ[][2], int dimpart, int section, string files[]){
     //processo Q
     printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
 
@@ -119,6 +119,6 @@ q(int pipePQ[][2], int dimpart, int section, string files[]){
     //logica processo Q
     int* counter=processoQ(dimpart*section, dimpart*(section+1),files[0]);
     string *message=statsToString(counter);
-    set_err_msg(&ret, writePipe(pipePQ ,message), "line 18 (Q) --> pipe non scritta correttamente");
+    set_err_msg(&ret, writePipe(pipePQ[section] ,message), "line 18 (Q) --> pipe non scritta correttamente");
     return ret;
 }

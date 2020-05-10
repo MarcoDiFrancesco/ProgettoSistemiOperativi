@@ -9,7 +9,7 @@ int set_error(int *ret, int value){
     
 }
 
-int set_error_msg(int *ret, int err, char* msg){
+int set_err_msg(int *ret, int err, char* msg){
     int er = set_error(ret, err);
     if(er<0){
         printf("%s", msg);
