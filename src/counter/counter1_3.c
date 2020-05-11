@@ -16,7 +16,7 @@ int main(int argc, string argv[]){
     }
     //tmp
 
-
+    //int file_per_p = ceil((float)(argc - 1)/(float)N);
     int file_per_p = ((argc - 1)/N) + 1;
     /*if(N == argc - 1){
         file_per_p = 1;
