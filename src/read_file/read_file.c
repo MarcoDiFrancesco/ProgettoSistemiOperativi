@@ -1,17 +1,7 @@
-#include <errno.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
+#ifndef _READ_FILE_H_
+#define _READ_FILE_H_
 
-// https://www.hackerearth.com/practice/data-structures/linked-list/singly-linked-list/tutorial/
-struct LinkedList {
-    char *str;
-    struct LinkedList *next;
-};
-
-typedef struct LinkedList *node;
+#include "read_file.h"
 
 node createNode() {
     node temp;
@@ -43,6 +33,7 @@ node addNode(node head, char *new_str) {
 
 // https://stackoverflow.com/a/230070/7924557
 int file_exists(char *filename) {
+    // TODO: check priviledges
     struct stat buffer;
     return (stat(filename, &buffer) == 0);
 }
@@ -83,21 +74,4 @@ node listFiles(char *path) {
     return files_list->next;  // First node is NULL, so return second
 }
 
-int main() {
-    // TODO: check priviledges
-    int res;
-    char *path = "test";
-    if (file_exists(path))
-        if (is_folder(path)) {
-            node file_list = listFiles(path);
-            while (file_list != NULL) {
-                printf("%s", file_list->str);  // Just for demonstration
-                file_list = file_list->next;
-            }
-        } else {
-            printf("is a file\n");
-        }
-    else
-        printf("no file nor folder found\n");
-    return 0;
-}
+#endif
