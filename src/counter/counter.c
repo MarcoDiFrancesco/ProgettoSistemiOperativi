@@ -173,7 +173,7 @@ int* processoQ_n(int *range, char** fname, int n, int q_loop, int index){
         str[i] = (char *)malloc(12 * sizeof(int));
     }
     
-    for( i = 0; i < CLUSTER; ++i){
+    for(i = 0; i < CLUSTER; ++i){
         sprintf(str[i], "%d", values[i]);
     }
 

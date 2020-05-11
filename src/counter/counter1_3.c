@@ -16,13 +16,14 @@ int main(int argc, string argv[]){
     }
     //tmp
 
-
-    int file_per_p = ((argc - 1)/N) + 1;
-    /*if(N == argc - 1){
-        file_per_p = 1;
+    int file_per_p;
+    if((argc - 1)%N == 0){
+        //printf("areo1\n");
+        file_per_p = (argc - 1)/N;
     } else {
+        //printf("areo2\n");
         file_per_p = ((argc - 1)/N) + 1;
-    }*/
+    }
 
     if(argc-1<N){
         N=argc-1;
