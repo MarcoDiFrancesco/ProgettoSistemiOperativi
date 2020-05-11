@@ -16,17 +16,10 @@ int main(int argc, string argv[]){
     }
     //tmp
 
-<<<<<<< HEAD
     int file_per_p;
     if((argc - 1)%N == 0){
         //printf("areo1\n");
         file_per_p = (argc - 1)/N;
-=======
-    //int file_per_p = ceil((float)(argc - 1)/(float)N);
-    int file_per_p = ((argc - 1)/N) + 1;
-    /*if(N == argc - 1){
-        file_per_p = 1;
->>>>>>> fa99207a113df68875a59ab70e1b8f2b10ee15db
     } else {
         //printf("areo2\n");
         file_per_p = ((argc - 1)/N) + 1;
