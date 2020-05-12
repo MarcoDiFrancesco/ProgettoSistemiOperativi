@@ -13,7 +13,6 @@
 #define WRITE 1
 #define MAXLEN 12*sizeof(int)
 #define CLUSTER 5
-// CLUSTER è il numero di categorie di caratteri che distinguiamo + 1
 
 #define BOOL char
 #define FALSE 0
@@ -24,7 +23,7 @@ typedef char * string;
 
 int writePipe(int pipe[],string *msg);
 string *readAndWait(int pipe[], pid_t son);
-int * filesDim(string *files,int num,int M);
+int * filesPart(string *files,int num,int M);
 
 //funzioni di ric
 
@@ -34,7 +33,7 @@ void countLetters(int dim, char* s, int* counter);
 
 int* processoQ(int from, int to, char* fname);
 
-int* processoQ_n(int *range, char** fname, int n, int q_loop, int index);
+int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int index, int M);
 
 //funzioni di phil
 
@@ -43,3 +42,5 @@ int* processoQ_n(int *range, char** fname, int n, int q_loop, int index);
  int *getValuesFromString(char **str);
 
  void printError(int code);
+
+ int *filesDim(string *files,int num,int M);

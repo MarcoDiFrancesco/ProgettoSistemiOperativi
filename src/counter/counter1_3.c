@@ -29,7 +29,8 @@ int main(int argc, string argv[]){
         N=argc-1;
     }
 
-    int *part = filesDim(files, argc-1,M);
+    int *part = filesPart(files, argc - 1, M);
+    int *f_dim = filesDim(files, argc - 1, M);
     /*
     int fp=open(toRead,O_RDONLY);
     int dim = lseek(fp,0,SEEK_END);
@@ -94,7 +95,7 @@ int main(int argc, string argv[]){
                             printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
 
                             //logica processo  q
-                            int* counter=processoQ_n(part,file_P,f_Psize,j,file_per_p*i);
+                            int* counter=processoQ_n(part, f_dim, file_P,f_Psize,j,file_per_p*i, M);
                             string *message=statsToString(counter);
                             int err=writePipe(q_p[j],message);
                             exit(0);

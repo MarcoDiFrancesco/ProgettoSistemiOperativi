@@ -40,7 +40,7 @@ int writePipe(int pipe[],string *msg){
     return ret;
 }
 
-int * filesDim(string *files,int num,int M){
+int * filesPart(string *files,int num,int M){
     int i;
     string toRead;
     int fp,dim;
@@ -50,7 +50,11 @@ int * filesDim(string *files,int num,int M){
         toRead=files[i];
         fp=open(toRead,O_RDONLY);
         dim = lseek(fp,0,SEEK_END);
-        ret[i]=dim/M;
+        if (dim%M == 0){
+            ret[i]=dim/M;
+        } else {
+            ret[i] = (dim/M) + 1;
+        }
         close(fp);
     }
     return ret;
@@ -128,14 +132,28 @@ int* processoQ(int from, int to, char* fname){
         return (int *)-1;
 }
 
-int* processoQ_n(int *range, char** fname, int n, int q_loop, int index){
+int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int index, int M){
     char* testo;
     int* stats;
     int i,j, inizio[n], fine[n];
     i = 0;
-    for(j=index; j<(index+n); j++){ 
+    for (j = index; j < (index + n); j++) {
         inizio[i] = range[j]*q_loop;
-        fine[i] = range[j]*(q_loop+1);
+        //j == (index + n ) -1 && dims[index + j] > (range[j]*q_loop + i) + range[j]  
+        //dims[index + j] - (range[j]*q_loop + i) < dims[index + j] - 1
+        //FUNZIONA PORCAMADONNA
+        if(q_loop == M - 1){
+            if((range[j]*(q_loop + 1) - dims[j] == 0)) {
+               // printf("%d",range[j]*q_loop + j);
+                fine[i] = range[j]*(q_loop + 1);
+            } else {
+                fine[i] = dims[index + j];
+            }
+        } else {
+            fine[i] = range[j]*(q_loop + 1);
+        }
+        
+        printf("\tinizio=%d, fine=%d\n",inizio[j],fine[j]);
         ++i;
     }
 
@@ -195,6 +213,21 @@ void printError(int code){
     printf("\n\n----------------------\n\n");
     printf("ERRNO = %d, error description = %s", code, strerror(code));
     printf("\n\n----------------------\n\n");
+}
+
+int *filesDim(string *files,int num,int M) {
+    int i;
+    string toRead;
+    int fp;
+    int *ret;
+    ret=malloc(num*sizeof(int));
+    for(i=0;i<num;i++){
+        toRead=files[i];
+        fp=open(toRead,O_RDONLY);
+        ret[i] = lseek(fp, 0, SEEK_END);
+        close(fp);
+    }
+    return ret;
 }
 
 #endif
