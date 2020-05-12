@@ -137,7 +137,25 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
     int* stats;
     int i,j, inizio[n], fine[n];
     i = 0;
+
     for (j = index; j < (index + n); j++) {
+
+        inizio[i] = range[j]*q_loop;
+        if((range[j]*(q_loop + 1) <= dims[j])) {
+            // printf("%d",range[j]*q_loop + j);
+            fine[i] = range[j]*(q_loop + 1);
+        } else {
+            fine[i] = dims[j]; 
+        } 
+
+        if(inizio[i] > fine[i]){
+            inizio[i] = fine[i] = 0;
+        }   
+    
+        
+
+
+        /*
         inizio[i] = range[j]*q_loop;
         //j == (index + n ) -1 && dims[index + j] > (range[j]*q_loop + i) + range[j]  
         //dims[index + j] - (range[j]*q_loop + i) < dims[index + j] - 1
@@ -152,8 +170,9 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
         } else {
             fine[i] = range[j]*(q_loop + 1);
         }
+        */
         
-        printf("\tinizio=%d, fine=%d\n",inizio[j],fine[j]);
+        printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
         ++i;
     }
 
