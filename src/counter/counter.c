@@ -152,27 +152,8 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
             inizio[i] = fine[i] = 0;
         }   
     
-        
-
-
-        /*
-        inizio[i] = range[j]*q_loop;
-        //j == (index + n ) -1 && dims[index + j] > (range[j]*q_loop + i) + range[j]  
-        //dims[index + j] - (range[j]*q_loop + i) < dims[index + j] - 1
-        //FUNZIONA PORCAMADONNA
-        if(q_loop == M - 1){
-            if((range[j]*(q_loop + 1) - dims[j] == 0)) {
-               // printf("%d",range[j]*q_loop + j);
-                fine[i] = range[j]*(q_loop + 1);
-            } else {
-                fine[i] = dims[index + j];
-            }
-        } else {
-            fine[i] = range[j]*(q_loop + 1);
-        }
-        */
-        
-        printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
+        if(inizio[i] != fine[i]) printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
+        else printf("\t---------\n");
         ++i;
     }
 
