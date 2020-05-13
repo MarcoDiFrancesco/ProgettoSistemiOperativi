@@ -6,19 +6,19 @@ int open_file(const char *dir) {
     if (pid = fork()) {  // Parent section
         waitpid(pid, &status, 0);
     } else {  // Child section
-        const char executable[] = "/bin/bash";
-        execl(executable, dir, NULL);
+        execl("/bin/bash", "bash", "-c", dir, NULL);
     }
     return status;
 }
 
-int main(dir) {
+int main(int argc, char** argv) {
     // TODO: check for error -> "/usr/include/stdc-predef.h:1:0: fatal error: can't create precompiled header bin/main: Text file busy"
 
-    printf("%d\n", open_file("bin/report"));
-    printf("%d\n", open_file("bin/analyzer"));
-
+    printf("report: %d\n", open_file("./bin/report"));
+    printf("analyzer: %d\n", open_file("./bin/analyzer"));
+    return 0;
 }
+
 /*
     char *path = "bin/analyzer";
     if (file_exists(path))
@@ -34,4 +34,4 @@ int main(dir) {
     else
         printf("no file nor folder found\n");
     return 0;
-    */
+*/
