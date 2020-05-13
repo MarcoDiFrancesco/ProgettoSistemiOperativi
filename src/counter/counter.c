@@ -170,7 +170,7 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
         countLetters(fine[j]-inizio[j], testo, stats);
         if(i<0) break;
     }
-    free(testo);
+    //free(testo);
 
 
     if(i==0)

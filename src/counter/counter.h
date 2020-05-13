@@ -11,7 +11,7 @@
 
 #define READ 0
 #define WRITE 1
-#define MAXLEN 12000*sizeof(int)
+#define MAXLEN 12*sizeof(int)
 #define CLUSTER 5
 
 #define BOOL char
