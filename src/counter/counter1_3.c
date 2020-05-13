@@ -6,8 +6,6 @@ int M=4;
 int main(int argc, string argv[]){
 
     int return_value;
-    //string toRead=argv[1];
-
     //temporaneo per testare 
     string files[argc-1];
     int i;
@@ -18,10 +16,8 @@ int main(int argc, string argv[]){
 
     int file_per_p;
     if((argc - 1)%N == 0){
-        //printf("areo1\n");
         file_per_p = (argc - 1)/N;
     } else {
-        //printf("areo2\n");
         file_per_p = ((argc - 1)/N) + 1;
     }
 
@@ -31,10 +27,7 @@ int main(int argc, string argv[]){
 
     int *part = filesPart(files, argc - 1, M);
     int *f_dim = filesDim(files, argc - 1, M);
-    /*
-    int fp=open(toRead,O_RDONLY);
-    int dim = lseek(fp,0,SEEK_END);
-    int part=dim/M;*/
+
     //pipes
     int p_c[N][2];
     int q_p[M][2];

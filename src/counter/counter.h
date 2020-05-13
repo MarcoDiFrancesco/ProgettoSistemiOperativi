@@ -44,3 +44,9 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
  void printError(int code);
 
  int *filesDim(string *files,int num,int M);
+
+ //process function
+
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int M, int *part, int *fdim, int index_p,int file_per_p);
+
+int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]);

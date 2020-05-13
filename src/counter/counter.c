@@ -230,4 +230,69 @@ int *filesDim(string *files,int num,int M) {
     return ret;
 }
 
+//------------------------ process function section-----------------------
+
+
+
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int m, int *part, int *fdim, int index_p,int file_per_p){
+    //creo pipe fra C e P
+    int g;
+    int return_value;
+        if(c_son==0){
+            //processo P
+            string *qTop[m];
+            int dataCollected[CLUSTER];
+            for(g=0;g<CLUSTER;g++){
+                dataCollected[g]=0;
+            }
+        printf("P created pid=%d ppid=%d\n",getpid(),getppid());                
+        int k = 0;
+        string file_P[file_per_p];
+        int f_Psize=0;
+        while(k < file_per_p){
+            if((file_per_p * index_p) + k < argc - 1){
+                file_P[k] = files[(file_per_p * index_p) + k];
+                f_Psize++;
+            }
+            if((file_per_p * index_p) + k == argc - 1){
+                    file_P[k] = 0;
+                }
+                ++k;
+            }
+        int j;
+        //creo M processi di tipo Q
+        for(j=0;j<m;j++){
+            //creo la pipe fra P e Q
+            pipe(pipe_q[j]);
+            int p_son=fork();
+            if(p_son==-1){
+                printf("error occurred at line 46\n");
+                return_value=46;
+            }else{
+                if(p_son==0){
+                    return_value=processQ(part, fdim, file_P,f_Psize,j,file_per_p*index_p, m, pipe_q[j]);
+                    exit(0);
+                }else{
+                    //successive parti del processo P
+                    qTop[j]=readAndWait(pipe_q[j],p_son);
+                    int *tmp=getValuesFromString(qTop[j]);
+                    for(g=0;g<CLUSTER;g++){
+                        dataCollected[g]+=tmp[g];
+                    }
+                }
+        }
+                        
+    }
+    return_value=writePipe(pipe_c[index_p],statsToString(dataCollected));
+    return return_value;
+    }
+}
+
+int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]){
+    printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
+    int* counter=processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
+    string *message=statsToString(counter);
+    int err=writePipe(pipe_q,message);
+    return err;
+}
 #endif
