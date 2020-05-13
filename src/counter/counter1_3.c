@@ -122,6 +122,6 @@ int main(int argc, string argv[]){
     printf("Numero di spazi calcolato= %d\n",data[2]);
     printf("Numero di punteggiatura calcolato= %d\n",data[3]);
     printf("Numero di altro calcolato= %d\n",data[4]);
-
+    system("sleep 33");
     return return_value;
 }

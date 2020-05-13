@@ -79,7 +79,6 @@ void countLetters(int dim, char* s, int* counter){
     //printf("testo cont: ");
     int i = dim-1;
     for(i; i>=0; i--){
-        
         //printf("%c\t", s[i]);
         if(s[i]>='a' && s[i]<='z' || s[i]>='A' && s[i]<='Z'){
             //lettera maiuscola o minuscola
@@ -171,6 +170,7 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
         countLetters(fine[j]-inizio[j], testo, stats);
         if(i<0) break;
     }
+    free(testo);
 
 
     if(i==0)
@@ -183,15 +183,15 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
 //---------------------------phil functions------------------------------------
 
 
- char **statsToString(int *values){
+ char **statsToString(int *values) {
 
     char **str = (char **)malloc(CLUSTER * sizeof(char *));
     int i;
-    for(i = 0; i < CLUSTER; ++i){
+    for(i = 0; i < CLUSTER; ++i) {
         str[i] = (char *)malloc(12 * sizeof(int));
     }
     
-    for(i = 0; i < CLUSTER; ++i){
+    for(i = 0; i < CLUSTER; ++i) {
         sprintf(str[i], "%d", values[i]);
     }
 
@@ -199,7 +199,7 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
 }
 
 
-int *getValuesFromString(char **str){
+int *getValuesFromString(char **str) {
     int *values = (int *)malloc(CLUSTER * sizeof(int));
     int i;
     for( i = 0; i < CLUSTER; ++i){
@@ -231,7 +231,6 @@ int *filesDim(string *files,int num,int M) {
 }
 
 //------------------------ process function section-----------------------
-
 
 
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int m, int *part, int *fdim, int index_p,int file_per_p){
