@@ -134,7 +134,7 @@ int* processoQ(int from, int to, char* fname){
 int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int index, int M){
     char* testo;
     int* stats;
-    int i,j, inizio[n], fine[n];
+    int i, j, k, value, inizio[n], fine[n];
     i = 0;
 
     for (j = index; j < (index + n); j++) {
@@ -156,7 +156,6 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
         ++i;
     }
 
-    testo = malloc(MAXLEN*sizeof(char));
     stats = malloc(5*sizeof(int));
     i = 0;
 
@@ -164,13 +163,21 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
         stats[i] = 0;
     }
 
+    k = index;
     for(j=0; j<n; j++){  
+        if(dims[k]%M == 0) {
+            value = dims[k]/M;
+        } else {
+            value = dims[k]/M + 1;
+        }
+        testo = malloc(value);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
         //printf("\t%s\n",testo);
         countLetters(fine[j]-inizio[j], testo, stats);
+        free(testo);
+        k++;
         if(i<0) break;
     }
-    //free(testo);
 
 
     if(i==0)
@@ -188,7 +195,7 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
     char **str = (char **)malloc(CLUSTER * sizeof(char *));
     int i;
     for(i = 0; i < CLUSTER; ++i) {
-        str[i] = (char *)malloc(12 * sizeof(int));
+        str[i] = (char *)malloc(MAXLEN);
     }
     
     for(i = 0; i < CLUSTER; ++i) {
@@ -197,6 +204,8 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
 
     return str;
 }
+
+// top -b -n 1 > ttest.txt
 
 
 int *getValuesFromString(char **str) {
@@ -294,4 +303,5 @@ int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int i
     int err=writePipe(pipe_q,message);
     return err;
 }
+
 #endif
