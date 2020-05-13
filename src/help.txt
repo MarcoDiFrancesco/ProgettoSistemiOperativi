@@ -3,4 +3,4 @@ Usage:  make [option]
 
 Options:
     build   Builds program
-    clean   Removes unused binary files
+    clean   Removes binary files

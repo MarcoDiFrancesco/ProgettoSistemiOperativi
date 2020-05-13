@@ -1,20 +1,24 @@
+# To build siletly: make -s
+MAKE=make -s
+# C compilaton flags
 FLAGS=-std=gnu90 -I.
+
+default:
+	@$(MAKE) help
 
 help:
 	@cat src/help.txt
 
 build:
 	@mkdir -p bin
-	@make bin/analyzer
-	# @make bin/createfile
-	@make bin/main
-	@make bin/report
-	@echo "Files susccessfully built"
+	@$(MAKE) bin/analyzer
+	@$(MAKE) bin/report
+	@$(MAKE) bin/main
+	@echo "Files successfully built"
 
 clean:
-	@# force option is used to fail silently, avoiding "No such file or directory"
-	@rm -f bin
-	@echo "Cleaned susccessfully"
+	@rm -rf bin/*
+	@echo "Cleaned successfully"
 
 ADEPS=src/analyzer/test.c src/analyzer/test.h
 bin/analyzer: src/analyzer/main.c $(ADEPS)
