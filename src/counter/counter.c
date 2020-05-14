@@ -131,24 +131,52 @@ int* processoQ(int from, int to, char* fname){
     else 
         return (int *)-1;
 }
-
-int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int index, int M){
+/**
+ * Questa è la funzione in cui avviene l'analisi vera e propria della porzione di file. 
+ * Inizialmente recupera gli indizi di inizio e fine degli n files da analizzare;
+ * successivamente, prepara un vettore dinamico per il recupero dei dati analizzati.
+ * A quel punto inizia il ciclo per effettuare il conteggio, dentro al quale viene allocata
+ * dinamicamente (e subito rilasciata) la memoria per contenere la porzione di testo da
+ * analizzare in quel momento. A quel punto si legge il file  e si ripone il contenuto da
+ * analizzare nel buffer apposito, e si conserva il valore di ritorno per questioni
+ * di debug.
+ * 
+ * @param range Vettore che contiene, per ogni file dato in input alla chiamata del main,
+ *              il valore ceil(dimensioneFile/M).
+ * @param dims Vettore che contiene la dimensione di ogni file.
+ * @param fname Vettore di stringhe che contiene i file che il processo P chiamante di questo
+ *              Q dovrà analizzare.
+ * @param n Numero di elementi di fname.
+ * @param q_loop Indice dell'iterazione corrispondente a questo processo Q.
+ * @param index Prodotto tra l'iterazione tra i processi P e il numero di file che ogni P può
+ *              analizzare; utile per sapere a quale elemento siamo arrivati nelle liste che non
+ *              distinguono i file tra i vari processi P.
+ * @param M Numero complessivo di sottoprocessi Q.
+ *              
+ * @return Vettore di interi che contiene i risultati dell'analisi
+ */
+int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int index, int M) {
     char* testo;
     int* stats;
-    int i,j, inizio[n], fine[n];
+    int i,j, k, alloc_value, inizio[n], fine[n];
     i = 0;
 
+    // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
+    // si parte da index e si itera n volte.
     for (j = index; j < (index + n); j++) {
 
+        // Controllo per gestire i casi in cui la dimensione del file non
+        // è un multiplo di M.
         inizio[i] = range[j]*q_loop;
-        if((range[j]*(q_loop + 1) <= dims[j])) {
+        if ((range[j]*(q_loop + 1) <= dims[j])) {
             // printf("%d",range[j]*q_loop + j);
             fine[i] = range[j]*(q_loop + 1);
         } else {
             fine[i] = dims[j]; 
         } 
-
-        if(inizio[i] > fine[i]){
+        
+        // Controllo per i file di dimensione inferiore a M - 1.
+        if (inizio[i] > fine[i]) {
             inizio[i] = fine[i] = 0;
         }   
     
@@ -157,19 +185,31 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
         ++i;
     }
 
-    testo = malloc(MAXLEN*sizeof(char));
-    stats = malloc(5*sizeof(int));
+    //stats = malloc(sizeof(int));
+    stats = malloc(CLUSTER*sizeof(int));
     i = 0;
 
-    for(i; i<CLUSTER; i++){
+    for (i; i<CLUSTER; i++) {
         stats[i] = 0;
     }
 
-    for(j=0; j<n; j++){  
+    k = index;
+    // In questa iterazione si assegna dinamicamente la dimensione del buffer di testo
+    // e la si libera subito, per evitare sprechi di memoria. La funzione readFile()
+    // deposita una porzione di file, ricavata sulla base degli indici, nel buffer 
+    // appena allocato, conservando il ritorno in caso di errori.
+    for (j=0; j<n; j++) {  
+        if (dims[k + j] % M == 0) {
+            alloc_value = dims[k + j];
+        } else {
+            alloc_value = dims[k + j] + 1;
+        }
+        testo = malloc(alloc_value);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
         //printf("\t%s\n",testo);
         countLetters(fine[j]-inizio[j], testo, stats);
-        if(i<0) break;
+        free(testo);
+        if (i<0) break;
     }
 
 
@@ -182,23 +222,34 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
 
 //---------------------------phil functions------------------------------------
 
+/**
+ * Funzione per trasformare un vettore di interi in una stringa che contenga
+ * gli stessi valori.
+ * 
+ * @param values Vettori di interi da convertire.
+ * 
+ * @return La stringa che contiene gli stessi valori.
+ */
+char **statsToString (int *values) {
 
- char **statsToString(int *values){
-
-    char **str = (char **)malloc(CLUSTER * sizeof(char *));
+    char **str = (char **) malloc(CLUSTER * sizeof(char *));
     int i;
-    for(i = 0; i < CLUSTER; ++i){
-        str[i] = (char *)malloc(12 * sizeof(int));
+    for (i = 0; i < CLUSTER; ++i) {
+        str[i] = (char *) malloc(12 * sizeof(int));
     }
     
-    for(i = 0; i < CLUSTER; ++i){
+    for (i = 0; i < CLUSTER; ++i) {
         sprintf(str[i], "%d", values[i]);
     }
 
     return str;
 }
 
-
+/**
+ * Funzione che recupera da una stringa dei valori numerici e li mette in un intero.
+ * @param str Il vettore di stringhe che contiene il valore.
+ * @return Il vettore di interi.
+ */
 int *getValuesFromString(char **str){
     int *values = (int *)malloc(CLUSTER * sizeof(int));
     int i;
@@ -209,6 +260,11 @@ int *getValuesFromString(char **str){
     return values;
 }
 
+/**
+ * Funzione che stampa in modo graficamente leggibile un codice di errore
+ * e relativa descrizione.
+ * @param code Codice errore.
+ */
 void printError(int code){
     printf("\n\n----------------------\n\n");
     printf("ERRNO = %d, error description = %s", code, strerror(code));
@@ -279,11 +335,13 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string fil
                     for(g=0;g<CLUSTER;g++){
                         dataCollected[g]+=tmp[g];
                     }
+                    free(tmp);//new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
                 }
         }
                         
     }
     return_value=writePipe(pipe_c[index_p],statsToString(dataCollected));
+    //possibile free di dataCollected (?)
     return return_value;
     }
 }
@@ -293,6 +351,7 @@ int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int i
     int* counter=processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
     string *message=statsToString(counter);
     int err=writePipe(pipe_q,message);
+    free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
     return err;
 }
 #endif
