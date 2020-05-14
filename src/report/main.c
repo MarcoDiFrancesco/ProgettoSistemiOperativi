@@ -10,7 +10,10 @@ int main(int argc, char *argv[]) {
     stats[4] = 1;
 
     string *str = statsToString(stats);
-
     read_result(5, str);
+
+    free(stats);
+    free(str);
+    
     return 0;
 }

@@ -134,7 +134,7 @@ int* processoQ(int from, int to, char* fname){
 int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int index, int M){
     char* testo;
     int* stats;
-    int i, j, k, value, inizio[n], fine[n];
+    int i, j, k, value_alloc, inizio[n], fine[n];
     i = 0;
 
     for (j = index; j < (index + n); j++) {
@@ -165,12 +165,12 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
 
     k = index;
     for(j=0; j<n; j++){  
-        if(dims[k]%M == 0) {
-            value = dims[k]/M;
+        if(dims[k+ j]%M == 0) {
+            value_alloc = dims[k + j]/M;
         } else {
-            value = dims[k]/M + 1;
+            value_alloc = dims[k + j]/M + 1;
         }
-        testo = malloc(value);
+        testo = malloc(value_alloc);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
         //printf("\t%s\n",testo);
         countLetters(fine[j]-inizio[j], testo, stats);
@@ -298,8 +298,9 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string fil
 
 int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]){
     printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
-    int* counter=processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
+    int* counter = processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
     string *message=statsToString(counter);
+    //free(counter);
     int err=writePipe(pipe_q,message);
     return err;
 }
