@@ -1,5 +1,7 @@
 # To build siletly: make -s
-MAKE=make -s
+MAKE=make
+# C compiler
+COMPILER=gcc
 # C compilaton flags
 FLAGS=-std=gnu90 -I.
 
@@ -20,14 +22,17 @@ clean:
 	@rm -rf bin/*
 	@echo "Cleaned successfully"
 
+# Analyzer
 ADEPS=src/analyzer/test.c src/analyzer/test.h
 bin/analyzer: src/analyzer/main.c $(ADEPS)
-	gcc -o $@ $< $(ADEPS) $(FLAGS)
+	$(COMPILER) -o $@ $< $(ADEPS) $(FLAGS)
 
+# Main
 MDEPS=src/read_file/read_file.c src/read_file/read_file.h
 bin/main: src/main/main.c $(MDEPS)
-	gcc -o $@ $< $(MDEPS) $(FLAGS)
+	$(COMPILER) -o $@ $< $(MDEPS) $(FLAGS)
 
+# Report
 RDEPS=src/report/result.c src/report/result.h
 bin/report: src/report/main.c $(RDEPS)
-	gcc -o $@ $< $(RDEPS) $(FLAGS)
+	$(COMPILER) -o $@ $< $(RDEPS) $(FLAGS)

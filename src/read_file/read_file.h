@@ -6,6 +6,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#define FALSE 0
+#define TRUE 1
+typedef char *string;
+
 // https://www.hackerearth.com/practice/data-structures/linked-list/singly-linked-list/tutorial/
 struct LinkedList {
     char *str;
