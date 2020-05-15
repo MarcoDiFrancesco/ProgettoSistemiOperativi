@@ -5,9 +5,11 @@ int M=4;
 int n_arg = 1;
 
 int main(int argc, string argv[]){
+    printf("> ");
     //--------------------------------------------------
     //--------------------------------------------------
     //prova arg N M
+
     if(strcmp(argv[1], "-n") == 0) {
         printf("N1");
         n_arg++;
@@ -32,27 +34,57 @@ int main(int argc, string argv[]){
             n_arg++;
         }
 
-    printf("\n(numero di argomenti prima dei file %d) \nN: %d\nM: %d\n", n_arg, N, M);
+    int a;
+    printf("\nfiles inseriti =  %d", argc - n_arg);
+    for(a = n_arg; a<argc; a++){
+        printf("\nfile %d = %s", argc - a, argv[a]);
+    }
 
+    printf("\n(numero di argomenti inseriti prima dei file %d) \nN: %d\nM: %d\n", n_arg-1, N, M);
+
+    //controllo sul nome dei file passati come argomento
+    BOOL filesOk[argc-n_arg];
+    int fileErrati = 0;
+    int i;
+    printf("nome corretto: ");
+    for(i=n_arg; i<argc; i++){
+        int lunghezza_nome = sizeof(argv[i]);
+        if(argv[i][lunghezza_nome-4] == '.' && argv[i][lunghezza_nome-3] == 't' && argv[i][lunghezza_nome-2] == 'x'&& argv[i][lunghezza_nome-1] == 't'){
+            filesOk[i] = TRUE;
+            printf(" OK ");
+        } else {
+            filesOk[i] = FALSE;
+            fileErrati++;
+            printf(" NO ");
+        }
+    }
 
     int return_value;
     //temporaneo per testare 
-    string files[argc-n_arg];
-    int i;
+    string files[argc - n_arg - fileErrati];
+    printf(" files OK = %d\n", argc - n_arg - fileErrati);
+    int next = 0;
     for(i=n_arg;i<argc;i++){
-        files[i-n_arg]=argv[i];
+        if(filesOk[i] == TRUE){
+            files[next]=argv[i];
+            next++;
+        }   
     }
     //tmp
-
+    
     int file_per_p;
-    if((argc - n_arg)%N == 0){
-        file_per_p = (argc - n_arg)/N;
+    if((argc - n_arg - fileErrati)%N == 0){
+        file_per_p = (argc - n_arg - fileErrati)/N;
     } else {
-        file_per_p = ((argc - n_arg)/N) + 1;
+        file_per_p = ((argc - n_arg - fileErrati)/N) + 1;
     }
-    if (argc - n_arg < N) {
-        N = argc - n_arg;
+    
+    if (argc - n_arg - fileErrati < N) {
+        N = argc - n_arg - fileErrati;
     }
+
+    int *part = filesPart(files, argc - n_arg - fileErrati, M);
+    int *f_dim = filesDim(files, argc - n_arg - fileErrati, M);
 
     //fine prova
     //--------------------------------------------------
@@ -79,25 +111,10 @@ int main(int argc, string argv[]){
         N = argc - 1;
     }
     
-    */
-
-    /*
-    //--------------------------------------------------
-    //--------------------------------------------------
-
-    if (argc - n_arg < N) {
-        N = argc - n_arg;
-    }
-
-    int *part = filesPart(files, argc - n_arg, M);
-    int *f_dim = filesDim(files, argc - n_arg, M);
-    //--------------------------------------------------
-    //--------------------------------------------------
-    */
     
     int *part = filesPart(files, argc - 1, M);
     int *f_dim = filesDim(files, argc - 1, M);
-    
+    */
 
     //pipes
     int p_c[N][2];
@@ -110,7 +127,7 @@ int main(int argc, string argv[]){
     for(g=0;g<CLUSTER;g++){
         data[g]=0;
     }
-    printf("Process C pid=%d\n",getpid());
+    printf("\n\nProcess C pid=%d\n",getpid());
 
     for(i=0;i<N;i++){
         pipe(p_c[i]);
