@@ -5,29 +5,29 @@ int M=4;
 int n_arg = 1;
 
 int main(int argc, string argv[]){
-    printf("> ");
+    if(argc == 3) printf(">.<");
     //--------------------------------------------------
     //--------------------------------------------------
     //prova arg N M
 
-    if(strcmp(argv[1], "-n") == 0) {
+    if(argc > 2 && strcmp(argv[1], "-n") == 0) {
         printf("N1");
         n_arg++;
         N = atoi(argv[2]);
         n_arg++;
-        } else if(strcmp(argv[3], "-n") == 0) {
+        } else if(argc > 4 && strcmp(argv[3], "-n") == 0) {
             printf("N2");
             n_arg++;
             N = atoi(argv[4]);
             n_arg++;
         }
     
-    if(strcmp(argv[1], "-m") == 0){
+    if(argc > 2 && strcmp(argv[1], "-m") == 0){
         printf("M1");
         n_arg++;
         M = atoi(argv[2]);
         n_arg++;
-        } else if(strcmp(argv[3], "-m") == 0) {
+        } else if(argc > 4 && strcmp(argv[3], "-m") == 0) {
             printf("M2");
             n_arg++;
             M = atoi(argv[4]);
