@@ -43,7 +43,7 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
 
  void printError(int code);
 
- int *filesDim(string *files,int num,int M);
+ int *filesDim(string *files, int num);
 
  //process function
 

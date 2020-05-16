@@ -84,7 +84,7 @@ int main(int argc, string argv[]){
     }
 
     int *part = filesPart(files, argc - n_arg - fileErrati, M);
-    int *f_dim = filesDim(files, argc - n_arg - fileErrati, M);
+    int *f_dim = filesDim(files, argc - n_arg - fileErrati);
 
     //fine prova
     //--------------------------------------------------

@@ -40,20 +40,28 @@ int writePipe(int pipe[],string *msg){
     return ret;
 }
 
-int * filesPart(string *files,int num,int M){
+/**
+ * Funzione che calcola le M-partizioni dei num file in input
+ * e le inserisce in un vettore di interi, in modo che possano
+ * essere recuperate nel momento in cui si vuole calcolare gli indici.
+ * @param files lista di files da cui calcolare le M-partizioni.
+ * @param num cardinalità della lista di partizioni.
+ * @param M numero di partizioni.
+ * @return vettore contenente le suddivisioni.
+ */
+int * filesPart(string *files, int num, int M) {
     int i;
     string toRead;
     int fp,dim;
-    int *ret;
-    ret=malloc(num*sizeof(int));
-    for(i=0;i<num;i++){
-        toRead=files[i];
-        fp=open(toRead,O_RDONLY);
-        dim = lseek(fp,0,SEEK_END);
-        if (dim%M == 0){
-            ret[i]=dim/M;
+    int *ret = malloc(num * sizeof(int));
+    for (i = 0; i < num; i++) {
+        toRead = files[i];
+        fp = open(toRead,O_RDONLY);
+        dim = lseek(fp, 0, SEEK_END);
+        if (dim % M == 0) {
+            ret[i] = dim / M;
         } else {
-            ret[i] = (dim/M) + 1;
+            ret[i] = (dim / M) + 1;
         }
         close(fp);
     }
@@ -61,7 +69,16 @@ int * filesPart(string *files,int num,int M){
 }
 
 //---------------------------ric functions------------------------------------
-
+ 
+/**
+ * Funzione che legge i caratteri in un dato intervallo passato e li ripone
+ * in un buffer di lettura.
+ * @param filename il file da cui estrarre la porzione.
+ * @param filedata il buffer in cui riporre il contenuto letto.
+ * @param start indice d'inizio.
+ * @param stop indice di fine.
+ * @return 0 in caso di successo, -1 in caso si siano verificati errori di lettura.
+ */
 int readFile(char* filename, char* filedata, int start, int stop){
     int sk, rd;
     int file = open(filename, O_RDONLY);
@@ -75,6 +92,15 @@ int readFile(char* filename, char* filedata, int start, int stop){
     else return -1;
 }
 
+/**
+ * Funzione che effettua il conteggio dei caratteri da una certa stringa
+ * di dimensione data e ripone i risultati dell'analisi all'interno
+ * di un vettore passato, utilizzando una catena di if else.
+ * TODO: forse possiamo implementarla con degli switch?
+ * @param dim dimensione della stringa da analizzare.
+ * @param s buffer che contiene i caratteri da analizzare.
+ * @param counter vettore in cui riporre i risultati.
+ */
 void countLetters(int dim, char* s, int* counter){
     //printf("testo cont: ");
     int i = dim-1;
@@ -153,7 +179,7 @@ int* processoQ(int from, int to, char* fname){
  *              distinguono i file tra i vari processi P.
  * @param M Numero complessivo di sottoprocessi Q.
  *              
- * @return Vettore di interi che contiene i risultati dell'analisi
+ * @return Vettore di interi che contiene i risultati dell'analisi, -1 in caso d'errore.
  */
 int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int index, int M) {
     char* testo;
@@ -225,9 +251,7 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
 /**
  * Funzione per trasformare un vettore di interi in una stringa che contenga
  * gli stessi valori.
- * 
  * @param values Vettori di interi da convertire.
- * 
  * @return La stringa che contiene gli stessi valori.
  */
 char **statsToString (int *values) {
@@ -271,15 +295,22 @@ void printError(int code){
     printf("\n\n----------------------\n\n");
 }
 
-int *filesDim(string *files,int num,int M) {
+/**
+ * Funzione per ottenere un vettore contenente la dimensione di tutti i num
+ * file passati.
+ * @param files riferimento alla lista di files di cui si vuole recuperare
+ *              la dimensione.
+ * @param num cardinalità della lista dei file passata.
+ * @return puntatore alla memoria allocata al vettore di interi cin le dimensioni.
+ */
+int *filesDim (string *files, int num) {
     int i;
     string toRead;
     int fp;
-    int *ret;
-    ret=malloc(num*sizeof(int));
-    for(i=0;i<num;i++){
-        toRead=files[i];
-        fp=open(toRead,O_RDONLY);
+    int *ret = malloc (num*sizeof(int));
+    for (i = 0; i < num; i++) {
+        toRead = files[i];
+        fp = open(toRead,O_RDONLY);
         ret[i] = lseek(fp, 0, SEEK_END);
         close(fp);
     }
