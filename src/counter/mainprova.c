@@ -47,8 +47,8 @@ int main(int argc, string argv[]){
     int fileErrati = 0;
     int i;
     printf("nome corretto: ");
-    for(i=n_arg; i<argc; i++){
-        int lunghezza_nome = sizeof(argv[i]);
+    for (i = n_arg; i < argc; i++) {
+        int lunghezza_nome = strlen(argv[i]);
         if(argv[i][lunghezza_nome-4] == '.' && argv[i][lunghezza_nome-3] == 't' && argv[i][lunghezza_nome-2] == 'x'&& argv[i][lunghezza_nome-1] == 't'){
             filesOk[i] = TRUE;
             printf(" OK ");
@@ -72,11 +72,12 @@ int main(int argc, string argv[]){
     }
     //tmp
     
-    int file_per_p;
-    if((argc - n_arg - fileErrati)%N == 0){
-        file_per_p = (argc - n_arg - fileErrati)/N;
+    //int fileIndex = 0;
+    int file_per_p;// = ceiling(argc - n_arg - fileErrati, N);
+    if ((argc - n_arg - fileErrati) % N == 0) {
+        file_per_p = (argc - n_arg - fileErrati) / N;
     } else {
-        file_per_p = ((argc - n_arg - fileErrati)/N) + 1;
+        file_per_p = ((argc - n_arg - fileErrati) / N) + 1;
     }
     
     if (argc - n_arg - fileErrati < N) {
@@ -128,8 +129,11 @@ int main(int argc, string argv[]){
         data[g]=0;
     }
     printf("\n\nProcess C pid=%d\n",getpid());
+    int file_restanti = argc - n_arg - fileErrati;
 
     for(i=0;i<N;i++){
+        printf("file restanti: %d --- processi restanti: %d\n", file_restanti, (N - i));
+        printf("questo proceso legge: %d files\n\n", file_per_p);
         pipe(p_c[i]);
         pid_t c_son=fork();
         if(c_son==-1){
@@ -137,7 +141,7 @@ int main(int argc, string argv[]){
         return_value=35;
         }else{
             if(c_son==0){
-                return_value=processP(c_son, p_c, q_p, argc, files, M, part, f_dim, i,file_per_p);
+                return_value = processP(c_son, p_c, q_p, argc, files, N, M, n_arg, fileErrati, part, f_dim, i, file_per_p); 
                 exit(return_value);
             }else{
                 //successive parti del processo C
@@ -145,10 +149,17 @@ int main(int argc, string argv[]){
                 int *tmp=getValuesFromString(buffer);
                 for(g=0;g<CLUSTER;g++){
                      data[g]+=tmp[g];
-                    }
-                free(tmp); //new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
                 }
+                free(tmp); //new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
+            }
         }
+        file_restanti -= file_per_p;
+        if (file_restanti % (N - i + 1) == 0) {
+                    file_per_p = file_restanti / (N - i + 1);
+                } else {
+                    file_per_p = (file_restanti / (N - i + 1)) + 1;
+                }
+                
     }
     printf("Printing data....\n");
     printf("Numero di lettere calcolato= %d\n",data[0]);

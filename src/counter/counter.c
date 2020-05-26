@@ -106,7 +106,7 @@ void countLetters(int dim, char* s, int* counter){
     int i = dim-1;
     for(i; i>=0; i--){
         
-        //printf("%c\t", s[i]);
+        //printf("\t%c\n", s[i]);
         if(s[i]>='a' && s[i]<='z' || s[i]>='A' && s[i]<='Z'){
             //lettera maiuscola o minuscola
             counter[0]++;
@@ -187,6 +187,12 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     int i,j, k, alloc_value, inizio[n], fine[n];
     i = 0;
 
+    for (i = 0; i < n; i++) {
+        printf("\tsto analizzando = %s\n", fname[i]);
+    }
+
+    i = 0;
+
     // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
     // si parte da index e si itera n volte.
     for (j = index; j < (index + n); j++) {
@@ -194,7 +200,7 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
         // Controllo per gestire i casi in cui la dimensione del file non
         // è un multiplo di M.
         inizio[i] = range[j]*q_loop;
-        if ((range[j]*(q_loop + 1) <= dims[j])) {
+        if ((range[j] * (q_loop + 1) <= dims[j])) {
             // printf("%d",range[j]*q_loop + j);
             fine[i] = range[j]*(q_loop + 1);
         } else {
@@ -317,17 +323,27 @@ int *filesDim (string *files, int num) {
     return ret;
 }
 
+int ceiling(int first, int second){
+    int result = 0;
+    if (first % second == 0){
+        result = first / second;
+    } else {
+        result = (first / second) + 1;
+    }
+    return result;
+}
+
 //------------------------ process function section-----------------------
 
 
 
-int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int m, int *part, int *fdim, int index_p,int file_per_p){
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int N, int M, int n_arg, int fileErrati, int *part, int *fdim, int index_p, int file_per_p){
     //creo pipe fra C e P
     int g;
     int return_value;
         if(c_son==0){
             //processo P
-            string *qTop[m];
+            string *qTop[M];
             int dataCollected[CLUSTER];
             for(g=0;g<CLUSTER;g++){
                 dataCollected[g]=0;
@@ -335,36 +351,38 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string fil
         printf("P created pid=%d ppid=%d\n",getpid(),getppid());                
         int k = 0;
         string file_P[file_per_p];
-        int f_Psize=0;
-        while(k < file_per_p){
-            if((file_per_p * index_p) + k < argc - 1){
+        int f_Psize = 0;
+        while (k < file_per_p) {
+            if ((file_per_p * index_p) + k < argc - n_arg - fileErrati) {
                 file_P[k] = files[(file_per_p * index_p) + k];
                 f_Psize++;
+                printf("sono il P%d e ho preso il file  numero %d\n", index_p, (file_per_p * index_p) + k);
             }
-            if((file_per_p * index_p) + k == argc - 1){
+            if ((file_per_p * index_p) + k == argc - n_arg - fileErrati) {
                     file_P[k] = 0;
+                    printf("ho finito i file\n");
                 }
-                ++k;
+            ++k;
             }
         int j;
         //creo M processi di tipo Q
-        for(j=0;j<m;j++){
+        for (j = 0; j < M; j++) {
             //creo la pipe fra P e Q
             pipe(pipe_q[j]);
             int p_son=fork();
-            if(p_son==-1){
+            if (p_son == -1) {
                 printf("error occurred at line 46\n");
                 return_value=46;
-            }else{
-                if(p_son==0){
-                    return_value=processQ(part, fdim, file_P,f_Psize,j,file_per_p*index_p, m, pipe_q[j]);
+            } else {
+                if (p_son == 0) {
+                    return_value = processQ(part, fdim, file_P, f_Psize, j, file_per_p * index_p, M, pipe_q[j]);
                     exit(0);
-                }else{
+                } else {
                     //successive parti del processo P
-                    qTop[j]=readAndWait(pipe_q[j],p_son);
-                    int *tmp=getValuesFromString(qTop[j]);
-                    for(g=0;g<CLUSTER;g++){
-                        dataCollected[g]+=tmp[g];
+                    qTop[j] = readAndWait(pipe_q[j],p_son);
+                    int *tmp = getValuesFromString(qTop[j]);
+                    for (g = 0; g < CLUSTER; g++) {
+                        dataCollected[g] += tmp[g];
                     }
                     free(tmp);//new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
                 }
