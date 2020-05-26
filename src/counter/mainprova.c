@@ -72,13 +72,13 @@ int main(int argc, string argv[]){
     }
     //tmp
     
-    //int fileIndex = 0;
-    int file_per_p;// = ceiling(argc - n_arg - fileErrati, N);
-    if ((argc - n_arg - fileErrati) % N == 0) {
+    int fileIndex = 0;
+    int file_per_p = ceiling(argc - n_arg - fileErrati, N);
+    /*if ((argc - n_arg - fileErrati) % N == 0) {
         file_per_p = (argc - n_arg - fileErrati) / N;
     } else {
         file_per_p = ((argc - n_arg - fileErrati) / N) + 1;
-    }
+    }*/
     
     if (argc - n_arg - fileErrati < N) {
         N = argc - n_arg - fileErrati;
@@ -131,7 +131,7 @@ int main(int argc, string argv[]){
     printf("\n\nProcess C pid=%d\n",getpid());
     int file_restanti = argc - n_arg - fileErrati;
 
-    for(i=0;i<N;i++){
+    for (i = 0; i < N; i++) {
         printf("file restanti: %d --- processi restanti: %d\n", file_restanti, (N - i));
         printf("questo proceso legge: %d files\n\n", file_per_p);
         pipe(p_c[i]);
@@ -141,24 +141,30 @@ int main(int argc, string argv[]){
         return_value=35;
         }else{
             if(c_son==0){
-                return_value = processP(c_son, p_c, q_p, argc, files, N, M, n_arg, fileErrati, part, f_dim, i, file_per_p); 
+                return_value = processP(c_son, p_c, q_p, argc, files, N, M, n_arg, fileErrati, fileIndex, part, f_dim, i, file_per_p); 
                 exit(return_value);
             }else{
                 //successive parti del processo C
                 string * buffer=readAndWait(p_c[i],c_son);
-                int *tmp=getValuesFromString(buffer);
-                for(g=0;g<CLUSTER;g++){
-                     data[g]+=tmp[g];
+                int *tmp = getValuesFromString(buffer);
+                for (g = 0; g < CLUSTER; g++) {
+                    data[g]+=tmp[g];
                 }
                 free(tmp); //new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
             }
         }
+        fileIndex += file_per_p;
         file_restanti -= file_per_p;
-        if (file_restanti % (N - i + 1) == 0) {
-                    file_per_p = file_restanti / (N - i + 1);
-                } else {
-                    file_per_p = (file_restanti / (N - i + 1)) + 1;
-                }
+        printf("sto valore stupido è %d\n", N - i - 1);
+        if(i != N - 1){
+            file_per_p = ceiling(file_restanti, N - i - 1);
+            /*if (file_restanti % (N - i - 1) == 0) {
+                file_per_p = file_restanti / (N - i - 1);
+            } else {
+                file_per_p = (file_restanti / (N - i - 1)) + 1;
+            } */
+        }
+
                 
     }
     printf("Printing data....\n");

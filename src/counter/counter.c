@@ -58,11 +58,12 @@ int * filesPart(string *files, int num, int M) {
         toRead = files[i];
         fp = open(toRead,O_RDONLY);
         dim = lseek(fp, 0, SEEK_END);
-        if (dim % M == 0) {
+        ret[i] = ceiling(dim, M);
+        /*if (dim % M == 0) {
             ret[i] = dim / M;
         } else {
             ret[i] = (dim / M) + 1;
-        }
+        }*/
         close(fp);
     }
     return ret;
@@ -191,6 +192,8 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
         printf("\tsto analizzando = %s\n", fname[i]);
     }
 
+    //printf("\tl'indice per recuperare gli indici è %d\n", index);
+
     i = 0;
 
     // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
@@ -231,11 +234,12 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     // deposita una porzione di file, ricavata sulla base degli indici, nel buffer 
     // appena allocato, conservando il ritorno in caso di errori.
     for (j=0; j<n; j++) {  
-        if (dims[k + j] % M == 0) {
+        alloc_value = ceiling(dims[k + j], M);
+        /*if (dims[k + j] % M == 0) {
             alloc_value = dims[k + j];
         } else {
             alloc_value = dims[k + j] + 1;
-        }
+        }*/
         testo = malloc(alloc_value);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
         //printf("\t%s\n",testo);
@@ -323,6 +327,13 @@ int *filesDim (string *files, int num) {
     return ret;
 }
 
+/**
+ * Semplice funzione che restituisce il ceiling di due
+ * valori interi.
+ * @param first il dividendo
+ * @param second il divisore
+ * @return l'intero superiore della divisione
+ */
 int ceiling(int first, int second){
     int result = 0;
     if (first % second == 0){
@@ -337,7 +348,7 @@ int ceiling(int first, int second){
 
 
 
-int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int N, int M, int n_arg, int fileErrati, int *part, int *fdim, int index_p, int file_per_p){
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int N, int M, int n_arg, int fileErrati, int fileIndex, int *part, int *fdim, int index_p, int file_per_p){
     //creo pipe fra C e P
     int g;
     int return_value;
@@ -352,15 +363,16 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string fil
         int k = 0;
         string file_P[file_per_p];
         int f_Psize = 0;
+        int fileIndexTemp = fileIndex;
         while (k < file_per_p) {
-            if ((file_per_p * index_p) + k < argc - n_arg - fileErrati) {
-                file_P[k] = files[(file_per_p * index_p) + k];
+            if (fileIndexTemp < argc - n_arg - fileErrati) {
+                file_P[k] = files[fileIndexTemp++];
                 f_Psize++;
-                printf("sono il P%d e ho preso il file  numero %d\n", index_p, (file_per_p * index_p) + k);
+                //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
             }
-            if ((file_per_p * index_p) + k == argc - n_arg - fileErrati) {
+            if (fileIndexTemp - 1 == argc - n_arg - fileErrati) {
                     file_P[k] = 0;
-                    printf("ho finito i file\n");
+                    //printf("ho finito i file\n");
                 }
             ++k;
             }
@@ -375,7 +387,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string fil
                 return_value=46;
             } else {
                 if (p_son == 0) {
-                    return_value = processQ(part, fdim, file_P, f_Psize, j, file_per_p * index_p, M, pipe_q[j]);
+                    return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, M, pipe_q[j]);
                     exit(0);
                 } else {
                     //successive parti del processo P
