@@ -59,11 +59,6 @@ int * filesPart(string *files, int num, int M) {
         fp = open(toRead,O_RDONLY);
         dim = lseek(fp, 0, SEEK_END);
         ret[i] = ceiling(dim, M);
-        /*if (dim % M == 0) {
-            ret[i] = dim / M;
-        } else {
-            ret[i] = (dim / M) + 1;
-        }*/
         close(fp);
     }
     return ret;
@@ -235,11 +230,6 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     // appena allocato, conservando il ritorno in caso di errori.
     for (j=0; j<n; j++) {  
         alloc_value = ceiling(dims[k + j], M);
-        /*if (dims[k + j] % M == 0) {
-            alloc_value = dims[k + j];
-        } else {
-            alloc_value = dims[k + j] + 1;
-        }*/
         testo = malloc(alloc_value);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
         //printf("\t%s\n",testo);
@@ -347,7 +337,22 @@ int ceiling(int first, int second){
 //------------------------ process function section-----------------------
 
 
-
+/**
+ * Logica del processo P
+ * @param c_son       pid del processo figlio
+ * @param pipe_c      pipe di comunicazione tra C e P
+ * @param pipe_q      pipe di comunicazione tra P e Q
+ * @param argc        numero di argomenti passati al main (files + n + m)
+ * @param files       lista dei files da analizzare
+ * @param N           numero dei processi Q
+ * @param M           numero dei processi P
+ * @param n_arg       numero di argomenti passati al main (solamente n e m)
+ * @param fileErrati  numero dei files passati al main con estensione sbagliata
+ * @param part        non mi ricordo cos'è ma bisogna passarlo a Q
+ * @param fdim        non mi ricordo cos'è ma bisogna passarlo a Q
+ * @param index_p     numero del processo P corrente
+ * @param file_per_p  numero di file che deve analizzare questo processo P
+ */
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int N, int M, int n_arg, int fileErrati, int fileIndex, int *part, int *fdim, int index_p, int file_per_p){
     //creo pipe fra C e P
     int g;
@@ -406,7 +411,16 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string fil
     return return_value;
     }
 }
-
+/**
+ * @param range     vedi documentazione processoQ_n
+ * @param dims         "                      "
+ * @param fname        "                      "
+ * @param f_Psize      "                      "
+ * @param q_loop       "                      "
+ * @param index        "                      "
+ * @param m            "                      "
+ * @param pipe_q    pipe di comunicazione tra P e Q
+ */
 int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]){
     printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
     int* counter=processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
