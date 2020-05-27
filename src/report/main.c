@@ -3,15 +3,16 @@
 int main(int argc, char *argv[]) {
     //testing named pipes
     int fd;
-    string namedPipe="./myPipe";
-    mkfifo(namedPipe);
+
+    string namedPipe="myPipe";
+    mkfifo(namedPipe, 0666);
     printf("Errore %s\n", strerror(errno));
     fd=open(namedPipe, O_WRONLY);
+    printf("Errore %s\n", strerror(errno));
     string message="ciao cazzon";
-    write(fd, message, sizeof(message));
+    write(fd, message, strlen(message));
     close(fd);
-    unlink(namedPipe);
-
+    
     /*int *stats = malloc(CLUSTER*sizeof(int));
 
     stats[0] = 12;
