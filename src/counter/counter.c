@@ -364,7 +364,22 @@ int ceiling(int first, int second){
 //------------------------ process function section-----------------------
 
 
-
+/**
+ * Logica del processo P
+ * @param c_son       pid del processo figlio
+ * @param pipe_c      pipe di comunicazione tra C e P
+ * @param pipe_q      pipe di comunicazione tra P e Q
+ * @param argc        numero di argomenti passati al main (files + n + m)
+ * @param files       lista dei files da analizzare
+ * @param N           numero dei processi Q
+ * @param M           numero dei processi P
+ * @param n_arg       numero di argomenti passati al main (solamente n e m)
+ * @param fileErrati  numero dei files passati al main con estensione sbagliata
+ * @param part        non mi ricordo cos'è ma bisogna passarlo a Q
+ * @param fdim        non mi ricordo cos'è ma bisogna passarlo a Q
+ * @param index_p     numero del processo P corrente
+ * @param file_per_p  numero di file che deve analizzare questo processo P
+ */
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
              int N, int M, int ceil, int fileIndex, int *part, int *fdim, 
              int index_p,int file_per_p) {
@@ -424,7 +439,16 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
     return return_value;
     }
 }
-
+/**
+ * @param range     vedi documentazione processoQ_n
+ * @param dims         "                      "
+ * @param fname        "                      "
+ * @param f_Psize      "                      "
+ * @param q_loop       "                      "
+ * @param index        "                      "
+ * @param m            "                      "
+ * @param pipe_q    pipe di comunicazione tra P e Q
+ */
 int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]){
     printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
     int* counter=processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);

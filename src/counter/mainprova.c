@@ -74,11 +74,6 @@ int main(int argc, string argv[]){
     
     int fileIndex = 0;
     int file_per_p = ceiling(argc - n_arg - fileErrati, N);
-    /*if ((argc - n_arg - fileErrati) % N == 0) {
-        file_per_p = (argc - n_arg - fileErrati) / N;
-    } else {
-        file_per_p = ((argc - n_arg - fileErrati) / N) + 1;
-    }*/
     
     if (argc - n_arg - fileErrati < N) {
         N = argc - n_arg - fileErrati;
@@ -133,8 +128,8 @@ int main(int argc, string argv[]){
     int file_restanti = argc - n_arg - fileErrati;
 
     for (i = 0; i < N; i++) {
-        printf("file restanti: %d --- processi restanti: %d\n", file_restanti, (N - i));
-        printf("questo proceso legge: %d files\n\n", file_per_p);
+        //printf("file restanti: %d --- processi restanti: %d\n", file_restanti, (N - i));
+        //printf("questo proceso legge: %d files\n\n", file_per_p);
         pipe(p_c[i]);
         pid_t c_son=fork();
         if(c_son==-1){
@@ -156,16 +151,10 @@ int main(int argc, string argv[]){
         }
         fileIndex += file_per_p;
         file_restanti -= file_per_p;
-        printf("sto valore stupido è %d\n", N - i - 1);
+        //printf("sto valore stupido è %d\n", N - i - 1);
         if(i != N - 1){
             file_per_p = ceiling(file_restanti, N - i - 1);
-            /*if (file_restanti % (N - i - 1) == 0) {
-                file_per_p = file_restanti / (N - i - 1);
-            } else {
-                file_per_p = (file_restanti / (N - i - 1)) + 1;
-            } */
         }
-
                 
     }
     printf("Printing data....\n");
