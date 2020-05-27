@@ -1,6 +1,8 @@
-#include <stdio.h>
 #include "test.h"
 
-int helloworld() {
-    printf("This is my old main\n");
+//funzioni
+
+int C(int argc, string argv[]){
+    
+    execl("/bin/bash", "bash", "-c", "./bin/report", "-r", "testo", NULL);
 }
