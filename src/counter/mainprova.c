@@ -15,7 +15,7 @@ int main(int argc, string argv[]){
         n_arg++;
         N = atoi(argv[2]);
         n_arg++;
-        } else if(argc > 4 && strcmp(argv[3], "-n") == 0) {
+        } else if (argc > 4 && strcmp(argv[3], "-n") == 0) {
             printf("N2");
             n_arg++;
             N = atoi(argv[4]);
@@ -129,6 +129,7 @@ int main(int argc, string argv[]){
         data[g]=0;
     }
     printf("\n\nProcess C pid=%d\n",getpid());
+    int fileBoundary = argc - n_arg - fileErrati;
     int file_restanti = argc - n_arg - fileErrati;
 
     for (i = 0; i < N; i++) {
@@ -141,7 +142,7 @@ int main(int argc, string argv[]){
         return_value=35;
         }else{
             if(c_son==0){
-                return_value = processP(c_son, p_c, q_p, argc, files, N, M, n_arg, fileErrati, fileIndex, part, f_dim, i, file_per_p); 
+                return_value = processP(c_son, p_c, q_p, files, N, M, fileBoundary, fileIndex, part, f_dim, i, file_per_p); 
                 exit(return_value);
             }else{
                 //successive parti del processo C

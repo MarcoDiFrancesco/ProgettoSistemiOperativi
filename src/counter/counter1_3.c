@@ -26,7 +26,7 @@ int main(int argc, string argv[]){
     }
 
     int *part = filesPart(files, argc - 1, M);
-    int *f_dim = filesDim(files, argc - 1, M);
+    int *f_dim = filesDim(files, argc - 1);
 
     //pipes
     int p_c[N][2];

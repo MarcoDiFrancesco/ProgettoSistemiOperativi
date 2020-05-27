@@ -4,20 +4,20 @@
 #include "counter.h"
 
 
-string *readAndWait(int pipe[], pid_t son){
+string *readAndWait(int pipe[], pid_t son) {
     close(pipe[WRITE]);
     string *msg;
-    msg=malloc(CLUSTER*sizeof(char*));
+    msg = malloc(CLUSTER*sizeof(char*));
     int i;
     int rd;
-    int err=0;
-    for(i=0;i<CLUSTER;i++){
-        msg[i]=malloc(MAXLEN);
-        rd=read(pipe[READ],msg[i], MAXLEN);
-        if(rd==-1){
-            err=rd;
+    int err = 0;
+    for (i = 0; i < CLUSTER; i++) {
+        msg[i] = malloc(MAXLEN);
+        rd = read(pipe[READ], msg[i], MAXLEN);
+        if (rd == -1) {
+            err = rd;
         }
-        msg[i][rd]=0;
+        msg[i][rd] = 0;
     }
     //printf("(read)ERR=%d",err);
     close(pipe[READ]);
@@ -25,15 +25,15 @@ string *readAndWait(int pipe[], pid_t son){
     return msg;
 }
 
-int writePipe(int pipe[],string *msg){
-    int ret=0;//per eventuali errori
+int writePipe(int pipe[],string *msg) {
+    int ret = 0;//per eventuali errori
     //close(pipe[READ]);
-    int i,err;
+    int i, err;
     
-    for(i=0;i<CLUSTER;i++){
-        err=write(pipe[WRITE],msg[i],MAXLEN);
-        if(err!=0){
-            ret=err;
+    for (i = 0; i < CLUSTER; i++) {
+        err = write(pipe[WRITE], msg[i], MAXLEN);
+        if (err != 0) {
+            ret = err;
         }
     }
     close(pipe[WRITE]);
@@ -49,21 +49,16 @@ int writePipe(int pipe[],string *msg){
  * @param M numero di partizioni.
  * @return vettore contenente le suddivisioni.
  */
-int * filesPart(string *files, int num, int M) {
+int *filesPart(string *files, int num, int M) {
     int i;
     string toRead;
-    int fp,dim;
+    int fp, dim;
     int *ret = malloc(num * sizeof(int));
     for (i = 0; i < num; i++) {
         toRead = files[i];
-        fp = open(toRead,O_RDONLY);
+        fp = open(toRead, O_RDONLY);
         dim = lseek(fp, 0, SEEK_END);
         ret[i] = ceiling(dim, M);
-        /*if (dim % M == 0) {
-            ret[i] = dim / M;
-        } else {
-            ret[i] = (dim / M) + 1;
-        }*/
         close(fp);
     }
     return ret;
@@ -83,14 +78,17 @@ int * filesPart(string *files, int num, int M) {
 int readFile(char* filename, char* filedata, int start, int stop){
     int sk, rd;
     int file = open(filename, O_RDONLY);
-    if(file>=0){
-        sk = lseek(file, start*sizeof(char), SEEK_SET);
-        if(sk != -1){
+    if (file >= 0) {
+        sk = lseek(file, start * sizeof(char), SEEK_SET);
+        if(sk != -1) {
             rd = read(file, filedata, stop-start);
         }
     }
-    if(file>=0 && sk>=0 && rd>=0) return 0;
-    else return -1;
+    if (file >= 0 && sk >= 0 && rd >= 0) {
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 /**
@@ -104,11 +102,28 @@ int readFile(char* filename, char* filedata, int start, int stop){
  */
 void countLetters(int dim, char* s, int* counter){
     //printf("testo cont: ");
-    int i = dim-1;
-    for(i; i>=0; i--){
+    int i = dim - 1;
+    for (i; i >= 0; i--) {
         
         //printf("\t%c\n", s[i]);
-        if(s[i]>='a' && s[i]<='z' || s[i]>='A' && s[i]<='Z'){
+        if (s[i] >= 'a' && s[i] <= 'z' || s[i] >= 'A' && s[i] <= 'Z') {
+            //lettera maiuscola o minuscola
+            counter[0]++;
+        } else if (s[i] >= '0' && s[i] <= '9') {
+            //numero
+            counter[1]++;
+        } else if (s[i] == ' ') {
+            //spazi
+            counter[2]++;
+        } else if(s[i] == '.' || s[i] == ',' || s[i] == ':' || 
+                  s[i] == ';' || s[i] == '?' || s[i] == '!') {
+            //punteggiatura
+            counter[3]++;
+        } else {
+            counter[4]++;
+        }
+
+        /*if (s[i]>='a' && s[i]<='z' || s[i]>='A' && s[i]<='Z'){
             //lettera maiuscola o minuscola
             counter[0]++;
         }else{
@@ -129,7 +144,7 @@ void countLetters(int dim, char* s, int* counter){
                     }
                 }
             }      
-        }
+        }*/
     }
 }
 
@@ -185,7 +200,8 @@ int* processoQ(int from, int to, char* fname){
 int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int index, int M) {
     char* testo;
     int* stats;
-    int i,j, k, alloc_value, inizio[n], fine[n];
+    int i, j, k, alloc_value;
+    int inizio[n], fine[n];
     i = 0;
 
     for (i = 0; i < n; i++) {
@@ -215,16 +231,19 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
             inizio[i] = fine[i] = 0;
         }   
     
-        if(inizio[i] != fine[i]) printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
-        else printf("\t---------\n");
+        if(inizio[i] != fine[i]) {
+            printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
+        } else {
+            printf("\t---------\n");
+        }
         ++i;
     }
 
     //stats = malloc(sizeof(int));
-    stats = malloc(CLUSTER*sizeof(int));
+    stats = malloc(CLUSTER * sizeof(int));
     i = 0;
 
-    for (i; i<CLUSTER; i++) {
+    for (i; i < CLUSTER; i++) {
         stats[i] = 0;
     }
 
@@ -233,26 +252,24 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     // e la si libera subito, per evitare sprechi di memoria. La funzione readFile()
     // deposita una porzione di file, ricavata sulla base degli indici, nel buffer 
     // appena allocato, conservando il ritorno in caso di errori.
-    for (j=0; j<n; j++) {  
+    for (j = 0; j < n; j++) {  
         alloc_value = ceiling(dims[k + j], M);
-        /*if (dims[k + j] % M == 0) {
-            alloc_value = dims[k + j];
-        } else {
-            alloc_value = dims[k + j] + 1;
-        }*/
         testo = malloc(alloc_value);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
         //printf("\t%s\n",testo);
-        countLetters(fine[j]-inizio[j], testo, stats);
+        countLetters(fine[j] - inizio[j], testo, stats);
         free(testo);
-        if (i<0) break;
+        if (i < 0) {
+            break;
+        }
     }
 
 
-    if(i==0)
+    if (i==0) {
         return stats;
-    else 
-        return (int *)-1;
+    } else {
+        return (int *) - 1;
+    }
 }
 
 
@@ -266,10 +283,10 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
  */
 char **statsToString (int *values) {
 
-    char **str = (char **) malloc(CLUSTER * sizeof(char *));
+    char **str = (char **)malloc(CLUSTER * sizeof(char *));
     int i;
     for (i = 0; i < CLUSTER; ++i) {
-        str[i] = (char *) malloc(12 * sizeof(int));
+        str[i] = (char *)malloc(12 * sizeof(int));
     }
     
     for (i = 0; i < CLUSTER; ++i) {
@@ -287,7 +304,7 @@ char **statsToString (int *values) {
 int *getValuesFromString(char **str){
     int *values = (int *)malloc(CLUSTER * sizeof(int));
     int i;
-    for( i = 0; i < CLUSTER; ++i){
+    for(i = 0; i < CLUSTER; ++i){
         values[i] = atoi(str[i]);
     }
 
@@ -313,14 +330,14 @@ void printError(int code){
  * @param num cardinalità della lista dei file passata.
  * @return puntatore alla memoria allocata al vettore di interi cin le dimensioni.
  */
-int *filesDim (string *files, int num) {
+int *filesDim(string *files, int num) {
     int i;
     string toRead;
     int fp;
-    int *ret = malloc (num*sizeof(int));
+    int *ret = malloc (num * sizeof(int));
     for (i = 0; i < num; i++) {
         toRead = files[i];
-        fp = open(toRead,O_RDONLY);
+        fp = open(toRead, O_RDONLY);
         ret[i] = lseek(fp, 0, SEEK_END);
         close(fp);
     }
@@ -348,58 +365,59 @@ int ceiling(int first, int second){
 
 
 
-int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[], int N, int M, int n_arg, int fileErrati, int fileIndex, int *part, int *fdim, int index_p, int file_per_p){
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
+             int N, int M, int ceil, int fileIndex, int *part, int *fdim, 
+             int index_p,int file_per_p) {
     //creo pipe fra C e P
     int g;
     int return_value;
-        if(c_son==0){
-            //processo P
-            string *qTop[M];
-            int dataCollected[CLUSTER];
-            for(g=0;g<CLUSTER;g++){
-                dataCollected[g]=0;
-            }
-        printf("P created pid=%d ppid=%d\n",getpid(),getppid());                
-        int k = 0;
-        string file_P[file_per_p];
-        int f_Psize = 0;
-        int fileIndexTemp = fileIndex;
-        while (k < file_per_p) {
-            if (fileIndexTemp < argc - n_arg - fileErrati) {
-                file_P[k] = files[fileIndexTemp++];
-                f_Psize++;
-                //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
-            }
-            if (fileIndexTemp - 1 == argc - n_arg - fileErrati) {
-                    file_P[k] = 0;
-                    //printf("ho finito i file\n");
-                }
-            ++k;
-            }
-        int j;
-        //creo M processi di tipo Q
-        for (j = 0; j < M; j++) {
-            //creo la pipe fra P e Q
-            pipe(pipe_q[j]);
-            int p_son=fork();
-            if (p_son == -1) {
-                printf("error occurred at line 46\n");
-                return_value=46;
-            } else {
-                if (p_son == 0) {
-                    return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, M, pipe_q[j]);
-                    exit(0);
-                } else {
-                    //successive parti del processo P
-                    qTop[j] = readAndWait(pipe_q[j],p_son);
-                    int *tmp = getValuesFromString(qTop[j]);
-                    for (g = 0; g < CLUSTER; g++) {
-                        dataCollected[g] += tmp[g];
-                    }
-                    free(tmp);//new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
-                }
+    if (c_son == 0) {
+        //processo P
+        string *qTop[M];
+        int dataCollected[CLUSTER];
+        for(g = 0; g < CLUSTER; g++) {
+            dataCollected[g] = 0;
         }
-                        
+    printf("P created pid=%d ppid=%d\n",getpid(),getppid());                
+    int k = 0;
+    string file_P[file_per_p];
+    int f_Psize = 0;
+    int fileIndexTemp = fileIndex;
+    while (k < file_per_p) {
+        if (fileIndexTemp < ceil) {
+            file_P[k] = files[fileIndexTemp++];
+            f_Psize++;
+            //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
+        }
+        if (fileIndexTemp - 1 == ceil) {
+            file_P[k] = 0;
+            //printf("ho finito i file\n");
+            }
+        ++k;
+    }
+    int j;
+    //creo M processi di tipo Q
+    for (j = 0; j < M; j++) {
+        //creo la pipe fra P e Q
+        pipe(pipe_q[j]);
+        int p_son = fork();
+        if (p_son == -1) {
+            printf("error occurred at line 46\n");
+            return_value = 46;
+        } else {
+            if (p_son == 0) {
+                return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, M, pipe_q[j]);
+                exit(0);
+            } else {
+                //successive parti del processo P
+                qTop[j] = readAndWait(pipe_q[j], p_son);
+                int *tmp = getValuesFromString(qTop[j]);
+                for (g = 0; g < CLUSTER; g++) {
+                    dataCollected[g] += tmp[g];
+                }
+                free(tmp);//new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
+            }
+        }                   
     }
     return_value=writePipe(pipe_c[index_p],statsToString(dataCollected));
     //possibile free di dataCollected (?)

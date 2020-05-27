@@ -33,7 +33,8 @@ void countLetters(int dim, char* s, int* counter);
 
 int* processoQ(int from, int to, char* fname);
 
-int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int index, int M);
+int* processoQ_n(int *range, int *dims, char** fname, int n, 
+                 int q_loop, int index, int M);
 
 //funzioni di phil
 
@@ -47,6 +48,9 @@ int* processoQ_n(int *range, int *dims, char** fname, int n, int q_loop, int ind
 
  //process function
 
-int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], int argc, string files[],int N, int M, int n_arg, int fileErrati, int fileIndex, int *part, int *fdim, int index_p,int file_per_p);
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
+             int N, int M, int ceil, int fileIndex, int *part, int *fdim, 
+             int index_p,int file_per_p);
 
-int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]);
+int processQ(int *range, int *dims, char** fname, int f_Psize, 
+             int q_loop, int index, int m, int pipe_q[]);
