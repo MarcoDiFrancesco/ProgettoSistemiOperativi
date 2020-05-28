@@ -9,6 +9,7 @@
 #define FALSE 0
 #define TRUE 1
 #define CLUSTER 5
+#define MAX_BUF_SIZE 1000
 
 
 enum simboli{lettere, numeri, spazi, punteggiatura, altro};

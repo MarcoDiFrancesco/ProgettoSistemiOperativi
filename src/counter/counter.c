@@ -457,4 +457,48 @@ int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int i
     free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
     return err;
 }
+
+///////////funzioni di messaggistica
+//da cambiare
+
+void report_and_exit(const char* msg) {
+  perror(msg);
+  exit(-1); /* EXIT_FAILURE */
+}
+
+void sender(int res[]) {
+    printf("making key...\n");
+    key_t key = ftok(PathName, ProjectId);
+    if (key < 0) report_and_exit("couldn't get key...");
+
+    printf("making qid...\n");
+    int qid = msgget(key, 0666 | IPC_CREAT);
+    if (qid < 0) report_and_exit("couldn't get queue id...");
+
+    string payloads[CLUSTER];
+    int i;
+    char tmp;
+    printf("making paylod...\n");
+    for(i=0;i<CLUSTER;i++){
+        //tmp=i+'0';
+        printf("item %d...\n",i);
+        payloads[i] = "msg";
+    }
+    //int types[] = {1, 1, 2, 2, 3, 3}; /* each must be > 0 */
+    printf("making messages...\n");
+    for (i = 0; i < CLUSTER; i++) {
+        /* build the message */
+        queuedMessage msg;
+        msg.type = res[i];
+        strcpy(msg.payload, payloads[i]);
+
+        /* send the message */
+        msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
+        printf("%s sent as type %i\n", msg.payload, (int) msg.type);
+    }
+}
+
+
+
+
 #endif

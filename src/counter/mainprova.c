@@ -164,6 +164,11 @@ int main(int argc, string argv[]){
     printf("Numero di punteggiatura calcolato= %d\n",data[3]);
     printf("Numero di altro calcolato= %d\n",data[4]);
 
+
+    printf("invio dati...\n");
+    sender(data);
+    printf("dati inviati!\n");
+
     //libero spazio in memoria
     free(part);
     free(f_dim);
