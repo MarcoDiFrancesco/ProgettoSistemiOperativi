@@ -86,18 +86,23 @@ int main(int argc, string argv[]){
         }   
     }
     //tmp
+
+    int const fileTotal = argc - n_arg - fileErrati - fileInesistenti;
+    if (fileTotal < 1) {
+        printf("non ho ricevuto alcun file valido\n");
+        exit(0);
+    }
     
     int fileIndex = 0;
-    int const fileBoundary = argc - n_arg - fileErrati - fileInesistenti;
-    int file_restanti = argc - n_arg - fileErrati - fileInesistenti;
-    int file_per_p = ceiling(fileBoundary, N);
+    int file_restanti = fileTotal;
+    int file_per_p = ceiling(fileTotal, N);
     
-    if (fileBoundary < N) {
-        N = fileBoundary;
+    if (fileTotal < N) {
+        N = fileTotal;
     }
 
-    int *part = filesPart(files, fileBoundary, M);
-    int *f_dim = filesDim(files, fileBoundary);
+    int *part = filesPart(files, fileTotal, M);
+    int *f_dim = filesDim(files, fileTotal);
 
     //fine prova
     //--------------------------------------------------
@@ -152,7 +157,7 @@ int main(int argc, string argv[]){
         return_value=35;
         }else{
             if(c_son==0){
-                return_value = processP(c_son, p_c, q_p, files, N, M, fileBoundary, fileIndex, part, f_dim, i, file_per_p); 
+                return_value = processP(c_son, p_c, q_p, files, N, M, fileTotal, fileIndex, part, f_dim, i, file_per_p); 
                 exit(return_value);
             }else{
                 //successive parti del processo C
