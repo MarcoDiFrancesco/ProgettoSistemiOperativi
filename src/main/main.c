@@ -1,5 +1,12 @@
 #include "../read_file/read_file.h"
 
+/*
+ * Max size when reading from input.
+ * Limitaion given by C99.
+ * Credits: https://stackoverflow.com/a/11488687/7924557
+*/
+#define MAX_INPUT_LENGHT 4096
+
 char *report_path[] = {"/root/bin/report", NULL};
 char *analyzer_path[] = {"/root/bin/analyzer", NULL};
 
@@ -27,6 +34,10 @@ int run_program(char **path) {
     return 0;
 }
 
+void get_analytics() {
+    printf("This is the table with all the analytics: TODO\n");
+}
+
 int main() {
     int r;
     r = run_program(analyzer_path);
@@ -46,24 +57,33 @@ int main() {
 
     if (r == 2 || r == 3 || r == 4 || r == 5)
         system("cd && make clean && make build");
-
-    // int choice;
-    // while (1) {
-    //     printf("1.Create Train\n");
-    //     printf("2.Do domething else\n");
-    //     printf("\nEnter Your choice : ");
-    //     fflush(stdin);
-    //     scanf("%d", &choice);
-    //     // do something with choice
-    //     // ...
-    //     // ask for ENTER key
-    //     printf("Press [Enter] key to continue.\n");
-    //     while (getchar() != '\n')
-    //         ;       // option TWO to clean stdin
-    //     getchar();  // wait for ENTER
-    // }
-
-    printf("Program ended\n");
+    // TODO: check for input > 4096 and tell the user
+    int choice;
+    while (1) {
+        printf("1. Add files to analyze\n");
+        printf("2. Get file analytics\n");
+        printf("Enter Your choice: ");
+        fflush(stdin);
+        scanf("%d", &choice);
+        if (choice == 1) {
+            char *s = malloc(MAX_INPUT_LENGHT);
+            if (s == NULL) {
+                printf("No memory available\n");  // TODO: test it
+            }
+            printf("Write something:\n");
+            fgets(s, MAX_INPUT_LENGHT, stdin);
+            fflush(stdin);
+            printf("--- %s ---", s);
+            free(s);
+        } else if (choice == 2) {
+            get_analytics();
+        } else {
+            printf("This is not a valid choice, type one of the following:\n");
+        }
+        while (getchar() != '\n')
+            ;  // option TWO to clean stdin
+        // getchar();  // wait for ENTER
+    }
     return 0;
 }
 
