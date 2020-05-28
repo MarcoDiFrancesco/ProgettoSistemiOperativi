@@ -4,13 +4,15 @@ int main(int argc, char *argv[]) {
     //testing named pipes
     int fd;
     string namedPipe="./myPipe";
-    mkfifo(namedPipe);
-    printf("Errore %s\n", strerror(errno));
-    fd=open(namedPipe, O_WRONLY);
+    mkfifo(namedPipe, 0666);
+    printf("Errore pipe : %s\n", strerror(errno));
+    fd = open(namedPipe, O_WRONLY);
+    printf("Errore open : %s\n", strerror(errno));
     string message="ciao cazzon";
-    write(fd, message, sizeof(message));
+    write(fd, message, strlen(message));
     close(fd);
-    unlink(namedPipe);
+    
+    //unlink(namedPipe);
 
     /*int *stats = malloc(CLUSTER*sizeof(int));
 

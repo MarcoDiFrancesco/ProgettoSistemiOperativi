@@ -8,7 +8,6 @@ int main(int argc, char *argv[]) {
     string message;
     read(fd, message, 100);
     close(fd);
-    unlink(namedPipe);
     printf("messaggio %s\n", message);
     return 0;
 }
