@@ -32,24 +32,36 @@ node addNode(node head, char *new_str) {
 }
 
 // https://stackoverflow.com/a/13098645/7924557
-int file_is_executable(char *filename) {
+int file_is_executable(char *path) {
     struct stat sb;
-    return (stat(filename, &sb) == 0 && sb.st_mode & S_IXUSR);
+    return (stat(path, &sb) == 0 && sb.st_mode & S_IXUSR);
 }
 
 // https://stackoverflow.com/a/230070/7924557
-int file_exists(char *filename) {
+int file_exists(char *path) {
     struct stat sb;
-    return (stat(filename, &sb) == 0);
+    return (stat(path, &sb) == 0);
 }
 
-// https://stackoverflow.com/a/24544128/7924557
-int is_folder(char *folder) {
+// https://stackoverflow.com/a/4553053/7924557
+int is_folder(char *path) {
     struct stat sb;
-    return (stat(folder, &sb) == 0 && S_ISDIR(sb.st_mode));
+    if (stat(path, &sb) != 0)
+        return 0;
+    return S_ISDIR(sb.st_mode);
 }
 
-// https://stackoverflow.com/a/8465083/7924557
+// https://stackoverflow.com/a/3985085/7924557
+int is_link(char *path) {
+    struct stat sb;
+    int x;
+    x = lstat(path, &sb);
+    return S_ISLNK(sb.st_mode);
+}
+
+/*
+ * Concatenate 3 strings in 1.
+*/
 char *concat(const char *s1, const char *s2, const char *s3) {
     char *result = malloc(strlen(s1) + strlen(s2) + strlen(s3) + 1);  // +1 for the null-terminator
     strcpy(result, s1);
@@ -58,6 +70,9 @@ char *concat(const char *s1, const char *s2, const char *s3) {
     return result;
 }
 
+/*
+ * Ginven a path of a directory it returns all files inside it.
+*/
 node listFiles(char *path) {
     node files_list = createNode();  // Tail of the list
     node head = files_list;

@@ -1,7 +1,7 @@
 #include "../read_file/read_file.h"
 
-char *report_path[] = {"./bin/report", NULL};
-char *analyzer_path[] = {"./bin/analyzer", NULL};
+char *report_path[] = {"/root/bin/report", NULL};
+char *analyzer_path[] = {"/root/bin/analyzer", NULL};
 
 /*
  * This function runs the program specified on path, in a completely separated process.
@@ -12,8 +12,10 @@ int run_program(char **path) {
         return 2;
     else if (!file_is_executable(path[0]))
         return 3;
-    else if (is_folder)
+    else if (is_folder(path[0]))
         return 4;
+    else if (is_link(path[0]))
+        return 5;
 
     int pid = fork();
 
@@ -39,8 +41,10 @@ int main() {
         printf("File is not executable, rebuilding it\n");  // TODO: check for file integrity using an hash function
     else if (r == 4)
         printf("File is a directory, rebuilding\n");
+    else if (r == 5)
+        printf("File is soft link, rebuilding\n");
 
-    if (r == 2 || r == 3 || r == 4)
+    if (r == 2 || r == 3 || r == 4 || r == 5)
         system("cd && make clean && make build");
 
     // int choice;
@@ -58,6 +62,7 @@ int main() {
     //         ;       // option TWO to clean stdin
     //     getchar();  // wait for ENTER
     // }
+
     printf("Program ended\n");
     return 0;
 }
