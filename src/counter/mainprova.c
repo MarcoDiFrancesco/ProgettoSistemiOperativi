@@ -180,9 +180,9 @@ int main(int argc, string argv[]){
     printf("Numero di altro calcolato= %d\n",data[4]);
 
 
-    /*printf("invio dati...\n");
+    printf("invio dati...\n");
     sender(data);
-    printf("dati inviati!\n");*/
+    printf("dati inviati!\n");
 
     //libero spazio in memoria
     free(part);

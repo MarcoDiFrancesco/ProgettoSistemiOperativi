@@ -465,32 +465,25 @@ void report_and_exit(const char* msg) {
   exit(-1); /* EXIT_FAILURE */
 }
 
-void sender(int res[]) {
-    printf("making key...\n");
+void sender(int data[]) {
+    string *message=statsToString(data);
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) report_and_exit("couldn't get key...");
 
-    printf("making qid...\n");
     int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) report_and_exit("couldn't get queue id...");
 
-    string payloads[CLUSTER];
+    //char* payloads[] = {"msg1", "msg2", "msg3", "msg4", "msg5"};
+    int types[CLUSTER];
     int i;
-    char tmp;
-    printf("making paylod...\n");
-    for(i=0;i<CLUSTER;i++){
-        //tmp=i+'0';
-        printf("item %d...\n",i);
-        payloads[i] = "msg";
+    for(i=0; i<CLUSTER; i++){
+        types[i] = i+1;
     }
-    //int types[] = {1, 1, 2, 2, 3, 3}; /* each must be > 0 */
-    printf("making messages...\n");
     for (i = 0; i < CLUSTER; i++) {
         /* build the message */
         queuedMessage msg;
-        msg.type = res[i];
-        strcpy(msg.payload, payloads[i]);
-
+        msg.type = types[i];
+        strcpy(msg.payload, message[i]);
         /* send the message */
         msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
         printf("%s sent as type %i\n", msg.payload, (int) msg.type);
