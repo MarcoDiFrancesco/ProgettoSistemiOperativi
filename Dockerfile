@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-WORKDIR /home
+WORKDIR /home/root
 
 # RUN runs on docker build
 # CMD runs on docker run

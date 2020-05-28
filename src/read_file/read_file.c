@@ -31,11 +31,16 @@ node addNode(node head, char *new_str) {
     return head;
 }
 
+// https://stackoverflow.com/a/13098645/7924557
+int file_is_executable(char *filename) {
+    struct stat sb;
+    return (stat(filename, &sb) == 0 && sb.st_mode & S_IXUSR);
+}
+
 // https://stackoverflow.com/a/230070/7924557
 int file_exists(char *filename) {
-    // TODO: check priviledges
-    struct stat buffer;
-    return (stat(filename, &buffer) == 0);
+    struct stat sb;
+    return (stat(filename, &sb) == 0);
 }
 
 // https://stackoverflow.com/a/24544128/7924557
