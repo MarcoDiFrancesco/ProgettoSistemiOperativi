@@ -7,7 +7,7 @@
 #include <ctype.h>
 
 #define ProjectId 123
-#define PathName  "../tmp/msg.h" /* any existing, accessible file would do */
+#define PathName  "queue.h" /* any existing, accessible file would do */
 #define MsgLen    4
 #define MsgCount  6
 

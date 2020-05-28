@@ -16,25 +16,29 @@
 #define WRITE 1
 #define MAXLEN 12*sizeof(int)
 #define CLUSTER 5
-
 #define BOOL char
 #define FALSE 0
 #define TRUE 1
 #define BUFFSIZE 1000
 
+//define per il sender
+#define ProjectId 123
+#define PathName  "counter.h" /* any existing, accessible file would do */
+#define MAX_MSG_SIZE 6
+
+//structures
 typedef char * string;
 
 typedef struct {
-  long type;                 /* must be of type long */
-  char payload[CLUSTER + 1];  /* bytes in the message */
+  long type;                  //must be of type long 
+  char payload[MAX_MSG_SIZE]; // bytes in the message 
 } queuedMessage;
 
-//define per il sender
-#define ProjectId 123
-#define PathName  "queue.h" /* any existing, accessible file would do */
-
+//declarations
 int writePipe(int pipe[],string *msg);
+
 string *readAndWait(int pipe[], pid_t son);
+
 int * filesPart(string *files,int num,int M);
 
 //funzioni di ric
@@ -69,4 +73,6 @@ int processQ(int *range, int *dims, char** fname, int f_Psize,
 
 //funzione di messaggi fra processi separati
 void report_and_exit(const char* msg);
-void sender(int res[]);
+
+void sender(int data[]);
+
