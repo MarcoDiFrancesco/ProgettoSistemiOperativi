@@ -369,19 +369,18 @@ int ceiling(int first, int second){
  * @param c_son       pid del processo figlio
  * @param pipe_c      pipe di comunicazione tra C e P
  * @param pipe_q      pipe di comunicazione tra P e Q
- * @param argc        numero di argomenti passati al main (files + n + m)
  * @param files       lista dei files da analizzare
  * @param N           numero dei processi Q
  * @param M           numero dei processi P
- * @param n_arg       numero di argomenti passati al main (solamente n e m)
- * @param fileErrati  numero dei files passati al main con estensione sbagliata
+ * @param total       il numero totale dei file da analizzare
+ * @param fileIndex   valore che conserva la posizione del prossimo file da analizzare
  * @param part        non mi ricordo cos'è ma bisogna passarlo a Q
  * @param fdim        non mi ricordo cos'è ma bisogna passarlo a Q
  * @param index_p     numero del processo P corrente
  * @param file_per_p  numero di file che deve analizzare questo processo P
  */
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
-             int N, int M, int ceil, int fileIndex, int *part, int *fdim, 
+             int N, int M, int total, int fileIndex, int *part, int *fdim, 
              int index_p,int file_per_p) {
     //creo pipe fra C e P
     int g;
@@ -399,12 +398,12 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
     int f_Psize = 0;
     int fileIndexTemp = fileIndex;
     while (k < file_per_p) {
-        if (fileIndexTemp < ceil) {
+        if (fileIndexTemp < total) {
             file_P[k] = files[fileIndexTemp++];
             f_Psize++;
             //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
         }
-        if (fileIndexTemp - 1 == ceil) {
+        if (fileIndexTemp - 1 == total) {
             file_P[k] = 0;
             //printf("ho finito i file\n");
             }

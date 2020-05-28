@@ -40,16 +40,17 @@ int main(int argc, string argv[]){
         printf("\nfile %d = %s", argc - a, argv[a]);
     }
 
-    printf("\n(numero di argomenti inseriti prima dei file %d) \nN: %d\nM: %d\n", n_arg-1, N, M);
+    printf("\n(numero di argomenti inseriti prima dei file %d) \nN: %d\nM: %d\n", n_arg - 1, N, M);
 
     //controllo sul nome dei file passati come argomento
-    BOOL filesOk[argc-n_arg];
+    BOOL filesOk[argc - n_arg];
     int fileErrati = 0;
     int i;
     printf("nome corretto: ");
     for (i = n_arg; i < argc; i++) {
         int lunghezza_nome = strlen(argv[i]);
-        if(argv[i][lunghezza_nome-4] == '.' && argv[i][lunghezza_nome-3] == 't' && argv[i][lunghezza_nome-2] == 'x'&& argv[i][lunghezza_nome-1] == 't'){
+        if(argv[i][lunghezza_nome - 4] == '.' && argv[i][lunghezza_nome - 3] == 't' && 
+           argv[i][lunghezza_nome - 2] == 'x' && argv[i][lunghezza_nome - 1] == 't') {
             filesOk[i] = TRUE;
             printf(" OK ");
         } else {
@@ -59,28 +60,44 @@ int main(int argc, string argv[]){
         }
     }
 
+    // Controllo sull'esistenza dei file passati
+    int fileInesistenti = 0;
+    puts("\n\nControllo l'esistenza dei file validi\n");
+    for(i = n_arg; i < argc ; ++i) {
+        if (filesOk[i]) {
+            if (access(argv[i], F_OK) == -1) {
+                filesOk[i] = FALSE;
+                fileInesistenti++;
+            }
+        }
+        //printf("file inesistenti: %d\n", fileInesistenti);
+    }
+
+
     int return_value;
     //temporaneo per testare 
     string files[argc - n_arg - fileErrati];
-    printf(" files OK = %d\n", argc - n_arg - fileErrati);
+    printf(" files OK = %d\n", argc - n_arg - fileErrati - fileInesistenti);
     int next = 0;
-    for(i=n_arg;i<argc;i++){
-        if(filesOk[i] == TRUE){
-            files[next]=argv[i];
+    for(i = n_arg; i < argc; i++) {
+        if(filesOk[i] == TRUE) {
+            files[next] = argv[i];
             next++;
         }   
     }
     //tmp
     
     int fileIndex = 0;
-    int file_per_p = ceiling(argc - n_arg - fileErrati, N);
+    int const fileBoundary = argc - n_arg - fileErrati - fileInesistenti;
+    int file_restanti = argc - n_arg - fileErrati - fileInesistenti;
+    int file_per_p = ceiling(fileBoundary, N);
     
-    if (argc - n_arg - fileErrati < N) {
-        N = argc - n_arg - fileErrati;
+    if (fileBoundary < N) {
+        N = fileBoundary;
     }
 
-    int *part = filesPart(files, argc - n_arg - fileErrati, M);
-    int *f_dim = filesDim(files, argc - n_arg - fileErrati);
+    int *part = filesPart(files, fileBoundary, M);
+    int *f_dim = filesDim(files, fileBoundary);
 
     //fine prova
     //--------------------------------------------------
@@ -120,12 +137,10 @@ int main(int argc, string argv[]){
     int data[CLUSTER];
     int g;
 
-    for(g=0;g<CLUSTER;g++){
-        data[g]=0;
+    for(g = 0; g < CLUSTER; g++) {
+        data[g] = 0;
     }
     printf("\n\nProcess C pid=%d\n",getpid());
-    int fileBoundary = argc - n_arg - fileErrati;
-    int file_restanti = argc - n_arg - fileErrati;
 
     for (i = 0; i < N; i++) {
         //printf("file restanti: %d --- processi restanti: %d\n", file_restanti, (N - i));
@@ -141,10 +156,10 @@ int main(int argc, string argv[]){
                 exit(return_value);
             }else{
                 //successive parti del processo C
-                string * buffer=readAndWait(p_c[i],c_son);
+                string * buffer = readAndWait(p_c[i],c_son);
                 int *tmp = getValuesFromString(buffer);
                 for (g = 0; g < CLUSTER; g++) {
-                    data[g]+=tmp[g];
+                    data[g] += tmp[g];
                 }
                 free(tmp); //new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
             }
@@ -165,9 +180,9 @@ int main(int argc, string argv[]){
     printf("Numero di altro calcolato= %d\n",data[4]);
 
 
-    printf("invio dati...\n");
+    /*printf("invio dati...\n");
     sender(data);
-    printf("dati inviati!\n");
+    printf("dati inviati!\n");*/
 
     //libero spazio in memoria
     free(part);
