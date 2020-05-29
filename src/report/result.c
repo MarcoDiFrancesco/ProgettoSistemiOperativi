@@ -10,13 +10,13 @@ void read_result(int cluster, string *results){
     char input;
 
     printf("Choose your result format: values[v] percentage[p] both[a]");
-    scanf("%c", &input);
-    while(!(input != 'v' || input != 'p' || input != 'a')){
+    scanf(" %c", &input);
+    while (input != 'v' && input != 'p' && input != 'a') {
         printf("Insert only [v], [p] or [a]");
-        scanf("%c", &input);
+        scanf(" %c", &input);
+        //scanf("%c", &input);
     }
-
-    switch(input){
+    switch (input) {
         case 'v' :
             print_values(cluster, nval);
             break;
@@ -34,7 +34,7 @@ void read_result(int cluster, string *results){
 void print_values(int cluster, int* results){
     int i = 0;
 
-    for(i=0; i<cluster; i++){
+    for (i = 0; i < cluster; i++) {
         printf("\n> Numero di %s: %d", print_type(i), results[i]);
     }
 }
@@ -106,7 +106,7 @@ string *readerMessage() {
   int types[] = {1, 2, 3, 4, 5}; /* different than in sender */
   queuedMessage msg; /* defined in queue.h */
   for (i = 0; i < CLUSTER; i++) {
-    if (msgrcv(qid, &msg, sizeof(msg), types[i], MSG_NOERROR | IPC_NOWAIT) < 0)   puts("msgrcv trouble...");
+    if (msgrcv(qid, &msg, sizeof(msg), types[i], MSG_NOERROR) < 0)   puts("msgrcv trouble...");
     printf("%s received as type %i\n", msg.payload, (int) msg.type);
     strcpy(ret[i], msg.payload);
   }
