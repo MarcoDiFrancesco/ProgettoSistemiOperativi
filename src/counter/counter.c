@@ -7,7 +7,7 @@
 string *readAndWait(int pipe[], pid_t son) {
     close(pipe[WRITE]);
     string *msg;
-    msg = malloc(CLUSTER*sizeof(char*));
+    msg = malloc(CLUSTER * sizeof(char *));
     int i;
     int rd;
     int err = 0;
@@ -75,8 +75,9 @@ int *filesPart(string *files, int num, int M) {
  * @param stop indice di fine.
  * @return 0 in caso di successo, -1 in caso si siano verificati errori di lettura.
  */
-int readFile(char* filename, char* filedata, int start, int stop){
+int readFile(char* filename, char* filedata, int start, int stop) {
     int sk, rd;
+    int ret;
     int file = open(filename, O_RDONLY);
     if (file >= 0) {
         sk = lseek(file, start * sizeof(char), SEEK_SET);
@@ -84,11 +85,11 @@ int readFile(char* filename, char* filedata, int start, int stop){
             rd = read(file, filedata, stop-start);
         }
     }
-    if (file >= 0 && sk >= 0 && rd >= 0) {
-        return 0;
-    } else {
-        return -1;
-    }
+    if (file >= 0 && sk >= 0 && rd >= 0)
+        ret = 0;
+    else
+        ret = -1;
+    return ret;
 }
 
 /**
@@ -100,7 +101,7 @@ int readFile(char* filename, char* filedata, int start, int stop){
  * @param s buffer che contiene i caratteri da analizzare.
  * @param counter vettore in cui riporre i risultati.
  */
-void countLetters(int dim, char* s, int* counter){
+void countLetters(int dim, char* s, int* counter) {
     //printf("testo cont: ");
     int i = dim - 1;
     for (i; i >= 0; i--) {
@@ -148,27 +149,27 @@ void countLetters(int dim, char* s, int* counter){
     }
 }
 
-int* processoQ(int from, int to, char* fname){
+int* processoQ(int from, int to, char* fname) {
     char* testo;
     int* stats;
     int i;
     int inizio = from;
     int fine = to;
 
-    testo = malloc(fine*sizeof(char));
-    stats = malloc(5*sizeof(int));
+    testo = malloc(fine * sizeof(char));
+    stats = malloc(5 * sizeof(int));
     i = 0;
 
-    for(i; i<CLUSTER; i++){
+    for (i; i < CLUSTER; i++) {
         stats[i] = 0;
     }
 
     i = readFile(fname, testo, inizio, fine);
 
-    countLetters(fine-inizio, testo, stats);
+    countLetters(fine - inizio, testo, stats);
 
 
-    if(i==0)
+    if (i==0)
         return stats;
     else 
         return (int *)-1;
@@ -265,11 +266,11 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     }
 
 
-    if (i==0) {
+    if (i == 0)
         return stats;
-    } else {
+    else
         return (int *) - 1;
-    }
+    
 }
 
 
@@ -301,10 +302,10 @@ char **statsToString (int *values) {
  * @param str Il vettore di stringhe che contiene il valore.
  * @return Il vettore di interi.
  */
-int *getValuesFromString(char **str){
+int *getValuesFromString(char **str) {
     int *values = (int *)malloc(CLUSTER * sizeof(int));
     int i;
-    for(i = 0; i < CLUSTER; ++i){
+    for (i = 0; i < CLUSTER; ++i) {
         values[i] = atoi(str[i]);
     }
 
@@ -316,7 +317,7 @@ int *getValuesFromString(char **str){
  * e relativa descrizione.
  * @param code Codice errore.
  */
-void printError(int code){
+void printError(int code) {
     printf("\n\n----------------------\n\n");
     printf("ERRNO = %d, error description = %s", code, strerror(code));
     printf("\n\n----------------------\n\n");
@@ -389,10 +390,10 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
         //processo P
         string *qTop[M];
         int dataCollected[CLUSTER];
-        for(g = 0; g < CLUSTER; g++) {
+        for (g = 0; g < CLUSTER; g++) {
             dataCollected[g] = 0;
         }
-    printf("P created pid=%d ppid=%d\n",getpid(),getppid());                
+    printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
     int k = 0;
     string file_P[file_per_p];
     int f_Psize = 0;
@@ -420,7 +421,8 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
             return_value = 46;
         } else {
             if (p_son == 0) {
-                return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, M, pipe_q[j]);
+                return_value = processQ(part, fdim, file_P, f_Psize, 
+                                        j, fileIndex, M, pipe_q[j]);
                 exit(0);
             } else {
                 //successive parti del processo P
@@ -433,7 +435,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
             }
         }                   
     }
-    return_value=writePipe(pipe_c[index_p],statsToString(dataCollected));
+    return_value = writePipe(pipe_c[index_p], statsToString(dataCollected));
     //possibile free di dataCollected (?)
     return return_value;
     }
@@ -448,11 +450,13 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
  * @param m            "                      "
  * @param pipe_q    pipe di comunicazione tra P e Q
  */
-int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]){
-    printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
-    int* counter=processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
-    string *message=statsToString(counter);
-    int err=writePipe(pipe_q,message);
+int processQ(int *range, int *dims, char** fname, int f_Psize, 
+             int q_loop, int index, int m, int pipe_q[]) {
+    printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
+    int* counter = processoQ_n(range, dims, fname, f_Psize,
+                               q_loop, index, m);
+    string *message = statsToString(counter);
+    int err = writePipe(pipe_q,message);
     free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
     return err;
 }
@@ -466,18 +470,20 @@ void report_and_exit(const char* msg) {
 }
 
 void sender(int data[]) {
-    string *message=statsToString(data);
+    string *message = statsToString(data);
     key_t key = ftok(PathName, ProjectId);
-    if (key < 0) report_and_exit("couldn't get key...");
+    if (key < 0) 
+        report_and_exit("couldn't get key...");
 
     int qid = msgget(key, 0666 | IPC_CREAT);
-    if (qid < 0) report_and_exit("couldn't get queue id...");
+    if (qid < 0) 
+        report_and_exit("couldn't get queue id...");
 
     //char* payloads[] = {"msg1", "msg2", "msg3", "msg4", "msg5"};
     int types[CLUSTER];
     int i;
-    for(i=0; i<CLUSTER; i++){
-        types[i] = i+1;
+    for (i = 0; i < CLUSTER; i++) {
+        types[i] = i + 1;
     }
     for (i = 0; i < CLUSTER; i++) {
         /* build the message */
