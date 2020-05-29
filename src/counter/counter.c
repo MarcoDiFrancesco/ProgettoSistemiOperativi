@@ -7,7 +7,7 @@
 string *readAndWait(int pipe[], pid_t son) {
     close(pipe[WRITE]);
     string *msg;
-    msg = malloc(CLUSTER*sizeof(char*));
+    msg = malloc(CLUSTER * sizeof(char *));
     int i;
     int rd;
     int err = 0;
@@ -21,7 +21,7 @@ string *readAndWait(int pipe[], pid_t son) {
     }
     //printf("(read)ERR=%d",err);
     close(pipe[READ]);
-    waitpid(son,NULL,0);
+    waitpid(son, NULL, 0);
     return msg;
 }
 
@@ -115,8 +115,8 @@ void countLetters(int dim, char* s, int* counter){
         } else if (s[i] == ' ') {
             //spazi
             counter[2]++;
-        } else if(s[i] == '.' || s[i] == ',' || s[i] == ':' || 
-                  s[i] == ';' || s[i] == '?' || s[i] == '!') {
+        } else if (s[i] == '.' || s[i] == ',' || s[i] == ':' || 
+                   s[i] == ';' || s[i] == '?' || s[i] == '!') {
             //punteggiatura
             counter[3]++;
         } else {
@@ -265,7 +265,7 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     }
 
 
-    if (i==0) {
+    if (i == 0) {
         return stats;
     } else {
         return (int *) - 1;
@@ -433,7 +433,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
             }
         }                   
     }
-    return_value=writePipe(pipe_c[index_p],statsToString(dataCollected));
+    return_value = writePipe(pipe_c[index_p],statsToString(dataCollected));
     //possibile free di dataCollected (?)
     return return_value;
     }
@@ -448,11 +448,12 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
  * @param m            "                      "
  * @param pipe_q    pipe di comunicazione tra P e Q
  */
-int processQ(int *range, int *dims, char** fname, int f_Psize, int q_loop, int index, int m, int pipe_q[]){
+int processQ(int *range, int *dims, char** fname, int f_Psize, 
+             int q_loop, int index, int m, int pipe_q[]) {
     printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
-    int* counter=processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
-    string *message=statsToString(counter);
-    int err=writePipe(pipe_q,message);
+    int* counter = processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
+    string *message = statsToString(counter);
+    int err = writePipe(pipe_q,message);
     free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
     return err;
 }
