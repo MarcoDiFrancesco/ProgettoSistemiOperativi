@@ -21,7 +21,7 @@ string *readAndWait(int pipe[], pid_t son) {
     }
     //printf("(read)ERR=%d",err);
     close(pipe[READ]);
-    waitpid(son,NULL,0);
+    waitpid(son, NULL, 0);
     return msg;
 }
 
@@ -116,8 +116,8 @@ void countLetters(int dim, char* s, int* counter) {
         } else if (s[i] == ' ') {
             //spazi
             counter[2]++;
-        } else if(s[i] == '.' || s[i] == ',' || s[i] == ':' || 
-                  s[i] == ';' || s[i] == '?' || s[i] == '!') {
+        } else if (s[i] == '.' || s[i] == ',' || s[i] == ':' || 
+                   s[i] == ';' || s[i] == '?' || s[i] == '!') {
             //punteggiatura
             counter[3]++;
         } else {
@@ -266,7 +266,11 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     }
 
 
+<<<<<<< HEAD
     if (i == 0)
+=======
+    if (i == 0) {
+>>>>>>> 851c60ea93c2946f6e44ebed784c04052e103c95
         return stats;
     else
         return (int *) - 1;
@@ -435,7 +439,11 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
             }
         }                   
     }
+<<<<<<< HEAD
     return_value = writePipe(pipe_c[index_p], statsToString(dataCollected));
+=======
+    return_value = writePipe(pipe_c[index_p],statsToString(dataCollected));
+>>>>>>> 851c60ea93c2946f6e44ebed784c04052e103c95
     //possibile free di dataCollected (?)
     return return_value;
     }
@@ -452,9 +460,14 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
  */
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
              int q_loop, int index, int m, int pipe_q[]) {
+<<<<<<< HEAD
     printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
     int* counter = processoQ_n(range, dims, fname, f_Psize,
                                q_loop, index, m);
+=======
+    printf("\tQ created pid=%d ppid=%d\n",getpid(),getppid());
+    int* counter = processoQ_n(range, dims, fname,f_Psize,q_loop,index, m);
+>>>>>>> 851c60ea93c2946f6e44ebed784c04052e103c95
     string *message = statsToString(counter);
     int err = writePipe(pipe_q,message);
     free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message

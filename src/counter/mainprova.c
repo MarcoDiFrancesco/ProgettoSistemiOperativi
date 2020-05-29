@@ -77,6 +77,13 @@ int main(int argc, string argv[]) {
 
     int return_value;
     int const fileTotal = argc - n_arg - fileErrati - fileInesistenti;
+<<<<<<< HEAD
+=======
+    if (fileTotal < 1) {
+        printf("non ho ricevuto alcun file valido\n");
+        exit(0);
+    }
+>>>>>>> 851c60ea93c2946f6e44ebed784c04052e103c95
     //temporaneo per testare 
     string files[fileTotal];
     printf(" files OK = %d\n", fileTotal);
@@ -89,11 +96,14 @@ int main(int argc, string argv[]) {
     }
     //tmp
 
+<<<<<<< HEAD
     if (fileTotal < 1) {
         printf("non ho ricevuto alcun file valido\n");
         exit(0);
     }
     
+=======
+>>>>>>> 851c60ea93c2946f6e44ebed784c04052e103c95
     int fileIndex = 0;
     int file_restanti = fileTotal;
     int file_per_p = ceiling(fileTotal, N);
