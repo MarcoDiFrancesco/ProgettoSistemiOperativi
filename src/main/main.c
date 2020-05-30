@@ -55,6 +55,7 @@ int main() {
     else if (r == 5)
         printf("File is soft link, rebuilding\n");
 
+    // TODO: get path where the program is run and replace the absolute path with ./
     if (r == 2 || r == 3 || r == 4 || r == 5)
         system("cd && make clean && make build");
     // TODO: check for input > 4096 and tell the user

@@ -62,3 +62,57 @@ Compile (inside the continer):
 ``` shell
 make build
 ```
+
+## How it works
+
+![Graph](https://i.imgur.com/r1lvqIh.png)
+
+### Main
+
+To run **main** run `./bin/main`.  
+It requires the files `./bin/analyzer` and `./bin/report` to exist.
+
+It is used to manage Analyzer and Report.
+
+### Report
+
+To run **main** run `./bin/main`.  
+It requires the file `./bin/analyzer` to exist.
+
+It is used to run Analyzer and open a named pipe with it, than require analyzed data, than it will close analyzer than finish.
+
+### Analyzer
+
+To run **analyzer** run `./bin/analyzer`.  
+
+It is used to create Counter and calulate which process P analyze which file. If Counter already exist, it will recalculate the processes P assigned files. Once this is completed it will close, it won't wait for Counter to close.
+
+### Counter
+
+Counter is run in [Analyzer](#Analyzer).
+
+Counter is the only process (except Main) that won't be stopped by anything.  
+When it's created, it will create all P processes.
+
+It is used to gather all the information in a struct:
+
+``` C
+struct CounterStruct {
+    string FileName = "";
+    int ProcessP = -1;
+    int Statistics[Cluster];
+    CounterStruct *next = NULL;
+}
+```
+
+### P
+
+P is run in [Counter](#Counter).
+
+When P is started, it will get the path of the file that it needs to analyze and it spowns the child processes Q and it waits for them to finish.
+
+### Q
+
+Q is run in [P](#P).
+
+When Q is started, it will get the path of the file that it needs to analyze and which part. When the process finishes, it communicates the results to P.

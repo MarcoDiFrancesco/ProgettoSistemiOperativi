@@ -2,3 +2,6 @@
 .vscode/
 bin/
 test/
+
+# Bash generated file
+.bash_history
