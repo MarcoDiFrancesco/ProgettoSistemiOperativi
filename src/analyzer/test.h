@@ -20,6 +20,11 @@
 #define FALSE 0
 #define TRUE 1
 
+//costanti funzionali
+/*int N = 3;
+int M = 4;
+int n_arg = 1;*/
+
 typedef char * string;
 
 
