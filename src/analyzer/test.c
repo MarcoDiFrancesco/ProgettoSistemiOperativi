@@ -3,6 +3,10 @@
 //funzioni
 
 int C(int argc, string argv[]){
-    
-    execl("/bin/bash", "bash", "-c", "./bin/report", "-r", "testo", NULL);
+    string arguments[argc];
+    int i;
+    for(i=0;i<argc;i++){
+        arguments[i]=arguments[i];
+    }
+    execv("../counter/main", arguments);
 }

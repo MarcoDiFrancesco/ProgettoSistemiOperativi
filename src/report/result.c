@@ -14,7 +14,6 @@ void read_result(int cluster, string *results){
     while (input != 'v' && input != 'p' && input != 'a') {
         printf("Insert only [v], [p] or [a]");
         scanf(" %c", &input);
-        //scanf("%c", &input);
     }
     switch (input) {
         case 'v' :
