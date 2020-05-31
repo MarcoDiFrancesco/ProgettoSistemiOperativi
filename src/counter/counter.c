@@ -470,16 +470,18 @@ void report_and_exit(const char* msg) {
 }
 
 void sender(int data[]) {
+    printf("cazzi\n");
     string *message = statsToString(data);
     key_t key = ftok(PathName, ProjectId);
-    if (key < 0) 
+    if (key < 0) {      
+        printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
+    }
 
     int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) 
         report_and_exit("couldn't get queue id...");
 
-    //char* payloads[] = {"msg1", "msg2", "msg3", "msg4", "msg5"};
     int types[CLUSTER];
     int i;
     for (i = 0; i < CLUSTER; i++) {

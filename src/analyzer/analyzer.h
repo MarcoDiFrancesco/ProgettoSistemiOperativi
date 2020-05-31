@@ -28,8 +28,4 @@ int n_arg = 1;*/
 typedef char * string;
 
 
-
-int C(int argc, string argv[]);
-
-
 #endif

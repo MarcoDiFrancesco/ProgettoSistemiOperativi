@@ -23,7 +23,7 @@
 
 //define per il sender
 #define ProjectId 123
-#define PathName  "counter.h" /* any existing, accessible file would do */
+#define PathName  "../counter/counter.h" /* any existing, accessible file would do */
 #define MAX_MSG_SIZE 6
 
 //structures
