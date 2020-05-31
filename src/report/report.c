@@ -1,7 +1,7 @@
-#ifndef __RESULT_H_
-#define __RESULT_H_
+#ifndef __REPORT_H_
+#define __REPORT_H_
 
-#include "result.h"
+#include "report.h"
 
 void read_result(int cluster, string *results){
     int i = 0,
