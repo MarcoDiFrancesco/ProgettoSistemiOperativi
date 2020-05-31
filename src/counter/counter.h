@@ -34,6 +34,14 @@ typedef struct {
   char payload[MAX_MSG_SIZE]; // bytes in the message 
 } queuedMessage;
 
+struct FileMap{
+  string name;
+  int fileHash;
+  int stats[CLUSTER];
+} FileMap;
+
+typedef struct FileMap *map;
+
 //declarations
 int writePipe(int pipe[],string *msg);
 
@@ -74,5 +82,5 @@ int processQ(int *range, int *dims, char** fname, int f_Psize,
 //funzione di messaggi fra processi separati
 void report_and_exit(const char* msg);
 
-void sender(int data[]);
+void sender(map data, int mapDim);
 

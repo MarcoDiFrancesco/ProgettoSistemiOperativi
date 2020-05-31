@@ -27,6 +27,14 @@ typedef struct {
   char payload[MAX_MSG_SIZE]; // bytes in the message 
 } queuedMessage;
 
+struct FileMap{
+  string name;
+  int fileHash;
+  int stats[CLUSTER];
+} FileMap;
+
+typedef struct FileMap *map;
+
 enum simboli{lettere, numeri, spazi, punteggiatura, altro};
 
 
@@ -49,4 +57,4 @@ int *getValuesFromString(char **str);
 //message functions
 void report_and_exit(const char* msg);
 
-string *readerMessage();
+map readerMessage();

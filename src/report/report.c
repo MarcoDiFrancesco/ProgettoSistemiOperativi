@@ -14,7 +14,6 @@ void read_result(int cluster, string *results){
     while (input != 'v' && input != 'p' && input != 'a') {
         printf("Insert only [v], [p] or [a]");
         scanf(" %c", &input);
-        //scanf("%c", &input);
     }
     switch (input) {
         case 'v' :
@@ -91,24 +90,35 @@ int *getValuesFromString(char **str){
 
 //message functions
 
-string *readerMessage() {
-  string *ret=(char **)malloc(CLUSTER * sizeof(char *));
-    int i;
-    for (i = 0; i < CLUSTER; ++i) {
-        ret[i] = (char *)malloc(12 * sizeof(int));
-    }
+map readerMessage() {
+  //string *ret=(char **)malloc(CLUSTER * sizeof(char *));
+    int i, j, nFiles;
+    //for (i = 0; i < CLUSTER; ++i) {
+        //ret[i] = (char *)malloc(12 * sizeof(int));
+    //}
+  map ret;
   key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
   if (key < 0) report_and_exit("key not gotten...");
 
   int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
   if (qid < 0) report_and_exit("no access to queue...");
 
-  int types[] = {1, 2, 3, 4, 5}; /* different than in sender */
+  int types[CLUSTER];
+  for(i=0; i<CLUSTER; i++){
+      types[i] = i+1;
+  }
   queuedMessage msg; /* defined in queue.h */
-  for (i = 0; i < CLUSTER; i++) {
-    if (msgrcv(qid, &msg, sizeof(msg), types[i], MSG_NOERROR) < 0)   puts("msgrcv trouble...");
-    printf("%s received as type %i\n", msg.payload, (int) msg.type);
-    strcpy(ret[i], msg.payload);
+  for(j=0; j<nFiles; j++){
+    //salvataggio nome file
+    if (msgrcv(qid, &msg, sizeof(msg), types[i], MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
+        printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
+    strcpy(ret[j].name, msg.payload);
+    for (i = 0; i < CLUSTER; i++) {
+        //salvataggio dati file
+        if (msgrcv(qid, &msg, sizeof(msg), types[i], MSG_NOERROR) < 0)   puts("msgrcv trouble...");
+        printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
+        strcpy(ret[j].stats[i], msg.payload);
+    }
   }
   /** remove the queue **/
   if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */

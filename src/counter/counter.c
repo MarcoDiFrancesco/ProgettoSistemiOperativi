@@ -469,9 +469,8 @@ void report_and_exit(const char* msg) {
   exit(-1); /* EXIT_FAILURE */
 }
 
-void sender(int data[]) {
-    printf("cazzi\n");
-    string *message = statsToString(data);
+void sender(map data, int mapDim) {
+    //string *message = statsToString(data);
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {      
         printf("err: %s\n", strerror(errno));
@@ -482,20 +481,37 @@ void sender(int data[]) {
     if (qid < 0) 
         report_and_exit("couldn't get queue id...");
 
-    int types[CLUSTER];
+    int types[CLUSTER*mapDim + mapDim +1];
     int i;
-    for (i = 0; i < CLUSTER; i++) {
+    for (i = 0; i < CLUSTER*mapDim + mapDim; i++) {
         types[i] = i + 1;
     }
-    for (i = 0; i < CLUSTER; i++) {
-        /* build the message */
-        queuedMessage msg;
-        msg.type = types[i];
-        strcpy(msg.payload, message[i]);
-        /* send the message */
-        msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
-        printf("%s sent as type %i\n", msg.payload, (int) msg.type);
+    
+    queuedMessage msgNum;
+    sprintf(msgNum.payload, sizeof(int), mapDim);
+    
+    
+    int j;
+    for(j=0;j<mapDim;j++){
+        //invio nome file
+        queuedMessage msgName;
+        strcpy(msgName.payload, data[j*CLUSTER].name);
+        msgName.type = types[j*CLUSTER];
+        msgsnd(qid, &msgName, sizeof(msgName), IPC_NOWAIT);
+        //conversione stats in message
+        string *message = statsToString(data[j].stats);
+        //invio dati file
+        for (i = 1; i <= CLUSTER; i++) {
+                /* build the message */
+                queuedMessage msg;
+                msg.type = types[i*(j+1)];
+                strcpy(msg.payload, message[i*(j+1)]);
+                /* send the message */
+                msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
+                printf("%s sent as type %i\n", msg.payload, (int) msg.type);
+        }
     }
+    
 }
 
 

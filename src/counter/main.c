@@ -76,7 +76,15 @@ int main(int argc, string argv[]) {
 
 
     printf("invio dati...\n");
-    sender(data);
+    //da cancellare solo per testare
+    map test;
+    test=malloc(sizeof(FileMap));
+    test[0].name="file1";
+    test[0].fileHash=123;
+    for(i=0;i<CLUSTER;i++){
+        test[0].stats[i]=data[i];
+    }
+    sender(test,1);
     printf("dati inviati!\n");
 
     //libero spazio in memoria
