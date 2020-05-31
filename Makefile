@@ -36,3 +36,8 @@ bin/main: src/main/main.c $(MDEPS)
 RDEPS=src/report/result.c src/report/result.h
 bin/report: src/report/main.c $(RDEPS)
 	$(COMPILER) -o $@ $< $(RDEPS) $(FLAGS)
+
+#Counter
+CDEPS=src/counter/counter.c src/counter/counter.h
+bin/counter: src/countermain.c $(CDEPS)
+	$(COMPILER) -o $@ $< $(CDEPS) $(FLAGS)
