@@ -1,4 +1,4 @@
-#include "test.h"
+#include "analyzer.h"
 
 int main(int argc, string argv[]) {
     //scrivo qui controllo degli argomenti per il C

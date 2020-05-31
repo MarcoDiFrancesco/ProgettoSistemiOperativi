@@ -23,7 +23,7 @@ clean:
 	@echo "Cleaned successfully"
 
 # Analyzer
-ADEPS=src/analyzer/test.c src/analyzer/test.h
+ADEPS=src/analyzer/analyzer.c src/analyzer/analyzer.h
 bin/analyzer: src/analyzer/main.c $(ADEPS)
 	$(COMPILER) -o $@ $< $(ADEPS) $(FLAGS)
 
