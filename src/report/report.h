@@ -40,11 +40,11 @@ typedef struct FileMap *map;
 
 enum simboli{lettere, numeri, spazi, punteggiatura, altro};
 
-void read_result(int cluster, string *results);
+void read_result(map results,int numFIle);
 
-void print_values(int cluster, int* results);
+void print_values(int* results);
 
-void print_percentual(int cluster, int* results);
+void print_percentual(int* results);
 
 string print_type(int n);
 
@@ -58,3 +58,13 @@ int *getValuesFromString(char **str);
 void report_and_exit(const char* msg);
 
 map readerMessage();
+
+//funzioni stampa
+
+void printAll(map results,int numFile);
+
+void printSingle(map results, int fileNum);
+
+int selectFile(map results, int numFile);
+
+void printNames(map results, int nFile);

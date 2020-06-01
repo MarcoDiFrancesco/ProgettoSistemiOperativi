@@ -3,12 +3,53 @@
 
 #include "report.h"
 
-void read_result(int cluster, string *results){
-    int i = 0,
+void read_result(map results,int numFile){
+    /*int i = 0,
         counter = 0,
-        *nval = getValuesFromString(results);
+        *nval = getValuesFromString(results);*/
     char input;
 
+    printf("Vuoi le statistiche di tutti i file [a]\no di un file singolo [u]?\n");
+    scanf(" %c", &input);
+    while (input != 'a' && input != 'u') {
+        printf("Inserisci solamente [a] o [u]");
+        scanf(" %c", &input);
+    }
+    switch (input) {
+        case 'a' :
+            printAll(results, numFile);
+            break;
+        case 'u' : 
+            printSingle(results, selectFile(results, numFile));
+            break;
+    }
+    
+    /*printf("Choose your result format: values[v] percentage[p] both[a]");
+    scanf(" %c", &input);
+    while (input != 'v' && input != 'p' && input != 'a') {
+        printf("Insert only [v], [p] or [a]");
+        scanf(" %c", &input);
+    }
+    switch (input) {
+        case 'v' :
+            print_values(nval);
+            break;
+        case 'p' : 
+            print_values(nval);
+            break;
+        case 'a' : 
+            print_values(nval);
+            printf("\n-----------");
+            print_percentual(nval);
+            break;
+    }*/
+}
+
+//new print functions
+
+void printAll(map results,int numFile){
+    int i;
+    char input;
     printf("Choose your result format: values[v] percentage[p] both[a]");
     scanf(" %c", &input);
     while (input != 'v' && input != 'p' && input != 'a') {
@@ -17,35 +58,94 @@ void read_result(int cluster, string *results){
     }
     switch (input) {
         case 'v' :
-            print_values(cluster, nval);
+            for(i=0;i<numFile;i++){
+                printf("File Name : %s\n",results[i].name);
+                print_values(results[i].stats);
+            }
+            
             break;
         case 'p' : 
-            print_values(cluster, nval);
+            for(i=0;i<numFile;i++){
+                printf("File Name : %s\n",results[i].name);
+                print_percentual(results[i].stats);
+            }
+            break;
+        case 'a' :
+            for(i=0;i<numFile;i++){
+                printf("File Name : %s\n",results[i].name);
+                print_values(results[i].stats);
+                printf("\n-----------");
+                print_percentual(results[i].stats);
+            }
+            
+            break;
+    }
+    
+}
+
+void printNames(map results, int nFile){
+    int i;
+    for(i=0; i<nFile; i++){
+        printf("(%d) %s\n", i+1, results[i].name);
+    }
+}
+
+int selectFile(map results, int numFile){
+    printf("Questi sono i file disponibili.\n");
+    printNames(results,numFile);
+    printf("Inserisci l'indice del file di cui vuoi conoscere le statistiche\n> ");
+    int input;
+    scanf(" %d", &input);
+    while (!(input >= 1 && input <= numFile)) {
+        printf("Inserisci un indice di un file sopra citato\n");
+        scanf(" %d", &input);
+    }
+    return input-1;
+}
+
+void printSingle(map results, int fileNum){
+    printf("Il nome del file scelto è:\n> %s\n", results[fileNum].name);
+    char input;
+    printf("Choose your result format: values[v] percentage[p] both[a]");
+    scanf(" %c", &input);
+    while (input != 'v' && input != 'p' && input != 'a') {
+        printf("Insert only [v], [p] or [a]");
+        scanf(" %c", &input);
+    }
+    switch (input) {
+        case 'v' :
+            print_values(results[fileNum].stats);
+            break;
+        case 'p' : 
+            print_percentual(results[fileNum].stats);
             break;
         case 'a' : 
-            print_values(cluster, nval);
+            print_values(results[fileNum].stats);
             printf("\n-----------");
-            print_percentual(cluster, nval);
+            print_percentual(results[fileNum].stats);
             break;
     }
 }
 
-void print_values(int cluster, int* results){
+//old print functions
+
+void print_values(int* results){
     int i = 0;
 
-    for (i = 0; i < cluster; i++) {
+    for (i = 0; i < CLUSTER; i++) {
         printf("\n> Numero di %s: %d", print_type(i), results[i]);
+        
     }
 }
 
-void print_percentual(int cluster, int* results){
+void print_percentual(int* results){
     int i = 0,
         dim = 0;
 
-    for(i=0; i<cluster; i++){
+    for(i=0; i<CLUSTER; i++){
         dim += results[i];
     }
-    for(i=0; i<cluster; i++){
+    for(i=0; i<CLUSTER; i++){
         printf("\n> percentuale di %s: %0.2f percento", print_type(i), ((float)results[i]/((float)dim))*100.0 );
     }
     printf("\n");
@@ -90,7 +190,7 @@ int *getValuesFromString(char **str){
 
 //message functions
 
-map readerMessage() {
+map readerMessage(int *numFileRet) {
 
     //string *ret=(char **)malloc(CLUSTER * sizeof(char *));
     int i=0, j, nFiles;
@@ -113,6 +213,7 @@ map readerMessage() {
     string tmp = malloc(sizeof(100));
     strcpy(tmp, msg.payload);
     nFiles = atoi(tmp);
+    *numFileRet = nFiles;
 
     /*int types[CLUSTER*nFiles + nFiles];
     for(i=0; i<CLUSTER*nFiles + nFiles; i++){
