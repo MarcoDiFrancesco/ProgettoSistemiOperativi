@@ -244,15 +244,7 @@ int **processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int i
             break;
         }
     }
-/*
 
-    for (i = 0; i < n; i++) {
-        printf("\t%d\n", i);
-        for (j = 0; j < CLUSTER; ++j) {
-            printf("\t\t%d\n", stats[i][j]);
-        }
-    }
-*/
 
     if (i == 0)
         return stats;
@@ -444,6 +436,75 @@ void storeOnMap(map fileData[], int **values, int size, int index) {
         }
         ++k;
     }
+}
+
+unsigned long computeHash(string fname, int dim, BOOL compare) {
+    int i = 0;
+    int err = 0;
+    unsigned long hash = 0;
+    int digits = 10;
+
+    if (compare == TRUE) {
+        dim = fileDim(fname);
+    }
+    string content = malloc(dim);
+    err = readFile(fname, content, 0, dim);
+    //content[dim] = 0;
+    //printf("%s", content);
+    while (content[i] != '\0') {
+        if (i % 2 == 0) {
+            hash += ((content[i] + 100) % 128);
+        } else if (i % 3 == 0) {
+            if(content[i] == content[i - 1]) {
+                hash += 69 * dim;
+            }
+        } else {
+            hash += content[i];
+        }
+        //printf("%c", content[i]);
+        //printf("%d", i);
+        ++i;
+    }
+    free(content);
+    hash += 2000;
+    int current = countDigits(hash);
+
+    /*
+    for (i = 0; i < digits; ++i) {
+        sprintf(fileData->fileHash[i], "%d", hash * 123456);
+    }*/
+
+    while (current != digits) {
+        current = countDigits(hash);
+        //printf("%d\n", current);
+        if (current < digits) {
+            hash *= 123456;
+        } else  if (current > digits) {
+            hash /= 9876;
+        }
+    }
+    //printf("\n");
+    //printf("%d\n", countDigits(hash));
+    //fileData->fileHash = hash;
+    return hash;
+}
+
+int countDigits(unsigned long n) {
+    int count = 0;
+    while (n != 0) {
+        n /= 10;
+        ++count;
+    }
+    return count;
+}
+
+int fileDim(string file) {
+    int ret = 0;
+    int fp;
+    fp = open(file, O_RDONLY);
+    ret = lseek(fp, 0, SEEK_END);
+    close(fp);
+    return ret;
 }
 
 //------------------------ process function section-----------------------

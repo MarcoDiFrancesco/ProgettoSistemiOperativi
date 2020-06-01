@@ -112,6 +112,7 @@ int main(int argc, string argv[]) {
     for (i = 0; i < fileTotal; ++i) {
         fileData[i] = (map)malloc(sizeof(struct FileMap));
         fileData[i]->name = files[i];
+        fileData[i]->fileHash = computeHash(files[i], f_dim[i], FALSE);
     }
 
     //pipes
@@ -181,6 +182,8 @@ int main(int argc, string argv[]) {
         }
                 
     }
+
+    //sleep(10);
     printf("Printing data....\n");
     /*printf("Numero di lettere calcolato= %d\n", data[0]);
     printf("Numero di numeri calcolato= %d\n", data[1]);
@@ -191,11 +194,16 @@ int main(int argc, string argv[]) {
     printf("\nHo analizzato i seguenti files:\n\n");
     for (i = 0; i < fileTotal; ++i) {
         printf("%s\n", fileData[i]->name);
+        if (fileData[i]->fileHash != computeHash(files[i], f_dim[i], TRUE)) {
+            printf("WARNING: %s has been modified while being analyzed,\nthis data is about the file prior to modification\n", fileData[i]->name);
+        }
+        printf("Old hash= %lu, new hash= %lu\n", fileData[i]->fileHash, computeHash(files[i], f_dim[i], TRUE));
         printf("\tNumero di lettere calcolato= %d\n", fileData[i]->stats[0]);
         printf("\tNumero di numeri calcolato= %d\n", fileData[i]->stats[1]);
         printf("\tNumero di spazi calcolato= %d\n", fileData[i]->stats[2]);
         printf("\tNumero di punteggiatura calcolato= %d\n", fileData[i]->stats[3]);
-        printf("\tNumero di altro calcolato= %d\n", fileData[i]->stats[4]);        
+        printf("\tNumero di altro calcolato= %d\n", fileData[i]->stats[4]); 
+               
     }
 
 
