@@ -1,7 +1,7 @@
-#ifndef _READ_FILE_H_
-#define _READ_FILE_H_
+#ifndef _MAIN_H_
+#define _MAIN_H_
 
-#include "read_file.h"
+#include "main.h"
 
 node createNode() {
     node temp;
@@ -31,37 +31,9 @@ node addNode(node head, char *new_str) {
     return head;
 }
 
-// https://stackoverflow.com/a/13098645/7924557
-int file_is_executable(char *path) {
-    struct stat sb;
-    return (stat(path, &sb) == 0 && sb.st_mode & S_IXUSR);
-}
-
-// https://stackoverflow.com/a/230070/7924557
-int file_exists(char *path) {
-    struct stat sb;
-    return (stat(path, &sb) == 0);
-}
-
-// https://stackoverflow.com/a/4553053/7924557
-int is_folder(char *path) {
-    struct stat sb;
-    if (stat(path, &sb) != 0)
-        return 0;
-    return S_ISDIR(sb.st_mode);
-}
-
-// https://stackoverflow.com/a/3985085/7924557
-int is_link(char *path) {
-    struct stat sb;
-    int x;
-    x = lstat(path, &sb);
-    return S_ISLNK(sb.st_mode);
-}
-
-/*
+/**
  * Concatenate 3 strings in 1.
-*/
+ */
 char *concat(const char *s1, const char *s2, const char *s3) {
     char *result = malloc(strlen(s1) + strlen(s2) + strlen(s3) + 1);  // +1 for the null-terminator
     strcpy(result, s1);
@@ -70,9 +42,9 @@ char *concat(const char *s1, const char *s2, const char *s3) {
     return result;
 }
 
-/*
- * Ginven a path of a directory it returns all files inside it.
-*/
+/**
+ * Given a path of a directory it returns all files inside it.
+ */
 node listFiles(char *path) {
     node files_list = createNode();  // Tail of the list
     node head = files_list;
@@ -92,6 +64,27 @@ node listFiles(char *path) {
 
     pclose(fp);               // Close pointer to command output
     return files_list->next;  // First node is NULL, so return second
+}
+
+/**
+ * Removes new line character from a given string
+ * 
+ * Credits: https://stackoverflow.com/a/28462221/7924557
+ */
+void removeNewline(char *string) {
+    string[strcspn(string, "\n")] = 0;
+}
+
+/**
+ * Input a string of paths, separate on the spaces, and send
+ * the path to Analyzer
+ * 
+ * Credits: https://stackoverflow.com/a/28462221/7924557
+ */
+void sendPaths(char *pathsString) {
+    if (pathsString[MAX_INPUT_LENGHT - 2] != '\0')
+        printf("Warning: you entered a list of strings bigger than %d\n", MAX_INPUT_LENGHT);
+    printf("Sending paths to Analyzer\n");
 }
 
 #endif
