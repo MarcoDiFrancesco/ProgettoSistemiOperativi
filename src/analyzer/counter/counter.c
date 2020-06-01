@@ -524,17 +524,86 @@ string **readAndWaitN(int pipe[], pid_t son, int size) {
     return msg;
 }
 
-void storeOnMap(map fileData[], int **values, int size, int index) {
+void storeOnMap(map fileData, int **values, int size, int index) {
     int i, j, k = 0;
     for (i = index; i < (index + size); ++i) {
         //printf("\tsono arrivato a %d\n", index + i + 1);
-        //printf("\tstatistiche di %s\n", fileData[i]->name);
+        //printf("\tstatistiche di %s\n", fileData[i].name);
         for (j = 0; j < CLUSTER; ++j) {
-            fileData[i]->stats[j] += values[k][j];
-            //printf("\t\t%d\n", fileData[i]->stats[j]);
+            fileData[i].stats[j] += values[k][j];
+            //printf("\t\t%d\n", fileData[i].stats[j]);
         }
         ++k;
     }
+}
+
+unsigned long computeHash(string fname, int dim, BOOL compare) {
+    int i = 0;
+    int err = 0;
+    unsigned long hash = 0;
+    int digits = 10;
+
+    if (compare == TRUE) {
+        dim = fileDim(fname);
+    }
+    string content = malloc(dim);
+    err = readFile(fname, content, 0, dim);
+    //content[dim] = 0;
+    //printf("%s", content);
+    while (content[i] != '\0') {
+        if (i % 2 == 0) {
+            hash += ((content[i] + 100) % 128);
+        } else if (i % 3 == 0) {
+            if(content[i] == content[i - 1]) {
+                hash += 69 * dim;
+            }
+        } else {
+            hash += content[i];
+        }
+        //printf("%c", content[i]);
+        //printf("%d", i);
+        ++i;
+    }
+    free(content);
+    hash += 2000;
+    int current = countDigits(hash);
+
+    /*
+    for (i = 0; i < digits; ++i) {
+        sprintf(fileDat.fileHash[i], "%d", hash * 123456);
+    }*/
+
+    while (current != digits) {
+        current = countDigits(hash);
+        //printf("%d\n", current);
+        if (current < digits) {
+            hash *= 123456;
+        } else  if (current > digits) {
+            hash /= 9876;
+        }
+    }
+    //printf("\n");
+    //printf("%d\n", countDigits(hash));
+    //fileData.fileHash = hash;
+    return hash;
+}
+
+int countDigits(unsigned long n) {
+    int count = 0;
+    while (n != 0) {
+        n /= 10;
+        ++count;
+    }
+    return count;
+}
+
+int fileDim(string file) {
+    int ret = 0;
+    int fp;
+    fp = open(file, O_RDONLY);
+    ret = lseek(fp, 0, SEEK_END);
+    close(fp);
+    return ret;
 }
 
 //------------------------ process function section-----------------------
@@ -555,64 +624,73 @@ void storeOnMap(map fileData[], int **values, int size, int index) {
  * @param index_p     numero del processo P corrente
  * @param file_per_p  numero di file che deve analizzare questo processo P
  */
-int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
              int N, int M, int total, int fileIndex, int *part, int *fdim, 
-             int index_p,int file_per_p) {
+             int index_p,int file_per_p, int f_Psize) {
     //creo pipe fra C e P
-    int g;
+    int l, g;
     int return_value;
     if (c_son == 0) {
         //processo P
-        string *qTop[M];
-        int dataCollected[CLUSTER];
-        for (g = 0; g < CLUSTER; g++) {
-            dataCollected[g] = 0;
-        }
-    printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
-    int k = 0;
-    string file_P[file_per_p];
-    int f_Psize = 0;
-    int fileIndexTemp = fileIndex;
-    while (k < file_per_p) {
-        if (fileIndexTemp < total) {
-            file_P[k] = files[fileIndexTemp++];
-            f_Psize++;
-            //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
-        }
-        if (fileIndexTemp - 1 == total) {
-            file_P[k] = 0;
-            //printf("ho finito i file\n");
+        string **qTop[M];
+        int **dataCollected = malloc(f_Psize * sizeof(int *));
+        for (l = 0; l < f_Psize; l++) {
+            dataCollected[l] = malloc(CLUSTER * sizeof(int));
+            for (g = 0; g < CLUSTER; g++) {
+                dataCollected[l][g] = 0;
             }
-        ++k;
-    }
-    int j;
-    //creo M processi di tipo Q
-    for (j = 0; j < M; j++) {
-        //creo la pipe fra P e Q
-        pipe(pipe_q[j]);
-        int p_son = fork();
-        if (p_son == -1) {
-            printf("error occurred at line 46\n");
-            return_value = 46;
-        } else {
-            if (p_son == 0) {
-                return_value = processQ(part, fdim, file_P, f_Psize, 
-                                        j, fileIndex, M, pipe_q[j]);
-                exit(0);
-            } else {
-                //successive parti del processo P
-                qTop[j] = readAndWait(pipe_q[j], p_son);
-                int *tmp = getValuesFromString(qTop[j]);
-                for (g = 0; g < CLUSTER; g++) {
-                    dataCollected[g] += tmp[g];
+        }
+        printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
+        /*int k = 0;
+        string file_P[file_per_p];
+        int f_Psize = 0;
+        int fileIndexTemp = fileIndex;
+        while (k < file_per_p) {
+            if (fileIndexTemp < total) {
+                file_P[k] = files[fileIndexTemp++];
+                f_Psize++;
+                //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
+            }
+            if (fileIndexTemp - 1 == total) {
+                file_P[k] = 0;
+                //printf("ho finito i file\n");
                 }
-                free(tmp);//new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
-            }
-        }                   
-    }
-    return_value = writePipe(pipe_c[index_p], statsToString(dataCollected));
-    //possibile free di dataCollected (?)
-    return return_value;
+            ++k;
+        }*/
+        int j;
+        //creo M processi di tipo Q
+        for (j = 0; j < M; j++) {
+            //creo la pipe fra P e Q
+            pipe(pipe_q[j]);
+            int p_son = fork();
+            if (p_son == -1) {
+                printf("error occurred at line 46\n");
+                return_value = 46;
+            } else {
+                if (p_son == 0) {
+                    return_value = processQ(part, fdim, file_P, f_Psize, 
+                                            j, fileIndex, M, pipe_q[j]);
+                    exit(0);
+                } else {
+                    //successive parti del processo P
+                    qTop[j] = readAndWaitN(pipe_q[j], p_son, f_Psize);
+                    int **tmp = getValuesFromStringN(qTop[j], f_Psize);
+                    for (l = 0; l < f_Psize; l++) {
+                        for (g = 0; g < CLUSTER; g++) {
+                            dataCollected[l][g] += tmp[l][g];
+                        }
+                    }
+                    for (g = 0; g < f_Psize; g++) {
+                        free(tmp[g]);
+                    }
+                }
+            }                   
+        }
+        return_value = writePipeN(pipe_c[index_p], statsToStringN(dataCollected, f_Psize), f_Psize);
+        for (g = 0; g < f_Psize; g++) {
+            free(dataCollected[g]);
+        }
+        return return_value;
     }
 }
 /**
@@ -628,10 +706,14 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
              int q_loop, int index, int m, int pipe_q[]) {
     printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
-    int* counter = processoQ_n(range, dims, fname, f_Psize,
-                               q_loop, index, m);
-    string *message = statsToString(counter);
-    int err = writePipe(pipe_q,message);
+    int i;
+    int** counter = processoQ_n_new(range, dims, fname, f_Psize,
+                                    q_loop, index, m);
+    string **message = statsToStringN(counter, f_Psize);
+    int err = writePipeN(pipe_q, message, f_Psize);
+    for (i = 0; i < f_Psize; ++i) {
+        free(counter[i]);
+    }
     free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
     return err;
 }
@@ -656,8 +738,6 @@ void sender(map data, int mapDim) {
     if (qid < 0) 
         report_and_exit("couldn't get queue id...");
 
-    printf("key : %d\nqid : %d\n", key, qid);
-
     /*int types[CLUSTER*mapDim + mapDim + 1];
     int i;
     for (i = 0; i < CLUSTER*mapDim + mapDim; i++) {
@@ -672,18 +752,19 @@ void sender(map data, int mapDim) {
     for(j=0; j<mapDim; j++){
         //invio nome file
         queuedMessage msgName;
-        strcpy(msgName.payload, data[j*CLUSTER].name);
+        strcpy(msgName.payload, data[j].name);
         msgName.type = cont;
         msgsnd(qid, &msgName, sizeof(msgName), IPC_NOWAIT);
+        printf("%s (name) sent as type %i\n", msgName.payload, (int) msgName.type);
         //conversione stats in message
-        string *message = statsToString(data[j*CLUSTER].stats);
+        string *message = statsToString(data[j].stats);
         //invio dati file
         cont++;
         for (i = 0; i < CLUSTER; i++) {
                 /* build the message */
                 queuedMessage msg;
                 msg.type = cont;
-                strcpy(msg.payload, message[i*(j+1)]);
+                strcpy(msg.payload, message[i]);
                 /* send the message */
                 msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
                 printf("%s sent as type %i\n", msg.payload, (int) msg.type);

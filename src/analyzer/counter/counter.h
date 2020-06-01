@@ -36,7 +36,7 @@ typedef struct {
 
 struct FileMap{
   string name;
-  int fileHash;
+  unsigned long fileHash;
   int stats[CLUSTER];
 } FileMap;
 
@@ -78,13 +78,19 @@ int writePipeN(int pipe[], string **msg, int size);
 
 string **readAndWaitN(int pipe[], pid_t son, int size);
 
-void storeOnMap(map fileData[], int **values, int size, int index);
+void storeOnMap(map fileData, int **values, int size, int index);
+
+unsigned long computeHash(string fname, int dim, BOOL compare);
+
+int countDigits(unsigned long n);
+
+int fileDim(string file);
 
 //process function
 
-int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
+int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
              int N, int M, int ceil, int fileIndex, int *part, int *fdim, 
-             int index_p,int file_per_p);
+             int index_p,int file_per_p, int f_Psize);
 
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
              int q_loop, int index, int m, int pipe_q[]);

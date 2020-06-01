@@ -94,6 +94,8 @@ int main(int argc, string argv[]) {
     
     if (fileTotal < N) {
         N = fileTotal;
+        nS=malloc(sizeof(MAXLEN));
+        sprintf(nS, "%d", N);
     }
 
     //argumets
@@ -115,6 +117,8 @@ int main(int argc, string argv[]) {
     }
 
     printf("%s\n", cmd);
-    system(cmd);    
+    system(cmd); 
+
+    free(cmd);
     return 0;
 }

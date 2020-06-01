@@ -121,7 +121,6 @@ map readerMessage() {
 
     int counter = 2;
     for(j=0; j<nFiles; j++){
-        printf(">counter: %d\n", counter);
         //salvataggio nome file
         if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
         printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
@@ -129,7 +128,6 @@ map readerMessage() {
         strcpy(ret[j].name, msg.payload);
         counter++;
         for (i = 0; i < CLUSTER; i++) {
-            printf("counter: %d\n", counter);
             //salvataggio dati file
             if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
             printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);

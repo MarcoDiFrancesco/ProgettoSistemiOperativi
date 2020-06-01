@@ -19,6 +19,7 @@
 #define BOOL char
 #define FALSE 0
 #define TRUE 1
+#define MAXLEN 12*sizeof(int)
 
 //costanti funzionali
 /*int N = 3;
