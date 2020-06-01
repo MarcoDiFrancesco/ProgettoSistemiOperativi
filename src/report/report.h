@@ -22,6 +22,9 @@
 #define PathName  "../analyzer/counter/counter.h" /* any existing, accessible file would do */
 #define MAX_MSG_SIZE 6
 
+
+typedef char * string;
+
 typedef struct {
   long type;                  //must be of type long 
   char payload[MAX_MSG_SIZE]; // bytes in the message 
@@ -36,9 +39,6 @@ struct FileMap{
 typedef struct FileMap *map;
 
 enum simboli{lettere, numeri, spazi, punteggiatura, altro};
-
-
-typedef char * string;
 
 void read_result(int cluster, string *results);
 

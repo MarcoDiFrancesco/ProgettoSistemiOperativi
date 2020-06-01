@@ -91,45 +91,63 @@ int *getValuesFromString(char **str){
 //message functions
 
 map readerMessage() {
-  //string *ret=(char **)malloc(CLUSTER * sizeof(char *));
-    int i, j, nFiles;
+
+    //string *ret=(char **)malloc(CLUSTER * sizeof(char *));
+    int i=0, j, nFiles;
     //for (i = 0; i < CLUSTER; ++i) {
         //ret[i] = (char *)malloc(12 * sizeof(int));
     //}
-  map ret;
-  key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
-  if (key < 0) report_and_exit("key not gotten...");
+    map ret = malloc(sizeof(FileMap));
 
-  int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
-  if (qid < 0) report_and_exit("no access to queue...");
+    key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
+    if (key < 0) report_and_exit("key not gotten...");
 
-  int types[CLUSTER];
-  for(i=0; i<CLUSTER; i++){
-      types[i] = i+1;
-  }
-  queuedMessage msg; /* defined in queue.h */
-  for(j=0; j<nFiles; j++){
-    //salvataggio nome file
-    if (msgrcv(qid, &msg, sizeof(msg), types[i], MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
+    int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
+    if (qid < 0) report_and_exit("no access to queue...");
+
+    printf("key : %d\nqid : %d\n", key, qid);
+
+    queuedMessage msg; /* defined in queue.h */
+    if (msgrcv(qid, &msg, sizeof(msg), 1, MSG_NOERROR) < 0)   puts("msgrcv (num) trouble...");
+    printf("%s (num) received as type %i\n", msg.payload, (int) msg.type);
+    string tmp = malloc(sizeof(100));
+    strcpy(tmp, msg.payload);
+    nFiles = atoi(tmp);
+
+    /*int types[CLUSTER*nFiles + nFiles];
+    for(i=0; i<CLUSTER*nFiles + nFiles; i++){
+        types[i] = i+2;
+    }*/
+
+    int counter = 2;
+    for(j=0; j<nFiles; j++){
+        printf(">counter: %d\n", counter);
+        //salvataggio nome file
+        if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
         printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
-    strcpy(ret[j].name, msg.payload);
-    for (i = 0; i < CLUSTER; i++) {
-        //salvataggio dati file
-        if (msgrcv(qid, &msg, sizeof(msg), types[i], MSG_NOERROR) < 0)   puts("msgrcv trouble...");
-        printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
-        strcpy(ret[j].stats[i], msg.payload);
+        ret[j].name=malloc(sizeof(msg.payload));
+        strcpy(ret[j].name, msg.payload);
+        counter++;
+        for (i = 0; i < CLUSTER; i++) {
+            printf("counter: %d\n", counter);
+            //salvataggio dati file
+            if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
+            printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
+            strcpy(tmp, msg.payload);
+            ret[j].stats[i] = atoi(tmp);
+            counter++;
+        }
     }
-  }
-  /** remove the queue **/
-  if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
-    report_and_exit("trouble removing queue...");
+    /** remove the queue **/
+    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+        report_and_exit("trouble removing queue...");
 
-  return ret;
-}
+    return ret;
+    }
 
-void report_and_exit(const char* msg) {
-  perror(msg);
-  exit(-1); /* EXIT_FAILURE */
+    void report_and_exit(const char* msg) {
+    perror(msg);
+    exit(-1); /* EXIT_FAILURE */
 }
 
 #endif

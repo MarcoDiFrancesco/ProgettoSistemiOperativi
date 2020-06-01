@@ -23,7 +23,7 @@
 
 //define per il sender
 #define ProjectId 123
-#define PathName  "../counter/counter.h" /* any existing, accessible file would do */
+#define PathName  "./counter/counter.h" /* any existing, accessible file would do */
 #define MAX_MSG_SIZE 6
 
 //structures
@@ -62,15 +62,25 @@ int* processoQ_n(int *range, int *dims, char** fname, int n,
 
 //funzioni di phil
 
- char **statsToString(int *values);
+char **statsToString(int *values);
 
- int *getValuesFromString(char **str);
+char ***statsToStringN(int **values, int size);
 
- void printError(int code);
+int *getValuesFromString(char **str);
 
- int *filesDim(string *files, int num);
+int **getValuesFromStringN(char ***str, int size);
 
- //process function
+void printError(int code);
+
+int *filesDim(string *files, int num);
+
+int writePipeN(int pipe[], string **msg, int size);
+
+string **readAndWaitN(int pipe[], pid_t son, int size);
+
+void storeOnMap(map fileData[], int **values, int size, int index);
+
+//process function
 
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string files[],
              int N, int M, int ceil, int fileIndex, int *part, int *fdim, 

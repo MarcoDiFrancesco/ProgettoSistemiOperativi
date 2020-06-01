@@ -273,6 +273,84 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     
 }
 
+int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, int index, int M) {
+    char *testo;
+    int **stats;
+    int i, j, k, alloc_value;
+    int inizio[n], fine[n];
+    i = 0;
+/*
+    for (i = 0; i < n; i++) {
+        printf("\tsto analizzando = %s\n", fname[i]);
+    }*/
+
+    //printf("\tl'indice per recuperare gli indici è %d\n", index);
+
+    i = 0;
+
+    // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
+    // si parte da index e si itera n volte.
+    for (j = index; j < (index + n); j++) {
+
+        // Controllo per gestire i casi in cui la dimensione del file non
+        // è un multiplo di M.
+        inizio[i] = range[j]*q_loop;
+        if ((range[j] * (q_loop + 1) <= dims[j])) {
+            // printf("%d",range[j]*q_loop + j);
+            fine[i] = range[j]*(q_loop + 1);
+        } else {
+            fine[i] = dims[j]; 
+        } 
+        
+        // Controllo per i file di dimensione inferiore a M - 1.
+        if (inizio[i] > fine[i]) {
+            inizio[i] = fine[i] = 0;
+        }   
+    
+        /*if(inizio[i] != fine[i]) {
+            printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
+        } else {
+            printf("\t---------\n");
+        }*/
+        ++i;
+    }
+
+    //stats = malloc(sizeof(int));
+    stats = (int **)malloc(n * sizeof(int *));
+
+    for (i = 0; i < n; i++) {
+        ///printf("\t%d\n", i);
+        stats[i] = malloc(CLUSTER * sizeof(int));
+        for (j = 0; j < CLUSTER; ++j) {
+           // printf("\t\t%d\n", j);
+            stats[i][j] = 0;
+        }
+    }
+    k = index;
+    // In questa iterazione si assegna dinamicamente la dimensione del buffer di testo
+    // e la si libera subito, per evitare sprechi di memoria. La funzione readFile()
+    // deposita una porzione di file, ricavata sulla base degli indici, nel buffer 
+    // appena allocato, conservando il ritorno in caso di errori.
+    for (j = 0; j < n; j++) { 
+        alloc_value = ceiling(dims[k + j], M); 
+        testo = malloc(alloc_value);
+        i = readFile(fname[j], testo, inizio[j], fine[j]);
+        //printf("\t%s\n",testo);
+        countLetters(fine[j] - inizio[j], testo, stats[j]);
+        free(testo);
+        if (i < 0) {
+            break;
+        }
+    }
+
+
+    if (i == 0)
+        return stats;
+    else
+        return (int **) - 1;
+    
+}
+
 
 //---------------------------phil functions------------------------------------
 
@@ -297,6 +375,27 @@ char **statsToString (int *values) {
     return str;
 }
 
+char ***statsToStringN(int **values, int size)
+{
+
+    char ***str = (char ***)malloc(size * sizeof(char **));
+    int i, j;
+    for (i = 0; i < size; ++i) {
+        str[i] = (char **)malloc(CLUSTER * sizeof(char *));
+        for (j = 0; j < CLUSTER; ++j) {
+            str[i][j] = (char *)malloc(12 * sizeof(int));
+        }
+    }
+
+    for (i = 0; i < size; ++i) {
+        for (j = 0; j < CLUSTER; ++j) {
+            sprintf(str[i][j], "%d", values[i][j]);
+        }
+    }
+
+    return str;
+}
+
 /**
  * Funzione che recupera da una stringa dei valori numerici e li mette in un intero.
  * @param str Il vettore di stringhe che contiene il valore.
@@ -307,6 +406,20 @@ int *getValuesFromString(char **str) {
     int i;
     for (i = 0; i < CLUSTER; ++i) {
         values[i] = atoi(str[i]);
+    }
+
+    return values;
+}
+
+int **getValuesFromStringN(char ***str, int size)
+{
+    int i, j;
+    int **values = (int **)malloc(CLUSTER * sizeof(int *));
+    for (i = 0; i < size; ++i) {
+        values[i] = (int *)malloc(CLUSTER * sizeof(int));
+        for (j = 0; j < CLUSTER; ++j) {
+            values[i][j] = atoi(str[i][j]);
+        }
     }
 
     return values;
@@ -360,6 +473,68 @@ int ceiling(int first, int second){
         result = (first / second) + 1;
     }
     return result;
+}
+
+
+int writePipeN(int pipe[], string **msg, int size)
+{
+    int ret = 0; //per eventuali errori
+    //close(pipe[READ]);
+    int i, j, err;
+
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < CLUSTER; j++) {
+            err = write(pipe[WRITE], msg[i][j], MAXLEN);
+            if (err != 0)
+            {
+                ret = err;
+            }
+        }
+    }
+    close(pipe[WRITE]);
+    return ret;
+}
+
+string **readAndWaitN(int pipe[], pid_t son, int size) {
+
+    close(pipe[WRITE]);
+    string **msg;
+    msg = malloc(size * sizeof(string *));
+    int i, j;
+    for (i = 0; i < size; ++i) {
+        msg[i] = malloc(CLUSTER * sizeof(char *));
+    }
+    int rd;
+    int err = 0;
+    for (i = 0; i < size; i++) {
+        for (j = 0; j < CLUSTER; j++) {
+            msg[i][j] = malloc(MAXLEN);
+            rd = read(pipe[READ], msg[i][j], MAXLEN);
+            if (rd == -1)
+            {
+                //printf("%d\n", rd);
+                err = rd;
+            }
+            msg[i][j][rd] = 0;
+        }
+    }
+    //printf("(read)ERR=%d",err);
+    close(pipe[READ]);
+    waitpid(son, NULL, 0);
+    return msg;
+}
+
+void storeOnMap(map fileData[], int **values, int size, int index) {
+    int i, j, k = 0;
+    for (i = index; i < (index + size); ++i) {
+        //printf("\tsono arrivato a %d\n", index + i + 1);
+        //printf("\tstatistiche di %s\n", fileData[i]->name);
+        for (j = 0; j < CLUSTER; ++j) {
+            fileData[i]->stats[j] += values[k][j];
+            //printf("\t\t%d\n", fileData[i]->stats[j]);
+        }
+        ++k;
+    }
 }
 
 //------------------------ process function section-----------------------
@@ -481,34 +656,38 @@ void sender(map data, int mapDim) {
     if (qid < 0) 
         report_and_exit("couldn't get queue id...");
 
-    int types[CLUSTER*mapDim + mapDim +1];
+    printf("key : %d\nqid : %d\n", key, qid);
+
+    /*int types[CLUSTER*mapDim + mapDim + 1];
     int i;
     for (i = 0; i < CLUSTER*mapDim + mapDim; i++) {
         types[i] = i + 1;
-    }
-    
+    }*/
+    int i;
     queuedMessage msgNum;
-    sprintf(msgNum.payload, sizeof(int), mapDim);
-    
-    
-    int j;
-    for(j=0;j<mapDim;j++){
+    sprintf(msgNum.payload, "%d", mapDim);
+    msgNum.type = 1;
+    msgsnd(qid, &msgNum, sizeof(msgNum), IPC_NOWAIT);
+    int j, cont = 2;
+    for(j=0; j<mapDim; j++){
         //invio nome file
         queuedMessage msgName;
         strcpy(msgName.payload, data[j*CLUSTER].name);
-        msgName.type = types[j*CLUSTER];
+        msgName.type = cont;
         msgsnd(qid, &msgName, sizeof(msgName), IPC_NOWAIT);
         //conversione stats in message
-        string *message = statsToString(data[j].stats);
+        string *message = statsToString(data[j*CLUSTER].stats);
         //invio dati file
-        for (i = 1; i <= CLUSTER; i++) {
+        cont++;
+        for (i = 0; i < CLUSTER; i++) {
                 /* build the message */
                 queuedMessage msg;
-                msg.type = types[i*(j+1)];
+                msg.type = cont;
                 strcpy(msg.payload, message[i*(j+1)]);
                 /* send the message */
                 msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
                 printf("%s sent as type %i\n", msg.payload, (int) msg.type);
+                cont++;
         }
     }
     
