@@ -19,7 +19,7 @@
 #define MAX_BUF_SIZE 1000
 //define per il sender
 #define ProjectId 123
-#define PathName  "../counter/counter.h" /* any existing, accessible file would do */
+#define PathName  "../analyzer/counter/counter.h" /* any existing, accessible file would do */
 #define MAX_MSG_SIZE 6
 
 typedef struct {

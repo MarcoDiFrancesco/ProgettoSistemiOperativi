@@ -102,7 +102,7 @@ int main(int argc, string argv[]) {
     sprintf(str, "%d", fileTotal);
     
     string cmd = malloc(sizeof(char)*10000);
-    strcat(cmd, "../counter/prova ");
+    strcat(cmd, "counter/main ");
     strcat(cmd, nS);
     strcat(cmd, " ");
     strcat(cmd, mS);

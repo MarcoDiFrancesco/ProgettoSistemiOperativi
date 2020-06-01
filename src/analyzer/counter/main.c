@@ -2,7 +2,7 @@
 
 
 int main(int argc, string argv[]) {
-    printf("richi scemo chi legge\n");
+
     int N = atoi(argv[1]);
     int M = atoi(argv[2]);
     int fileTotal = atoi(argv[3]);
