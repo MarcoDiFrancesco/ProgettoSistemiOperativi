@@ -28,7 +28,7 @@ bin/analyzer: src/analyzer/main.c $(ADEPS)
 	$(COMPILER) -o $@ $< $(ADEPS) $(FLAGS)
 
 # Main
-MDEPS=src/read_file/read_file.c src/read_file/read_file.h
+MDEPS=src/main/read_file.c src/main/file_check.c src/main/main.h
 bin/main: src/main/main.c $(MDEPS)
 	$(COMPILER) -o $@ $< $(MDEPS) $(FLAGS)
 
