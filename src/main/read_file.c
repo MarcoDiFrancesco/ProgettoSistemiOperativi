@@ -81,10 +81,53 @@ void removeNewline(char *string) {
  * 
  * Credits: https://stackoverflow.com/a/28462221/7924557
  */
-void sendPaths(char *pathsString) {
-    if (pathsString[MAX_INPUT_LENGHT - 2] != '\0')
-        printf("Warning: you entered a list of strings bigger than %d\n", MAX_INPUT_LENGHT);
-    printf("Sending paths to Analyzer\n");
+void splitAndSendPaths(char *string) {
+    // TODO: check if user inputs ,.-
+    if (string[MAX_INPUT_LENGHT - 2] != '\0')
+        printf("Warning: you succeeded the %d char limit, the last path might not be counted\n", MAX_INPUT_LENGHT);
+    char *processPath = getProcessPath("/proc/self/exe");
+    // TODO: free(processPath)
+    printf("Process path: %s\n", processPath);
+
+    /**  WHAT TO DO NEXT
+     * Now split the path of the executable /root/bin/main in /root/bin/ and add analyzer to
+     * get /root/bin/analyzer, than execute it, open the pipe in that side and get the passed
+     * paths given below.
+     */
+
+    char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
+    singlePath = strtok(string, " ");  // Split in space
+    while (singlePath != NULL) {
+        sendPath(singlePath);
+        singlePath = strtok(NULL, " ");
+    }
+}
+
+/**
+ * Input a string containing a path and send it to Analyzer
+ */
+void sendPath(char *string) {
+    printf("I'm sending to Analyzer: '%s'...", string);
+    fflush(stdout);
+
+    int fd;
+    char *myfifo = "/tmp/myfifo";
+    mkfifo(myfifo, 0666);
+    fd = open(myfifo, O_WRONLY);
+    write(fd, string, strlen(string) + 1);
+    close(fd);
+    printf("Done!\n");
+}
+
+char *getProcessPath(char *process) {
+    char *buff = malloc(PATH_MAX);
+    ssize_t len = readlink(process, buff, PATH_MAX - 1);
+    if (len != -1) {
+        buff[len] = '\0';
+        return buff;
+    }
+    return "";
+    // TODO: handle error condition
 }
 
 #endif
