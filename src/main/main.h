@@ -36,9 +36,14 @@ node listFiles(char *path);
 void removeNewline(char *string);
 void splitAndSendPaths(char *string);
 char *getSelfProcessPath();
+void getAnalytics();
+void printError(int errNumber);
 int runProgram(char **path);
 int runProgramAndWait(char **path);
-
+char *baseName(char *path);
+char *concatPaths(char *dir, char *file);
+int checkIntegrity(char *file);
+int executableChecks(char *path);
 int pathIsExecutable(char *path);
 int pathIsFile(char *path);
 int pathIsFolder(char *path);
