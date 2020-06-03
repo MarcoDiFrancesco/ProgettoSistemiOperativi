@@ -3,8 +3,8 @@
 int N = 3;
 int M = 4;
 int n_arg = 1;
-string nS="3";
-string mS="4";
+string nS = "3";
+string mS = "4";
 
 int main(int argc, string argv[]) {
     //scrivo qui controllo degli argomenti per il C

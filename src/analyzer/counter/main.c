@@ -21,7 +21,7 @@ int main(int argc, string argv[]) {
     int p_c[N][2];
     int q_p[M][2];
     //counters
-    int data[CLUSTER];
+    //int data[CLUSTER];
     int g;
 
     int *part = filesPart(files, fileTotal, M);
@@ -30,13 +30,14 @@ int main(int argc, string argv[]) {
     map fileData = malloc(fileTotal * sizeof(FileMap));
     int i;
     for (i = 0; i < fileTotal; ++i) {
+        //printf("file: %s\n", files[i]);
         fileData[i].name = files[i];
         fileData[i].fileHash = computeHash(files[i], f_dim[i], FALSE);
     }
 
-    for(g = 0; g < CLUSTER; g++) {
+    /*for(g = 0; g < CLUSTER; g++) {
         data[g] = 0;
-    }
+    }*/
     printf("\n\nProcess C pid=%d\n",getpid());
     for (i = 0; i < N; i++) {
         //printf("file restanti: %d --- processi restanti: %d\n", file_restanti, (N - i));
@@ -50,7 +51,7 @@ int main(int argc, string argv[]) {
             if (fileIndexTemp < fileTotal) {
                 file_P[k] = files[fileIndexTemp++];
                 f_Psize++;
-                //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
+                //printf("sono il P%d e ho preso il file  %s\n con %d file per p\n", i + 1, file_P[k], file_per_p);
             }
             if (fileIndexTemp - 1 == fileTotal) {
                 file_P[k] = 0;
@@ -66,7 +67,7 @@ int main(int argc, string argv[]) {
             return_value=35;
         } else {
             if (c_son == 0) {
-                return_value = processP(c_son, p_c, q_p, files, N, M, 
+                return_value = processP(c_son, p_c, q_p, file_P, N, M, 
                                         fileTotal, fileIndex, part, f_dim, 
                                         i, file_per_p, f_Psize); 
                 exit(return_value);
@@ -79,9 +80,11 @@ int main(int argc, string argv[]) {
                     data[g] += tmp[g];
                     //fileData.stats[g] += tmp[g];
                 }*/
-                for (g = 0; g < fileTotal; g++) {
+                for (g = 0; g < f_Psize; g++) {
+    //printf("");
                     free(tmp[g]);
                 } //new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
+                free(tmp);
             }
         }
         fileIndex += file_per_p;

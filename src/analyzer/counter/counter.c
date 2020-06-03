@@ -204,10 +204,10 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     int i, j, k, alloc_value;
     int inizio[n], fine[n];
     i = 0;
-
+/*
     for (i = 0; i < n; i++) {
         printf("\tsto analizzando = %s\n", fname[i]);
-    }
+    }*/
 
     //printf("\tl'indice per recuperare gli indici è %d\n", index);
 
@@ -231,12 +231,12 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
         if (inizio[i] > fine[i]) {
             inizio[i] = fine[i] = 0;
         }   
-    
+    /*
         if(inizio[i] != fine[i]) {
             printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
         } else {
             printf("\t---------\n");
-        }
+        }*/
         ++i;
     }
 
@@ -279,10 +279,10 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
     int i, j, k, alloc_value;
     int inizio[n], fine[n];
     i = 0;
-/*
+
     for (i = 0; i < n; i++) {
-        printf("\tsto analizzando = %s\n", fname[i]);
-    }*/
+        //printf("\tsto analizzando = %s\n", fname[i]);
+    }
 
     //printf("\tl'indice per recuperare gli indici è %d\n", index);
 
@@ -306,8 +306,8 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
         if (inizio[i] > fine[i]) {
             inizio[i] = fine[i] = 0;
         }   
-    
-        /*if(inizio[i] != fine[i]) {
+    /*
+        if(inizio[i] != fine[i]) {
             printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
         } else {
             printf("\t---------\n");
@@ -419,6 +419,7 @@ int **getValuesFromStringN(char ***str, int size)
         values[i] = (int *)malloc(CLUSTER * sizeof(int));
         for (j = 0; j < CLUSTER; ++j) {
             values[i][j] = atoi(str[i][j]);
+            //printf("i=%d, j=%d\n", i, j);
         }
     }
 
@@ -538,19 +539,24 @@ void storeOnMap(map fileData, int **values, int size, int index) {
 }
 
 unsigned long computeHash(string fname, int dim, BOOL compare) {
-    int i = 0;
-    int err = 0;
+    int i,
+        err = 0;
     unsigned long hash = 0;
     int digits = 10;
+    //printf("dim=%d\n", dim);
 
     if (compare == TRUE) {
         dim = fileDim(fname);
+        //printf("dimDopo=%d\n", dim);
     }
     string content = malloc(dim);
     err = readFile(fname, content, 0, dim);
     //content[dim] = 0;
-    //printf("%s", content);
-    while (content[i] != '\0') {
+    //printf("%s\n", content);
+    for (i = 0; i < dim; ++i) {
+
+    //if(strcmp(fname, "tt.txt") == 0)
+        //printf("%c ", content[i]);
         if (i % 2 == 0) {
             hash += ((content[i] + 100) % 128);
         } else if (i % 3 == 0) {
@@ -562,20 +568,19 @@ unsigned long computeHash(string fname, int dim, BOOL compare) {
         }
         //printf("%c", content[i]);
         //printf("%d", i);
-        ++i;
+        //++i;
     }
     free(content);
-    hash += 2000;
     int current = countDigits(hash);
 
     /*
     for (i = 0; i < digits; ++i) {
         sprintf(fileDat.fileHash[i], "%d", hash * 123456);
     }*/
-
+    //printf("\nEntro nell'ultimo while\n");
     while (current != digits) {
         current = countDigits(hash);
-        //printf("%d\n", current);
+        //printf("%lu\n", hash);
         if (current < digits) {
             hash *= 123456;
         } else  if (current > digits) {
