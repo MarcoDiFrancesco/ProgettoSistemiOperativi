@@ -36,9 +36,37 @@ int main(int argc, string argv[]) {
             n_arg++;
         }
 
-    int a;
+    int a, i;
     printf("\nfiles inseriti =  %d", argc - n_arg);
     for (a = n_arg; a<argc; a++) {
+        if(argv[a] == "-c" && a+1<argc){
+            node l = listFiles(argv[a+1]);
+            int elements_in_folder = 0;
+            while(l->next != NULL){
+                elements_in_folder++;
+                l = l->next;
+            }
+
+            string tmp[argc + elements_in_folder -2];
+            for(i=0; i<argc; i++){
+                if(i != a && i != a+1)
+                    tmp[i] = argv[i];
+            }
+
+            argv = tmp;
+
+            while(l->next != NULL){
+                argv[i] = l->str;
+                i++;
+                l = l->next;
+            }
+
+            printf("\nnuovi argomenti dopo aver analizzato la cartella");
+            for(i=0; i<argc+elements_in_folder-2; i++){
+                printf("\n> %s", argv[i]);
+            }
+            printf("\n---\n");
+        }
         printf("\nfile %d = %s", argc - a, argv[a]);
     }
 
@@ -48,12 +76,12 @@ int main(int argc, string argv[]) {
     //controllo sul nome dei file passati come argomento
     BOOL filesOk[argc - n_arg];
     int fileErrati = 0;
-    int i;
     printf("nome corretto: ");
     for (i = n_arg; i < argc; i++) {
         int lunghezza_nome = strlen(argv[i]);
-        if(argv[i][lunghezza_nome - 4] == '.' && argv[i][lunghezza_nome - 3] == 't' && 
-           argv[i][lunghezza_nome - 2] == 'x' && argv[i][lunghezza_nome - 1] == 't') {
+        if(isTxt(argv[i], lunghezza_nome) || isC(argv[i], lunghezza_nome) ||
+           isCpp(argv[i], lunghezza_nome) || isPy(argv[i], lunghezza_nome) ||
+           isJava(argv[i], lunghezza_nome)) {
             filesOk[i] = TRUE;
             printf(" OK ");
         } else {
