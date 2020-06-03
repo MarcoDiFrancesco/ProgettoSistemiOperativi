@@ -37,37 +37,52 @@ int main(int argc, string argv[]) {
         }
 
     int a, i;
-    printf("\nfiles inseriti =  %d", argc - n_arg);
+    printf("\n (%d) files inseriti =  %d",argc,  argc - n_arg);
+
+    string *arg = malloc(sizeof(string)*argc);
+    for(i=0; i<argc; i++){
+        arg[i] = argv[i];
+    }
+
+    
     for (a = n_arg; a<argc; a++) {
-        if(argv[a] == "-c" && a+1<argc){
-            node l = listFiles(argv[a+1]);
-            int elements_in_folder = 0;
-            while(l->next != NULL){
-                elements_in_folder++;
-                l = l->next;
-            }
+        printf("\nelemento: %d  contene: %s", a, arg[a]);
+        if( strcmp(arg[a], "-c") == 0 ){
+            printf(" %s flag detected - (%d) ",arg[a], a);
 
-            string tmp[argc + elements_in_folder -2];
-            for(i=0; i<argc; i++){
-                if(i != a && i != a+1)
-                    tmp[i] = argv[i];
-            }
+            if(argc > a+1) {
+                printf(" - next exists - ");
+                node l = listFiles(arg[a+1]);
+                node t = l;
+                int elements_in_folder = 0;
+                while(t->next != NULL){
+                    elements_in_folder++;
+                    t = t->next;
+                }
+                printf("\nelementi trovati nella cartella: %d\n", elements_in_folder);
 
-            argv = tmp;
+                arg = realloc(arg, sizeof(string)*(argc + elements_in_folder));
+                i=argc;
+                while(l->next != NULL){
+                    arg[i] = l->str;
+                    i++;
+                    l = l->next;
+                }
 
-            while(l->next != NULL){
-                argv[i] = l->str;
-                i++;
-                l = l->next;
-            }
+                printf("nuovi argomenti dopo aver analizzato la cartella\n");
+                for(i=0; i<argc+elements_in_folder-2; i++){
+                    printf("\n> %s", arg[i]);
+                }
+                printf("\n---\n");
 
-            printf("\nnuovi argomenti dopo aver analizzato la cartella");
-            for(i=0; i<argc+elements_in_folder-2; i++){
-                printf("\n> %s", argv[i]);
+                argc += elements_in_folder ;
             }
-            printf("\n---\n");
         }
-        printf("\nfile %d = %s", argc - a, argv[a]);
+        
+    }
+
+    for (a = n_arg; a<argc; a++) {
+        printf("\nfile %d = %s", argc - a, arg[a]);
     }
 
     printf("\n(numero di argomenti inseriti prima dei file %d) \nN: %d\nM: %d\n", 
@@ -78,10 +93,10 @@ int main(int argc, string argv[]) {
     int fileErrati = 0;
     printf("nome corretto: ");
     for (i = n_arg; i < argc; i++) {
-        int lunghezza_nome = strlen(argv[i]);
-        if(isTxt(argv[i], lunghezza_nome) || isC(argv[i], lunghezza_nome) ||
-           isCpp(argv[i], lunghezza_nome) || isPy(argv[i], lunghezza_nome) ||
-           isJava(argv[i], lunghezza_nome)) {
+        int lunghezza_nome = strlen(arg[i]);
+        if(isTxt(arg[i], lunghezza_nome)==TRUE || isC(arg[i], lunghezza_nome)==TRUE ||
+           isCpp(arg[i], lunghezza_nome)==TRUE || isPy(arg[i], lunghezza_nome)==TRUE ||
+           isJava(arg[i], lunghezza_nome)==TRUE) {
             filesOk[i] = TRUE;
             printf(" OK ");
         } else {
@@ -96,13 +111,12 @@ int main(int argc, string argv[]) {
     puts("\n\nControllo l'esistenza dei file validi\n");
     for (i = n_arg; i < argc ; ++i) {
         if (filesOk[i]) {
-            if (access(argv[i], F_OK) == -1) {
+            if (access(arg[i], F_OK) == -1) {
                 filesOk[i] = FALSE;
                 fileInesistenti++;
             }
         }
     }
-
 
     int const fileTotal = argc - n_arg - fileErrati - fileInesistenti;
     if (fileTotal < 1) {
@@ -115,7 +129,7 @@ int main(int argc, string argv[]) {
     int next = 0;
     for (i = n_arg; i < argc; i++) {
         if (filesOk[i] == TRUE) {
-            files[next] = argv[i];
+            files[next] = arg[i];
             next++;
         }   
     }
