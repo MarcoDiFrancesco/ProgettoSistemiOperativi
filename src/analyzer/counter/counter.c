@@ -743,6 +743,7 @@ void sender(map data, int mapDim) {
     for (i = 0; i < CLUSTER*mapDim + mapDim; i++) {
         types[i] = i + 1;
     }*/
+    
     int i;
     queuedMessage msgNum;
     sprintf(msgNum.payload, "%d", mapDim);

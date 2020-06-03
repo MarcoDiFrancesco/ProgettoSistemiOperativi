@@ -57,7 +57,7 @@ int *getValuesFromString(char **str);
 //message functions
 void report_and_exit(const char* msg);
 
-map readerMessage();
+map readerMessage(int *numFileRet);
 
 //funzioni stampa
 

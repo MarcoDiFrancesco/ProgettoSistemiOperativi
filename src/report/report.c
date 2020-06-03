@@ -50,29 +50,29 @@ void read_result(map results,int numFile){
 void printAll(map results,int numFile){
     int i;
     char input;
-    printf("Choose your result format: values[v] percentage[p] both[a]");
+    printf("Scegli il vormato di visualizzazione: per valore[v] percentuale[p] o entrambi[e]");
     scanf(" %c", &input);
-    while (input != 'v' && input != 'p' && input != 'a') {
-        printf("Insert only [v], [p] or [a]");
+    while (input != 'v' && input != 'p' && input != 'e') {
+        printf("Insermento non valido, inserire esclusivamente [v], [p] o [e]");
         scanf(" %c", &input);
     }
     switch (input) {
         case 'v' :
             for(i=0;i<numFile;i++){
-                printf("File Name : %s\n",results[i].name);
+                printf("Nome del file : %s\n",results[i].name);
                 print_values(results[i].stats);
             }
             
             break;
         case 'p' : 
             for(i=0;i<numFile;i++){
-                printf("File Name : %s\n",results[i].name);
+                printf("Nome del file : %s\n",results[i].name);
                 print_percentual(results[i].stats);
             }
             break;
-        case 'a' :
+        case 'e' :
             for(i=0;i<numFile;i++){
-                printf("File Name : %s\n",results[i].name);
+                printf("Nome del file : %s\n",results[i].name);
                 print_values(results[i].stats);
                 printf("\n-----------");
                 print_percentual(results[i].stats);
@@ -106,10 +106,10 @@ int selectFile(map results, int numFile){
 void printSingle(map results, int fileNum){
     printf("Il nome del file scelto è:\n> %s\n", results[fileNum].name);
     char input;
-    printf("Choose your result format: values[v] percentage[p] both[a]");
+    printf("Scegli il vormato di visualizzazione: per valore[v] percentuale[p] o entrambi[e]");
     scanf(" %c", &input);
-    while (input != 'v' && input != 'p' && input != 'a') {
-        printf("Insert only [v], [p] or [a]");
+    while (input != 'v' && input != 'p' && input != 'e') {
+        printf("Insermento non valido, inserire esclusivamente [v], [p] o [e]");
         scanf(" %c", &input);
     }
     switch (input) {
@@ -119,7 +119,7 @@ void printSingle(map results, int fileNum){
         case 'p' : 
             print_percentual(results[fileNum].stats);
             break;
-        case 'a' : 
+        case 'e' : 
             print_values(results[fileNum].stats);
             printf("\n-----------");
             print_percentual(results[fileNum].stats);
@@ -134,8 +134,8 @@ void print_values(int* results){
 
     for (i = 0; i < CLUSTER; i++) {
         printf("\n> Numero di %s: %d", print_type(i), results[i]);
-        
     }
+    printf("\n");
 }
 
 void print_percentual(int* results){
@@ -197,8 +197,7 @@ map readerMessage(int *numFileRet) {
     //for (i = 0; i < CLUSTER; ++i) {
         //ret[i] = (char *)malloc(12 * sizeof(int));
     //}
-    map ret = malloc(sizeof(FileMap));
-
+    
     key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
     if (key < 0) report_and_exit("key not gotten...");
 
@@ -219,6 +218,7 @@ map readerMessage(int *numFileRet) {
     for(i=0; i<CLUSTER*nFiles + nFiles; i++){
         types[i] = i+2;
     }*/
+    map ret = malloc(nFiles*sizeof(FileMap));
 
     int counter = 2;
     for(j=0; j<nFiles; j++){
