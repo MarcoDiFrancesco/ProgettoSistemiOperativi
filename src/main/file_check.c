@@ -1,7 +1,76 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+#include <time.h>
+
 #include "main.h"
+/** ONLY FOR TESTING
+ * Select delay in seconds 
+ */
+int delay(double delay) {
+    time_t start = time(NULL);
+    time_t current;
+    do {
+        time(&current);
+    } while (difftime(current, start) < delay);
+    return delay;
+}
+
+/**
+ * This function runs the program specified on path, in a completely separated process.
+ * The program is checked for existance
+ */
+int runProgram(char **path) {
+    if (!pathIsFile(path[0]))
+        return 2;
+    else if (!pathIsExecutable(path[0]))
+        return 3;
+    else if (pathIsFolder(path[0]))
+        return 4;
+    else if (pathIsLink(path[0]))
+        return 5;
+
+    int pid = fork();
+
+    if (pid == -1) {  // Error in forking
+        return 1;
+    } else if (pid == 0) {  // Child section
+        execvp(path[0], path);
+    }
+    return 0;
+}
+
+int executableChecks(char *path) {
+    if (!pathIsFile(path))
+        return 2;
+    else if (!pathIsExecutable(path))
+        return 3;
+    else if (pathIsFolder(path))
+        return 4;
+    else if (pathIsLink(path))
+        return 5;
+    return 0;
+}
+/**
+ * This function runs the program specified on path and wait for it to end.
+ */
+int runProgramAndWait(char **path) {
+    // Check for executable errors
+    executableChecks(path[0]);
+    int pid = fork();
+
+    if (pid == -1) {  // Error in forking
+        return 1;
+    } else if (pid == 0) {  // Child section
+        execvp(path[0], path);
+    } else {
+        printf("I'm the parent waiting for child:%d, I'm:%d\n", pid, getpid());
+        // Wait for a process (the first that comes)
+        wait(NULL);  // TODO: test with pid
+        printf("Waited, now ending\n");
+    }
+    return 0;
+}
 
 /**
  * Returns if path is a file and the file is executable

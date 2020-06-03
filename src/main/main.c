@@ -1,42 +1,17 @@
 #include "main.h"
 
-char *report_path[] = {"/root/bin/report", NULL};
-char *analyzer_path[] = {"/root/bin/analyzer", NULL};
-
-/**
- * This function runs the program specified on path, in a completely separated process.
- * The program is checked for existance
- */
-int runProgram(char **path) {
-    if (!pathIsFile(path[0]))
-        return 2;
-    else if (!pathIsExecutable(path[0]))
-        return 3;
-    else if (pathIsFolder(path[0]))
-        return 4;
-    else if (pathIsLink(path[0]))
-        return 5;
-
-    int pid = fork();
-
-    if (pid == -1) {  // Error in forking
-        return 1;
-    } else if (pid == 0) {  // Child section
-        execvp(path[0], path);
-    }
-    return 0;
-}
-
 void get_analytics() {
     printf("This is the table with all the analytics: TODO\n");
 }
 
-int main() {
-    int r = 0;
-    // r = runProgram(analyzer_path);
-    if (r == 0)
-        printf("Analyzer started\n");
-    else if (r == 1)
+/**
+ * Print error from runProgram() output function
+ */
+void printError(int r) {
+    // TODO: remove printing when the program runs correctly
+    // if (r == 0)
+    //     printf("Program tarted\n");
+    if (r == 1)
         printf("Error in forking\n");  // TODO: do something about not being able to fork
     else if (r == 2)
         printf("File does not exist, building it\n");
@@ -46,10 +21,30 @@ int main() {
         printf("File is a directory, rebuilding\n");
     else if (r == 5)
         printf("File is soft link, rebuilding\n");
+}
 
-        if (r == 2 || r == 3 || r == 4 || r == 5)
+int main() {
+    int r;
+    // Check if report is executable
+    r = executableChecks("/root/bin/report");
+    if (r == 2 || r == 3 || r == 4 || r == 5)
+        system("cd && make clean && make build");
+    // Check if analyzer is executable
+    r = executableChecks("/root/bin/analyzer");
+    if (r == 2 || r == 3 || r == 4 || r == 5)
         system("cd && make clean && make build");
 
+    // char *processPath = getSelfProcessPath();
+    // TODO: free(processPath)
+    // printf("Process path: %s\n", processPath);
+    /**  WHAT TODO NEXT
+     * Now split the path of the executable /root/bin/main in /root/bin/ and add analyzer to
+     * get /root/bin/analyzer, than check the file correctness.
+     * 
+     * Than make function GetRunningExecutablePath()
+     */
+
+    // TODO: check each malloc, if it does not have memory, kill the process
     char s[MAX_INPUT_LENGHT], choice[MAX_INPUT_LENGHT];
     while (1) {
         // Empty the array

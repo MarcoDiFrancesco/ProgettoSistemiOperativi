@@ -35,8 +35,9 @@ char *concat(const char *s1, const char *s2, const char *s3);
 node listFiles(char *path);
 void removeNewline(char *string);
 void splitAndSendPaths(char *string);
-void sendPath(char *string);
-char *getProcessPath(char *process);
+char *getSelfProcessPath();
+int runProgram(char **path);
+int runProgramAndWait(char **path);
 
 int pathIsExecutable(char *path);
 int pathIsFile(char *path);

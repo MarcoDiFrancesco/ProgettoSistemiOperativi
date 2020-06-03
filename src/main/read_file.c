@@ -3,6 +3,9 @@
 
 #include "main.h"
 
+char report_path[] = "/root/bin/report";
+char analyzer_path[] = "/root/bin/analyzer";
+
 node createNode() {
     node temp;
     temp = (node)malloc(sizeof(struct LinkedList));
@@ -76,57 +79,37 @@ void removeNewline(char *string) {
 }
 
 /**
- * Input a string of paths, separate on the spaces, and send
- * the path to Analyzer
+ * Input a string of paths, separate on the spaces, and run Analyzer
+ * with the file path specified
  * 
  * Credits: https://stackoverflow.com/a/28462221/7924557
  */
 void splitAndSendPaths(char *string) {
-    // TODO: check if user inputs ,.-
     if (string[MAX_INPUT_LENGHT - 2] != '\0')
         printf("Warning: you succeeded the %d char limit, the last path might not be counted\n", MAX_INPUT_LENGHT);
-    char *processPath = getProcessPath("/proc/self/exe");
-    // TODO: free(processPath)
-    printf("Process path: %s\n", processPath);
-
-    /**  WHAT TO DO NEXT
-     * Now split the path of the executable /root/bin/main in /root/bin/ and add analyzer to
-     * get /root/bin/analyzer, than execute it, open the pipe in that side and get the passed
-     * paths given below.
-     */
 
     char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
     singlePath = strtok(string, " ");  // Split in space
     while (singlePath != NULL) {
-        sendPath(singlePath);
+        char *a[] = {analyzer_path, string};
+        runProgramAndWait(a);
         singlePath = strtok(NULL, " ");
     }
 }
 
 /**
- * Input a string containing a path and send it to Analyzer
+ * Returns the path of the executable I'm running.
+ * e.g. /root/bin/analyzer
+ * e.g. /root/bin/main
  */
-void sendPath(char *string) {
-    printf("I'm sending to Analyzer: '%s'...", string);
-    fflush(stdout);
-
-    int fd;
-    char *myfifo = "/tmp/myfifo";
-    mkfifo(myfifo, 0666);
-    fd = open(myfifo, O_WRONLY);
-    write(fd, string, strlen(string) + 1);
-    close(fd);
-    printf("Done!\n");
-}
-
-char *getProcessPath(char *process) {
+char *getSelfProcessPath() {
     char *buff = malloc(PATH_MAX);
-    ssize_t len = readlink(process, buff, PATH_MAX - 1);
+    ssize_t len = readlink("/proc/self/exe", buff, PATH_MAX - 1);
     if (len != -1) {
         buff[len] = '\0';
         return buff;
     }
-    return "";
+    return "";  // Error
     // TODO: handle error condition
 }
 
