@@ -685,16 +685,17 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
                             dataCollected[l][g] += tmp[l][g];
                         }
                     }
-                    for (g = 0; g < f_Psize; g++) {
+                    /*for (g = 0; g < f_Psize-1; g++) {
                         free(tmp[g]);
-                    }
+                    }*/
+                    free(tmp);
                 }
             }                   
         }
         return_value = writePipeN(pipe_c[index_p], statsToStringN(dataCollected, f_Psize), f_Psize);
         for (g = 0; g < f_Psize; g++) {
             free(dataCollected[g]);
-        }
+    }
         return return_value;
     }
 }
@@ -760,7 +761,7 @@ void sender(map data, int mapDim) {
         queuedMessage msgName;
         strcpy(msgName.payload, data[j].name);
         msgName.type = cont;
-        msgsnd(qid, &msgName, sizeof(msgName), IPC_NOWAIT);
+        msgsnd(qid, &msgName, strlen(msgName.payload)+1, IPC_NOWAIT);
         printf("%s (name) sent as type %i\n", msgName.payload, (int) msgName.type);
         //conversione stats in message
         string *message = statsToString(data[j].stats);

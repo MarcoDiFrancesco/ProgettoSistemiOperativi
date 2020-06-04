@@ -223,9 +223,9 @@ map readerMessage(int *numFileRet) {
     int counter = 2;
     for(j=0; j<nFiles; j++){
         //salvataggio nome file
-        if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
+        if (msgrcv(qid, &msg, MAX_MSG_SIZE, counter, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
         printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
-        ret[j].name=malloc(sizeof(msg.payload));
+        ret[j].name=malloc(strlen(msg.payload));
         strcpy(ret[j].name, msg.payload);
         counter++;
         for (i = 0; i < CLUSTER; i++) {

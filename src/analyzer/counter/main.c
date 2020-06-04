@@ -74,17 +74,17 @@ int main(int argc, string argv[]) {
             } else {
                 //successive parti del processo C
                 string **buffer = readAndWaitN(p_c[i], c_son, f_Psize);
-                int **tmp = getValuesFromStringN(buffer, f_Psize);
-                storeOnMap(fileData, tmp, f_Psize, fileIndex);
+                int **temp = getValuesFromStringN(buffer, f_Psize);
+                storeOnMap(fileData, temp, f_Psize, fileIndex);
                 /*for (g = 0; g < CLUSTER; g++) {
-                    data[g] += tmp[g];
-                    //fileData.stats[g] += tmp[g];
+                    data[g] += temp[g];
+                    //fileData.stats[g] += temp[g];
                 }*/
-                for (g = 0; g < f_Psize; g++) {
-    //printf("");
-                    free(tmp[g]);
-                } //new: tmp non ci serve più perchè il suoi valori vengono passati a dataCollected
-                free(tmp);
+
+                /*for (g = 0; g < f_Psize; g++) {
+                    free(temp[g]);
+                } //new: temp non ci serve più perchè il suoi valori vengono passati a dataCollected*/
+                free(temp);
             }
         }
         fileIndex += file_per_p;
