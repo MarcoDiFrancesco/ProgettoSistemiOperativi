@@ -37,24 +37,25 @@ int main(int argc, string argv[]) {
         }
 
     int a, i;
-    printf("\n (%d) files inseriti =  %d",argc,  argc - n_arg);
+    //printf("\n (%d) files inseriti =  %d",argc,  argc - n_arg);
 
     string *arg = malloc(sizeof(string)*argc);
     for(i=0; i<argc; i++){
         arg[i] = argv[i];
     }
 
-    
+    int stupido = 0;
     for (a = n_arg; a<argc; a++) {
         //printf("\nelemento: %d  contene: %s", a, arg[a]);
         if( strcmp(arg[a], "-c") == 0 ){
             //printf(" %s flag detected - (%d) ",arg[a], a);
-
-            if(argc > a+1) {
+            //printf("argc=%d a+1+stupido=%d\n", argc, a+1+stupido);
+            if(argc > a+1+stupido) {
+                int elements_in_folder = 0;
                 //printf(" - next exists - ");
                 node l = listFiles(arg[a+1]);
                 node t = l;
-                int elements_in_folder = 0;
+                //elements_in_folder = 0;
                 while(t != NULL){
                     elements_in_folder++;
                     t = t->next;
@@ -68,19 +69,20 @@ int main(int argc, string argv[]) {
                     i++;
                     l = l->next;
                 }
-
-                argc += elements_in_folder ;
-            }
+                argc += elements_in_folder;
+                stupido += elements_in_folder;
+            } else {
+                n_arg++;
+                printf("-c diocan\n");
+            }   
         }
-        
     }
 
     for (a = n_arg; a<argc; a++) {
         //printf("\nfile %d = %s", argc - a, arg[a]);
     }
 
-    printf("\n(numero di argomenti inseriti prima dei file %d) \nN: %d\nM: %d\n", 
-               n_arg - 1, N, M);
+    //printf("\n(numero di argomenti inseriti prima dei file %d) \nN: %d\nM: %d\n", n_arg - 1, N, M);
 
     //controllo sul nome dei file passati come argomento
     BOOL filesOk[argc - n_arg];
@@ -92,11 +94,11 @@ int main(int argc, string argv[]) {
            isCpp(arg[i], lunghezza_nome)==TRUE || isPy(arg[i], lunghezza_nome)==TRUE ||
            isJava(arg[i], lunghezza_nome)==TRUE) {
             filesOk[i] = TRUE;
-            printf(" OK ");
+            //printf("> %s OK (%d)\n", arg[i], i);
         } else {
             filesOk[i] = FALSE;
             fileErrati++;
-            printf(" NO ");
+            //printf("> %s NO (%d)\n", arg[i], i);
         }
     }
 
@@ -104,7 +106,6 @@ int main(int argc, string argv[]) {
     int fileInesistenti = 0;
     puts("\n\nControllo l'esistenza dei file validi\n");
     for (i = n_arg; i < argc ; ++i) {
-        printf("indice di avanzamento %d\n", i);
         if (filesOk[i]) {
             if (access(arg[i], F_OK) == -1) {
                 filesOk[i] = FALSE;
@@ -113,25 +114,73 @@ int main(int argc, string argv[]) {
         }
     }
 
-    printf("ARGC = %d, n_arg = %d, fileErrati = %d, fileInesistenti = %d", argc, n_arg, fileErrati, fileInesistenti);
+    //printf("ARGC = %d, n_arg = %d, fileErrati = %d, fileInesistenti = %d\n", argc, n_arg, fileErrati, fileInesistenti);
 
     int const fileTotal = argc - n_arg - fileErrati - fileInesistenti;
     if (fileTotal < 1) {
         printf("non ho ricevuto alcun file valido\n");
         exit(0);
     }
-    //temporaneo per testare 
-    string files[fileTotal];
-    printf(" files OK = %d\n", fileTotal);
+
+    
+    
+    
+    string *files = malloc(fileTotal * sizeof(char *));
+    //string files[fileTotal];
+    //printf(" files OK = %d\n", fileTotal);
+    int count = 0;
+    for (i = n_arg; i < argc; ++i) {
+        if(filesOk[i] == TRUE) {
+            if (i == argc - 1) {
+                //printf("DIO PORCO BOIA MAIALE ");
+            }
+            count++;
+            //printf("%d ", count);
+        }
+    }
+
     int next = 0;
-    for (i = n_arg; i < argc; i++) {
+    
+    /*for (i = n_arg; i < argc; i++) {
+        //printf("indice di avanzamento %d\n", i);
         if (filesOk[i] == TRUE) {
             files[next] = arg[i];
-            printf("---IL ROMPICAZZO %s (%d)\n", files[next], next);
+            //Printf("---IL ROMPICAZZO %s (%d)\n", files[next], next);
             next++;
-        }   
+        } 
+    }*/
+    for (i = n_arg; i < argc; i++) {
+        //printf("indice di avanzamento %d\n", i);
+        if (filesOk[i] == TRUE) {
+            /*if (i == argc - 1) {
+                printf("DIO PORCO BOIA MAIALE ");
+            }*/
+            //printf("---IL ROMPICAZZO %s ()\n", arg[i]);
+            files[next] = arg[i];
+            next++;
+        } /*else if (fileTotal % 40 == 0  && i == argc - 1) {
+            //printf("---IL ROMPICAZZO %s ()\n", arg[i]);
+            files[next] = arg[i];
+        } else {
+            //puts("questo è stupido\n");
+        } */
     }
-    
+/*
+    for (i = n_arg; i < argc; i++) {
+        //printf("indice di avanzamento %d\n", i);
+        if (filesOk[i] == TRUE) {
+            //printf("---IL ROMPICAZZO %s ()\n", arg[i]);
+            files[next] = arg[i];
+            next++;
+        } else if (filesOk) {
+            //printf("---IL ROMPICAZZO %s ()\n", arg[i]);
+            files[next] = arg[i];
+        } else {
+            //puts("questo è stupido\n");
+        }
+        
+    }*/
+
     if (fileTotal < N) {
         N = fileTotal;
         nS=malloc(sizeof(MAXLEN));
@@ -143,8 +192,8 @@ int main(int argc, string argv[]) {
     char str[100];
     sprintf(str, "%d", fileTotal);
 
-    printf("fileTotal=%d\n", fileTotal);
-    string cmd = malloc(sizeof(char)*1000000);
+    printf("\nfileTotal=%d\n", fileTotal);
+    string cmd = malloc(sizeof(char)*fileTotal*1000 + 100);
     strcat(cmd, "../bin/counter ");
     strcat(cmd, nS);
     strcat(cmd, " ");
@@ -154,13 +203,15 @@ int main(int argc, string argv[]) {
     strcat(cmd, " ");
     for(i=0; i<fileTotal; i++){
         strcat(cmd, files[i]);
+        //free(files[i]);
         strcat(cmd, " ");
     }
 
     //printf("%s\n", cmd);
-    printf("---DIOLADRO\n");
     system(cmd); 
 
     free(cmd);
+    free(files);
+
     return 0;
 }
