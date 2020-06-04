@@ -1,10 +1,17 @@
 #include "main.h"
 
 int main() {
-    if (checkIntegrity("analyzer") || checkIntegrity("report"))
-        printf("Rebuild...\n");
+    char *fillProcessPath = getSelfProcessPath();
+    char *processPath = baseName(fillProcessPath);
 
-    // TODO: check each malloc, if it does not have memory, kill the process
+    if (strcmp(processPath, "/root/bin/"))
+        printf("Warning: /root/bin/ not detected, new folder is: %s\n", processPath);
+
+    if (checkIntegrity("analyzer", processPath) || checkIntegrity("report", processPath)) {
+        printf("Some files were modified, rebuilding...\n");
+        makeFiles(processPath);  // Reduild
+    }
+
     char s[MAX_INPUT_LENGHT], choice[MAX_INPUT_LENGHT];
     while (1) {
         // Empty the array
