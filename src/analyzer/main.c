@@ -144,8 +144,11 @@ int main(int argc, string argv[]) {
     int nArguments=3+fileTotal;
     char str[10];
     sprintf(str, "%d", fileTotal);
+
+    //printf("fileTotal=%d\n", fileTotal);
     
-    string cmd = malloc(sizeof(char)*10000);
+    string cmd = malloc(sizeof(char)*1000000);
+    printf("---- DIOLADRO \n");
     strcat(cmd, "counter/main ");
     strcat(cmd, nS);
     strcat(cmd, " ");
@@ -158,7 +161,7 @@ int main(int argc, string argv[]) {
         strcat(cmd, " ");
     }
 
-    printf("%s\n", cmd);
+    //printf("%s\n", cmd);
     system(cmd); 
 
     free(cmd);
