@@ -63,7 +63,7 @@ int main(int argc, string argv[]) {
 
                 arg = realloc(arg, sizeof(string)*(argc + elements_in_folder));
                 i=argc;
-                while(l->next != NULL){
+                while(l != NULL){
                     arg[i] = l->str;
                     i++;
                     l = l->next;
