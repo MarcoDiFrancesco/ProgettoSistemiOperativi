@@ -762,7 +762,7 @@ void sender(map data, int mapDim) {
         strcpy(msgName.payload, data[j].name);
         msgName.type = cont;
         msgsnd(qid, &msgName, strlen(msgName.payload)+1, IPC_NOWAIT);
-        printf("%s (name) sent as type %i\n", msgName.payload, (int) msgName.type);
+        //printf("%s (name) sent as type %i\n", msgName.payload, (int) msgName.type);
         //conversione stats in message
         string *message = statsToString(data[j].stats);
         //invio dati file
@@ -774,7 +774,7 @@ void sender(map data, int mapDim) {
                 strcpy(msg.payload, message[i]);
                 /* send the message */
                 msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
-                printf("%s sent as type %i\n", msg.payload, (int) msg.type);
+                //printf("%s sent as type %i\n", msg.payload, (int) msg.type);
                 cont++;
         }
     }

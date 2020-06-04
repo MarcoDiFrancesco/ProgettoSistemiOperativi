@@ -29,8 +29,9 @@ int main(int argc, string argv[]) {
 
     map fileData = malloc(fileTotal * sizeof(FileMap));
     int i;
-    for (i = 0; i < fileTotal; ++i) {
-        //printf("file: %s\n", files[i]);
+    printf("rompicazzo %s\n", files[fileTotal - 1]);
+    for (i = 0; i < fileTotal; i++) {
+        //printf("file: %s, indice: %d\n", files[i], i);
         fileData[i].name = files[i];
         fileData[i].fileHash = computeHash(files[i], f_dim[i], FALSE);
     }
