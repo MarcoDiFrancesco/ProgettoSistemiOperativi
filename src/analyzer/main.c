@@ -55,7 +55,7 @@ int main(int argc, string argv[]) {
                 node l = listFiles(arg[a+1]);
                 node t = l;
                 int elements_in_folder = 0;
-                while(t->next != NULL){
+                while(t != NULL){
                     elements_in_folder++;
                     t = t->next;
                 }
