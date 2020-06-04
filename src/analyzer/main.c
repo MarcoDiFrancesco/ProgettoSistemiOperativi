@@ -148,8 +148,7 @@ int main(int argc, string argv[]) {
     //printf("fileTotal=%d\n", fileTotal);
     
     string cmd = malloc(sizeof(char)*1000000);
-    printf("---- DIOLADRO \n");
-    strcat(cmd, "counter/main ");
+    strcat(cmd, "../bin/counter ");
     strcat(cmd, nS);
     strcat(cmd, " ");
     strcat(cmd, mS);

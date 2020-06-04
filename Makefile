@@ -14,8 +14,8 @@ help:
 build:
 	@mkdir -p bin
 	@$(MAKE) bin/analyzer
+	@$(MAKE) bin/counter
 	@$(MAKE) bin/report
-	@$(MAKE) bin/main
 	@echo "Files successfully built"
 
 clean:
@@ -28,11 +28,15 @@ bin/analyzer: src/analyzer/main.c $(ADEPS)
 	$(COMPILER) -o $@ $< $(ADEPS) $(FLAGS)
 
 # Main
-MDEPS=src/read_file/read_file.c src/read_file/read_file.h
-bin/main: src/main/main.c $(MDEPS)
-	$(COMPILER) -o $@ $< $(MDEPS) $(FLAGS)
+bin/main: src/main/main.c 
+	$(COMPILER) -o $@ $< $(FLAGS)
 
 # Report
-RDEPS=src/report/result.c src/report/result.h
+RDEPS=src/report/report.c src/report/report.h
 bin/report: src/report/main.c $(RDEPS)
 	$(COMPILER) -o $@ $< $(RDEPS) $(FLAGS)
+
+# Counter
+CDEPS=src/analyzer/counter/counter.c src/analyzer/counter/counter.h
+bin/counter:src/analyzer/counter/main.c $(CDEPS)
+	$(COMPILER) -o $@ $< $(CDEPS) $(FLAGS)
