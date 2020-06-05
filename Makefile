@@ -28,8 +28,9 @@ bin/analyzer: src/analyzer/main.c $(ADEPS)
 	$(COMPILER) -o $@ $< $(ADEPS) $(FLAGS)
 
 # Main
-bin/main: src/main/main.c 
-	$(COMPILER) -o $@ $< $(FLAGS)
+MDEPS=src/main/main_functions.c src/main/main.h
+bin/main: src/main/main.c $(MDEPS)
+	$(COMPILER) -o $@ $< $(MDEPS) $(FLAGS)
 
 # Report
 RDEPS=src/report/report.c src/report/report.h
