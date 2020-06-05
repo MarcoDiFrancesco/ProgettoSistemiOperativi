@@ -14,6 +14,7 @@ help:
 build:
 	@mkdir -p bin
 	@$(MAKE) bin/analyzer
+	@$(MAKE) bin/main
 	@$(MAKE) bin/counter
 	@$(MAKE) bin/report
 	@echo "Files successfully built"
@@ -28,7 +29,7 @@ bin/analyzer: src/analyzer/main.c $(ADEPS)
 	$(COMPILER) -o $@ $< $(ADEPS) $(FLAGS)
 
 # Main
-MDEPS=src/main/main_functions.c src/main/main.h
+MDEPS=src/main/main_functions.c src/main/main_functions.h
 bin/main: src/main/main.c $(MDEPS)
 	$(COMPILER) -o $@ $< $(MDEPS) $(FLAGS)
 

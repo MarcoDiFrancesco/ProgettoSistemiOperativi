@@ -1,3 +1,6 @@
+#ifndef __REPORT_H_
+#define __REPORT_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,3 +71,5 @@ void printSingle(map results, int fileNum);
 int selectFile(map results, int numFile);
 
 void printNames(map results, int nFile);
+
+#endif

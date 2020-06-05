@@ -1,6 +1,3 @@
-#ifndef __REPORT_H_
-#define __REPORT_H_
-
 #include "report.h"
 
 void read_result(map results,int numFile){
@@ -248,5 +245,3 @@ map readerMessage(int *numFileRet) {
     perror(msg);
     exit(-1); /* EXIT_FAILURE */
 }
-
-#endif

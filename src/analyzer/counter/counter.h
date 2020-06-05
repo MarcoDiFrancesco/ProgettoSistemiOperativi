@@ -1,3 +1,6 @@
+#ifndef _COUNTER_H_
+#define _COUNTER_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -102,3 +105,4 @@ void report_and_exit(const char* msg);
 
 void sender(map data, int mapDim);
 
+#endif

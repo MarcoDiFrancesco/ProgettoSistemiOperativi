@@ -1,7 +1,4 @@
-#ifndef _MAIN_H_
-#define _MAIN_H_
-
-#include "main.h"
+#include "main_functions.h"
 
 char report_path[] = "/root/bin/report";
 char analyzer_path[] = "/root/bin/analyzer";
@@ -97,14 +94,18 @@ void removeNewline(char *string) {
 void splitAndSendPaths(char *string) {
     if (string[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
         printf("Warning: you succeeded the %d char limit, the last path might not be considered\n", MAX_INPUT_LENGHT);
-
+    char arguments[MAX_ARG_STRLEN]; // *4 in case the path is "a" there is " -c " chars
     char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
     singlePath = strtok(string, " ");  // Split in space
     while (singlePath != NULL) {
-        char *a[] = {analyzer_path, string};
-        runProgramAndWait(a);
+        strcat(arguments, " -c ");
+        strcat(arguments, singlePath);
         singlePath = strtok(NULL, " ");
     }
+    printf("%s\n", arguments);
+    // char *a[] = {analyzer_path, string};
+    // runProgramAndWait(a);
+    // free(arguments);
 }
 
 /**
@@ -322,5 +323,3 @@ void ignoreSignal(int signal) {
     if (SHOW_WARNING)
         printf("\nWarining: ignoring signal\n");
 }
-
-#endif

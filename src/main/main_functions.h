@@ -1,3 +1,6 @@
+#ifndef _MAIN_FUNCTIONS_H_
+#define _MAIN_FUNCTIONS_H_
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -40,6 +43,8 @@ typedef char *string;
  */
 #define PATH_MAX 4096
 
+#define MAX_ARG_STRLEN 131072
+
 struct LinkedList {
     char *str;
     struct LinkedList *next;
@@ -67,3 +72,5 @@ int pathIsFolder(char *path);
 int pathIsLink(char *path);
 char *concatPaths(char *dir, char *file);
 void ignoreSignal(int signal);
+
+#endif

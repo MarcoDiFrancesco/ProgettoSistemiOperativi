@@ -1,4 +1,4 @@
-#include "main.h"
+#include "main_functions.h"
 
 int main() {
     if (!DEBUG) {
@@ -19,25 +19,26 @@ int main() {
         makeFiles(processPath);  // Reduild
     }
 
-    char s[MAX_INPUT_LENGHT], choice[MAX_INPUT_LENGHT];
+    char mainChoice[MAX_INPUT_LENGHT], choice1[MAX_INPUT_LENGHT], choice2[MAX_INPUT_LENGHT];
     while (1) {
-        // Empty the array
-        memset(s, 0, sizeof s);
-        memset(choice, 0, sizeof choice);
+        // Empty the arrays
+        memset(mainChoice, 0, sizeof mainChoice);
+        memset(choice1, 0, sizeof choice1);
+        memset(choice2, 0, sizeof choice2);
 
+        printf("What do you want to do?\n");
         printf("1. Add files to analyze\n");
         printf("2. Get file analytics\n");
         printf("Enter Your choice: ");
-        // Input choice
-        fgets(choice, MAX_INPUT_LENGHT, stdin);
-        removeNewline(choice);
+        fgets(mainChoice, MAX_INPUT_LENGHT, stdin); // Input main choice
+        removeNewline(mainChoice);
 
-        if (!strcmp(choice, "1")) {  // If choice equals 1
+        if (!strcmp(mainChoice, "1")) {  // If choice equals 1
             printf("Enter space-separeted paths: ");
-            fgets(s, MAX_INPUT_LENGHT, stdin);
-            removeNewline(s);
-            splitAndSendPaths(s);
-        } else if (!strcmp(choice, "2")) {  // If choice equals 2
+            fgets(choice1, MAX_INPUT_LENGHT, stdin);
+            removeNewline(choice1);
+            splitAndSendPaths(choice1);
+        } else if (!strcmp(mainChoice, "2")) {  // If choice equals 2
             getAnalytics();
         } else {
             printf("This is not a valid choice, type one of the following:\n");

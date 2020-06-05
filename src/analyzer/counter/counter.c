@@ -1,8 +1,4 @@
-#ifndef _COUNTER_H_
-#define _COUNTER_H_
-
 #include "counter.h"
-
 
 string *readAndWait(int pipe[], pid_t son) {
     close(pipe[WRITE]);
@@ -819,8 +815,3 @@ void sender(map data, int mapDim) {
     }
     
 }
-
-
-
-
-#endif
