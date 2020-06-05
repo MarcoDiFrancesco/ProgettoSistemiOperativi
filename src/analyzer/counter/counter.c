@@ -15,7 +15,6 @@ string *readAndWait(int pipe[], pid_t son) {
         }
         msg[i][rd] = 0;
     }
-    //printf("(read)ERR=%d",err);
     close(pipe[READ]);
     waitpid(son, NULL, 0);
     return msg;
@@ -23,7 +22,7 @@ string *readAndWait(int pipe[], pid_t son) {
 
 int writePipe(int pipe[],string *msg) {
     int ret = 0;//per eventuali errori
-    //close(pipe[READ]);
+    close(pipe[READ]);
     int i, err;
     
     for (i = 0; i < CLUSTER; i++) {
@@ -98,11 +97,8 @@ int readFile(char* filename, char* filedata, int start, int stop) {
  * @param counter vettore in cui riporre i risultati.
  */
 void countLetters(int dim, char* s, int* counter) {
-    //printf("testo cont: ");
     int i = dim - 1;
     for (i; i >= 0; i--) {
-        
-        //printf("\t%c\n", s[i]);
         if (s[i] >= 'a' && s[i] <= 'z' || s[i] >= 'A' && s[i] <= 'Z') {
             //lettera maiuscola o minuscola
             counter[0]++;
@@ -119,29 +115,6 @@ void countLetters(int dim, char* s, int* counter) {
         } else {
             counter[4]++;
         }
-
-        /*if (s[i]>='a' && s[i]<='z' || s[i]>='A' && s[i]<='Z'){
-            //lettera maiuscola o minuscola
-            counter[0]++;
-        }else{
-            if(s[i]>='0' && s[i]<='9'){
-                //numero
-                counter[1]++;
-            }else{
-                if(s[i]==' '){
-                    //spazi
-                    counter[2]++;
-                }else{
-                    if(s[i]=='.' || s[i]==',' || s[i]==':' || s[i]==';' || s[i]=='?' || s[i]=='!'){
-                        //punteggiatura
-                        counter[3]++;
-                    }else{
-                        //tutto il resto
-                        counter[4]++;
-                    }
-                }
-            }      
-        }*/
     }
 }
 
@@ -200,15 +173,6 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
     int i, j, k, alloc_value;
     int inizio[n], fine[n];
     i = 0;
-/*
-    for (i = 0; i < n; i++) {
-        printf("\tsto analizzando = %s\n", fname[i]);
-    }*/
-
-    //printf("\tl'indice per recuperare gli indici è %d\n", index);
-
-    i = 0;
-
     // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
     // si parte da index e si itera n volte.
     for (j = index; j < (index + n); j++) {
@@ -217,7 +181,6 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
         // è un multiplo di M.
         inizio[i] = range[j]*q_loop;
         if ((range[j] * (q_loop + 1) <= dims[j])) {
-            // printf("%d",range[j]*q_loop + j);
             fine[i] = range[j]*(q_loop + 1);
         } else {
             fine[i] = dims[j]; 
@@ -227,16 +190,8 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
         if (inizio[i] > fine[i]) {
             inizio[i] = fine[i] = 0;
         }   
-    /*
-        if(inizio[i] != fine[i]) {
-            printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
-        } else {
-            printf("\t---------\n");
-        }*/
         ++i;
     }
-
-    //stats = malloc(sizeof(int));
     stats = malloc(CLUSTER * sizeof(int));
     i = 0;
 
@@ -253,7 +208,6 @@ int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int in
         alloc_value = ceiling(dims[k + j], M);
         testo = malloc(alloc_value);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
-        //printf("\t%s\n",testo);
         countLetters(fine[j] - inizio[j], testo, stats);
         free(testo);
         if (i < 0) {
@@ -279,9 +233,6 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
     for (i = 0; i < n; i++) {
         printf("\tsto analizzando = %s\n", fname[i]);
     }
-
-    //printf("\tl'indice per recuperare gli indici è %d\n", index);
-
     i = 0;
 
     // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
@@ -303,22 +254,19 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
             inizio[i] = fine[i] = 0;
         }   
     
-        if(inizio[i] != fine[i]) {
+        /*if(inizio[i] != fine[i]) {
             printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
         } else {
             printf("\t---------\n");
-        }
+        }*/
         ++i;
     }
 
-    //stats = malloc(sizeof(int));
     stats = (int **)malloc(n * sizeof(int *));
 
     for (i = 0; i < n; i++) {
-        ///printf("\t%d\n", i);
         stats[i] = malloc(CLUSTER * sizeof(int));
         for (j = 0; j < CLUSTER; ++j) {
-           // printf("\t\t%d\n", j);
             stats[i][j] = 0;
         }
     }
@@ -331,23 +279,12 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
         alloc_value = ceiling(dims[k + j], M); 
         testo = malloc(alloc_value);
         i = readFile(fname[j], testo, inizio[j], fine[j]);
-        //printf("\t%s\n",testo);
         countLetters(fine[j] - inizio[j], testo, stats[j]);
         free(testo);
         if (i < 0) {
             break;
         }
     }
-
-/*
-    for (i = 0; i < n; i++) {
-        printf("\t%d\n", i);
-        for (j = 0; j < CLUSTER; ++j) {
-            printf("\t\t%d\n", stats[i][j]);
-        }
-    }*/
-
-
     if (i == 0)
         return stats;
     else
@@ -485,7 +422,7 @@ int ceiling(int first, int second){
 int writePipeN(int pipe[], string **msg, int size)
 {
     int ret = 0; //per eventuali errori
-    //close(pipe[READ]);
+    close(pipe[READ]);
     int i, j, err;
 
     for (i = 0; i < size; i++) {
@@ -518,13 +455,11 @@ string **readAndWaitN(int pipe[], pid_t son, int size) {
             rd = read(pipe[READ], msg[i][j], MAXLEN);
             if (rd == -1)
             {
-                //printf("%d\n", rd);
                 err = rd;
             }
             msg[i][j][rd] = 0;
         }
     }
-    //printf("(read)ERR=%d",err);
     close(pipe[READ]);
     waitpid(son, NULL, 0);
     return msg;
@@ -533,11 +468,8 @@ string **readAndWaitN(int pipe[], pid_t son, int size) {
 void storeOnMap(map fileData, int **values, int size, int index) {
     int i, j, k = 0;
     for (i = index; i < (index + size); ++i) {
-        //printf("\tsono arrivato a %d\n", index + i + 1);
-        //printf("\tstatistiche di %s\n", fileData[i].name);
         for (j = 0; j < CLUSTER; ++j) {
             fileData[i].stats[j] += values[k][j];
-            //printf("\t\t%d\n", fileData[i].stats[j]);
         }
         ++k;
     }
@@ -548,20 +480,13 @@ unsigned long computeHash(string fname, int dim, BOOL compare) {
         err = 0;
     unsigned long hash = 0;
     int digits = 10;
-    //printf("dim=%d\n", dim);
 
     if (compare == TRUE) {
         dim = fileDim(fname);
-        //printf("dimDopo=%d\n", dim);
     }
     string content = malloc(dim);
     err = readFile(fname, content, 0, dim);
-    //content[dim] = 0;
-    //printf("%s\n", content);
     for (i = 0; i < dim; ++i) {
-
-    //if(strcmp(fname, "tt.txt") == 0)
-        //printf("%c ", content[i]);
         if (i % 2 == 0) {
             hash += ((content[i] + 100) % 128);
         } else if (i % 3 == 0) {
@@ -571,30 +496,18 @@ unsigned long computeHash(string fname, int dim, BOOL compare) {
         } else {
             hash += content[i];
         }
-        //printf("%c", content[i]);
-        //printf("%d", i);
-        //++i;
     }
     free(content);
     int current = countDigits(hash);
 
-    /*
-    for (i = 0; i < digits; ++i) {
-        sprintf(fileDat.fileHash[i], "%d", hash * 123456);
-    }*/
-    //printf("\nEntro nell'ultimo while\n");
     while (current != digits) {
         current = countDigits(hash);
-        //printf("%lu\n", hash);
         if (current < digits) {
             hash *= 123456;
         } else  if (current > digits) {
             hash /= 9876;
         }
     }
-    //printf("\n");
-    //printf("%d\n", countDigits(hash));
-    //fileData.fileHash = hash;
     return hash;
 }
 
@@ -655,22 +568,6 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
             }
         }
         printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
-        /*int k = 0;
-        string file_P[file_per_p];
-        int f_Psize = 0;
-        int fileIndexTemp = fileIndex;
-        while (k < file_per_p) {
-            if (fileIndexTemp < total) {
-                file_P[k] = files[fileIndexTemp++];
-                f_Psize++;
-                //printf("sono il P%d e ho preso il file  numero %d\n con %d file per p\n", index_p, fileIndexTemp - 1, file_per_p);
-            }
-            if (fileIndexTemp - 1 == total) {
-                file_P[k] = 0;
-                //printf("ho finito i file\n");
-                }
-            ++k;
-        }*/
         int j;
         //creo M processi di tipo Q
         for (j = 0; j < M; j++) {
@@ -688,32 +585,13 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
                 } else {
                     //successive parti del processo P
                     qTop[j] = readAndWaitN(pipe_q[j], p_son, f_Psize);
-                    /*for (l = 0; l < f_Psize; l++) {
-                        printf("%d\n", l);
-                        for (g = 0; g < CLUSTER; g++) {
-                            printf("\t%s\n", qTop[j][l][g]);;
-                        }
-                        nl();
-                    }*/
                     int **tmp = getValuesFromStringN(qTop[j], f_Psize);
                     for (l = 0; l < f_Psize; l++) {
-                        printf("%d\n", l);
                         for (g = 0; g < CLUSTER; g++) {
-                            printf("\t%d\n", tmp[l][g]);
-                        }
-                        nl();
-                    }
-                    for (l = 0; l < f_Psize; l++) {
-                        for (g = 0; g < CLUSTER; g++) {
-                            //printf("> data: %d\n", tmp[l][g]);
                             dataCollected[l][g] += tmp[l][g];
-                            //printf("< datacollected: %d\n", dataCollected[l][g]);
                         }
                     }
                     nl();
-                    /*for (g = 0; g < f_Psize; g++) {
-                        free(tmp[g]);
-                    }*/
                     free(tmp);
                 }
             }                   
@@ -742,13 +620,6 @@ int processQ(int *range, int *dims, char** fname, int f_Psize,
     int** counter = processoQ_n_new(range, dims, fname, f_Psize,
                                     q_loop, index, m);
     string **message = statsToStringN(counter, f_Psize);
-    /*for (i = 0; i < f_Psize; i++) {
-        printf("%d\n", i);
-        for (j = 0; j < CLUSTER; j++) {
-            printf("\t%s\n", message[i][j]);;
-        }
-        nl();
-    }*/
     int err = writePipeN(pipe_q, message, f_Psize);
     for (i = 0; i < f_Psize; ++i) {
         free(counter[i]);
@@ -760,7 +631,6 @@ int processQ(int *range, int *dims, char** fname, int f_Psize,
 }
 
 ///////////funzioni di messaggistica
-//da cambiare
 
 void report_and_exit(const char* msg) {
   perror(msg);
@@ -768,7 +638,6 @@ void report_and_exit(const char* msg) {
 }
 
 void sender(map data, int mapDim) {
-    //string *message = statsToString(data);
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {      
         printf("err: %s\n", strerror(errno));
@@ -778,13 +647,6 @@ void sender(map data, int mapDim) {
     int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) 
         report_and_exit("couldn't get queue id...");
-
-    /*int types[CLUSTER*mapDim + mapDim + 1];
-    int i;
-    for (i = 0; i < CLUSTER*mapDim + mapDim; i++) {
-        types[i] = i + 1;
-    }*/
-    
     int i;
     queuedMessage msgNum;
     sprintf(msgNum.payload, "%d", mapDim);
@@ -796,8 +658,8 @@ void sender(map data, int mapDim) {
         queuedMessage msgName;
         strcpy(msgName.payload, data[j].name);
         msgName.type = cont;
-        msgsnd(qid, &msgName, strlen(msgName.payload)+1, IPC_NOWAIT);
-        //printf("%s (name) sent as type %i\n", msgName.payload, (int) msgName.type);
+        msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
+        printf("err (f): %s\n", strerror(errno));
         //conversione stats in message
         string *message = statsToString(data[j].stats);
         //invio dati file
@@ -808,8 +670,8 @@ void sender(map data, int mapDim) {
                 msg.type = cont;
                 strcpy(msg.payload, message[i]);
                 /* send the message */
-                msgsnd(qid, &msg, sizeof(msg), IPC_NOWAIT); /* don't block */
-                //printf("%s sent as type %i\n", msg.payload, (int) msg.type);
+                msgsnd(qid, &msg, sizeof(msg), MSG_NOERROR | IPC_NOWAIT); /* don't block */
+                printf("\terr (i): %s\n", strerror(errno));
                 cont++;
         }
     }

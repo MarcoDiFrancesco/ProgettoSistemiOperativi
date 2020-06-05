@@ -203,7 +203,7 @@ map readerMessage(int *numFileRet) {
 
     printf("key : %d\nqid : %d\n", key, qid);
 
-    queuedMessage msg; /* defined in queue.h */
+    queuedMessage msg; 
     if (msgrcv(qid, &msg, sizeof(msg), 1, MSG_NOERROR) < 0)   puts("msgrcv (num) trouble...");
     printf("%s (num) received as type %i\n", msg.payload, (int) msg.type);
     string tmp = malloc(sizeof(100));
@@ -221,18 +221,20 @@ map readerMessage(int *numFileRet) {
     for(j=0; j<nFiles; j++){
         //salvataggio nome file
         if (msgrcv(qid, &msg, MAX_MSG_SIZE, counter, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
-        printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
+        //printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
         ret[j].name=malloc(strlen(msg.payload));
         strcpy(ret[j].name, msg.payload);
         counter++;
         for (i = 0; i < CLUSTER; i++) {
             //salvataggio dati file
             if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
-            printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
+            printf("\telemento %d del cluster\n", i);
+            //printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
             strcpy(tmp, msg.payload);
             ret[j].stats[i] = atoi(tmp);
             counter++;
         }
+        printf("File numero %d completo\n", j);
     }
     /** remove the queue **/
     if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */

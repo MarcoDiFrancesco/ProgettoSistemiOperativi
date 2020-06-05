@@ -52,8 +52,6 @@ string *readAndWait(int pipe[], pid_t son);
 
 int * filesPart(string *files,int num,int M);
 
-//funzioni di ric
-
 int readFile(char* filename, char* filedata, int start, int stop);
 
 void countLetters(int dim, char* s, int* counter);
@@ -62,8 +60,6 @@ int* processoQ(int from, int to, char* fname);
 
 int* processoQ_n(int *range, int *dims, char** fname, int n, 
                  int q_loop, int index, int M);
-
-//funzioni di phil
 
 char **statsToString(int *values);
 
@@ -100,7 +96,8 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
              int q_loop, int index, int m, int pipe_q[]);
 
-//funzione di messaggi fra processi separati
+//IPC functions
+
 void report_and_exit(const char* msg);
 
 void sender(map data, int mapDim);

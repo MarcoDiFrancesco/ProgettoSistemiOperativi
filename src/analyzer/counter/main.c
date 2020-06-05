@@ -30,19 +30,12 @@ int main(int argc, string argv[]) {
     map fileData = malloc(fileTotal * sizeof(FileMap));
     int i;
     for (i = 0; i < fileTotal; i++) {
-        //printf("file: %s, indice: %d\n", files[i], i);
         fileData[i].name = files[i];
         fileData[i].fileHash = computeHash(files[i], f_dim[i], FALSE);
     }
 
-    /*for(g = 0; g < CLUSTER; g++) {
-        data[g] = 0;
-    }*/
     printf("\n\nProcess C pid=%d\n",getpid());
     for (i = 0; i < N; i++) {
-        //printf("file restanti: %d --- processi restanti: %d\n", file_restanti, (N - i));
-        //printf("questo proceso legge: %d files\n\n", file_per_p);
-        
         int k = 0;
         string file_P[file_per_p];
         int f_Psize = 0;
@@ -51,11 +44,9 @@ int main(int argc, string argv[]) {
             if (fileIndexTemp < fileTotal) {
                 file_P[k] = files[fileIndexTemp++];
                 f_Psize++;
-                //printf("sono il P%d e ho preso il file  %s\n con %d file per p\n", i + 1, file_P[k], file_per_p);
             }
             if (fileIndexTemp - 1 == fileTotal) {
                 file_P[k] = 0;
-                //printf("ho finito i file\n");
                 }
             ++k;
         }
@@ -76,33 +67,17 @@ int main(int argc, string argv[]) {
                 string **buffer = readAndWaitN(p_c[i], c_son, f_Psize);
                 int **temp = getValuesFromStringN(buffer, f_Psize);
                 storeOnMap(fileData, temp, f_Psize, fileIndex);
-                /*for (g = 0; g < CLUSTER; g++) {
-                    data[g] += temp[g];
-                    //fileData.stats[g] += temp[g];
-                }*/
-
-                /*for (g = 0; g < f_Psize; g++) {
-                    free(temp[g]);
-                } //new: temp non ci serve più perchè il suoi valori vengono passati a dataCollected*/
                 free(temp);
             }
         }
         fileIndex += file_per_p;
         file_restanti -= file_per_p;
-        //printf("sto valore stupido è %d\n", N - i - 1);
         if (i != N - 1) {
             file_per_p = ceiling(file_restanti, N - i - 1);
         }
                 
     }
-    //sleep(10);
     printf("Printing data....\n");
-    /*printf("Numero di lettere calcolato= %d\n", data[0]);
-    printf("Numero di numeri calcolato= %d\n", data[1]);
-    printf("Numero di spazi calcolato= %d\n", data[2]);
-    printf("Numero di punteggiatura calcolato= %d\n", data[3]);
-    printf("Numero di altro calcolato= %d\n", data[4]);*/
-
     printf("\nHo analizzato i seguenti files:\n\n");
     for (i = 0; i < fileTotal; ++i) {
         printf("%s\n", fileData[i].name);
@@ -115,17 +90,13 @@ int main(int argc, string argv[]) {
         printf("\tNumero di spazi calcolato= %d\n", fileData[i].stats[2]);
         printf("\tNumero di punteggiatura calcolato= %d\n", fileData[i].stats[3]);
         printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[4]); 
+        if(fileData[i].stats[0] + fileData[i].stats[1] + fileData[i].stats[2] + fileData[i].stats[3] + fileData[i].stats[4] !=
+        f_dim[i]){
+            puts("\n\n TANTI CAZZI \n\n");
+        }
     }
 
     printf("invio dati...\n");
-    //da cancellare solo per testare
-    /*map test;
-    test=malloc(sizeof(FileMap));
-    test[0].name="file1";
-    test[0].fileHash=123;
-    for(i=0;i<CLUSTER;i++){
-        test[0].stats[i]=data[i];
-    }*/
     printf("\tfile total %d\n",fileTotal);
     sender(fileData,fileTotal);
     printf("dati inviati!\n");
