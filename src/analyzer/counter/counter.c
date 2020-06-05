@@ -672,7 +672,7 @@ void sender(map data, int mapDim) {
             cantWrite = TRUE;
             printf(" se si raggiunge il limite di file inviati\n");
             while(cantWrite==TRUE){
-                system("sleep 2");
+                //system("sleep 2");
                 msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
                 if(msgError == 0) cantWrite = FALSE;
             }
@@ -694,12 +694,12 @@ void sender(map data, int mapDim) {
                     cantWrite = TRUE;
                     printf(" se si raggiunge il limite di file inviati\n");
                     while(cantWrite==TRUE){
-                        system("sleep 2");
+                        //system("sleep 2");
                         msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
                         if(msgError == 0) cantWrite = FALSE;
                     }
                 }
-                printf("\terr (%d): %s\n", i, strerror(errno));
+                //printf("\terr (%d): %s\n", i, strerror(errno));
                 cont++;
         }
     }
