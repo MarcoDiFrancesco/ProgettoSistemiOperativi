@@ -115,7 +115,6 @@ int main(int argc, string argv[]) {
         printf("\tNumero di spazi calcolato= %d\n", fileData[i].stats[2]);
         printf("\tNumero di punteggiatura calcolato= %d\n", fileData[i].stats[3]);
         printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[4]); 
-               
     }
 
     printf("invio dati...\n");
@@ -127,7 +126,7 @@ int main(int argc, string argv[]) {
     for(i=0;i<CLUSTER;i++){
         test[0].stats[i]=data[i];
     }*/
-    printf("\tfile total dioca %d\n",fileTotal);
+    printf("\tfile total %d\n",fileTotal);
     sender(fileData,fileTotal);
     printf("dati inviati!\n");
 

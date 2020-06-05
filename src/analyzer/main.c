@@ -94,11 +94,11 @@ int main(int argc, string argv[]) {
            isCpp(arg[i], lunghezza_nome)==TRUE || isPy(arg[i], lunghezza_nome)==TRUE ||
            isJava(arg[i], lunghezza_nome)==TRUE) {
             filesOk[i] = TRUE;
-            //printf("> %s OK (%d)\n", arg[i], i);
+            printf("> %s OK (%d)\n", arg[i], i);
         } else {
             filesOk[i] = FALSE;
             fileErrati++;
-            //printf("> %s NO (%d)\n", arg[i], i);
+            printf("> %s NO (%d)\n", arg[i], i);
         }
     }
 

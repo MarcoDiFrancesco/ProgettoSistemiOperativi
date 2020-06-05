@@ -86,6 +86,8 @@ int countDigits(unsigned long n);
 
 int fileDim(string file);
 
+void nl();
+
 //process function
 
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,

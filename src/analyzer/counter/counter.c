@@ -281,7 +281,7 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
     i = 0;
 
     for (i = 0; i < n; i++) {
-        //printf("\tsto analizzando = %s\n", fname[i]);
+        printf("\tsto analizzando = %s\n", fname[i]);
     }
 
     //printf("\tl'indice per recuperare gli indici è %d\n", index);
@@ -306,12 +306,12 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
         if (inizio[i] > fine[i]) {
             inizio[i] = fine[i] = 0;
         }   
-    /*
+    
         if(inizio[i] != fine[i]) {
             printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
         } else {
             printf("\t---------\n");
-        }*/
+        }
         ++i;
     }
 
@@ -342,6 +342,14 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
             break;
         }
     }
+
+/*
+    for (i = 0; i < n; i++) {
+        printf("\t%d\n", i);
+        for (j = 0; j < CLUSTER; ++j) {
+            printf("\t\t%d\n", stats[i][j]);
+        }
+    }*/
 
 
     if (i == 0)
@@ -414,13 +422,14 @@ int *getValuesFromString(char **str) {
 int **getValuesFromStringN(char ***str, int size)
 {
     int i, j;
-    int **values = (int **)malloc(CLUSTER * sizeof(int *));
+    int **values = (int **)malloc(size * sizeof(int *));
     for (i = 0; i < size; ++i) {
         values[i] = (int *)malloc(CLUSTER * sizeof(int));
         for (j = 0; j < CLUSTER; ++j) {
             values[i][j] = atoi(str[i][j]);
-            //printf("i=%d, j=%d\n", i, j);
+            
         }
+        nl();
     }
 
     return values;
@@ -611,6 +620,10 @@ int fileDim(string file) {
     return ret;
 }
 
+void nl() {
+    printf("\n");
+}
+
 //------------------------ process function section-----------------------
 
 
@@ -679,13 +692,30 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
                 } else {
                     //successive parti del processo P
                     qTop[j] = readAndWaitN(pipe_q[j], p_son, f_Psize);
+                    /*for (l = 0; l < f_Psize; l++) {
+                        printf("%d\n", l);
+                        for (g = 0; g < CLUSTER; g++) {
+                            printf("\t%s\n", qTop[j][l][g]);;
+                        }
+                        nl();
+                    }*/
                     int **tmp = getValuesFromStringN(qTop[j], f_Psize);
                     for (l = 0; l < f_Psize; l++) {
+                        printf("%d\n", l);
                         for (g = 0; g < CLUSTER; g++) {
+                            printf("\t%d\n", tmp[l][g]);
+                        }
+                        nl();
+                    }
+                    for (l = 0; l < f_Psize; l++) {
+                        for (g = 0; g < CLUSTER; g++) {
+                            //printf("> data: %d\n", tmp[l][g]);
                             dataCollected[l][g] += tmp[l][g];
+                            //printf("< datacollected: %d\n", dataCollected[l][g]);
                         }
                     }
-                    /*for (g = 0; g < f_Psize-1; g++) {
+                    nl();
+                    /*for (g = 0; g < f_Psize; g++) {
                         free(tmp[g]);
                     }*/
                     free(tmp);
@@ -712,15 +742,24 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
              int q_loop, int index, int m, int pipe_q[]) {
     printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
-    int i;
+    int i, j;
     int** counter = processoQ_n_new(range, dims, fname, f_Psize,
                                     q_loop, index, m);
     string **message = statsToStringN(counter, f_Psize);
+    /*for (i = 0; i < f_Psize; i++) {
+        printf("%d\n", i);
+        for (j = 0; j < CLUSTER; j++) {
+            printf("\t%s\n", message[i][j]);;
+        }
+        nl();
+    }*/
     int err = writePipeN(pipe_q, message, f_Psize);
     for (i = 0; i < f_Psize; ++i) {
         free(counter[i]);
+        free(message[i]);
     }
     free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
+    free(message);
     return err;
 }
 
