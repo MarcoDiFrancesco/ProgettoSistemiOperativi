@@ -1,10 +1,17 @@
 #include "main.h"
 
 int main() {
-    char *fillProcessPath = getSelfProcessPath();
-    char *processPath = baseName(fillProcessPath);
+    if (!DEBUG) {
+        int i;
+        for (i = 1; i <= 31; i++) {
+            signal(i, ignoreSignal);
+        }
+    }
 
-    if (strcmp(processPath, "/root/bin/"))
+    char *fullProcessPath = getSelfProcessPath();
+    char *processPath = baseName(fullProcessPath);
+
+    if (SHOW_WARNING && strcmp(processPath, "/root/bin/"))
         printf("Warning: /root/bin/ not detected, new folder is: %s\n", processPath);
 
     if (checkIntegrity("analyzer", processPath) || checkIntegrity("report", processPath)) {

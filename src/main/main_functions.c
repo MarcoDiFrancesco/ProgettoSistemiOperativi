@@ -4,7 +4,7 @@
 #include "main.h"
 
 char report_path[] = "/root/bin/report";
-char concatenated_path[] = "/root/bin/concatenated";
+char analyzer_path[] = "/root/bin/analyzer";
 
 /**
  * Create tail of the list
@@ -53,7 +53,8 @@ node listFiles(char *path) {
     fp = popen(command, "r");  // Open pointer to command output
     free(command);
     if (fp == NULL) {
-        printf("Failed to run command");
+        if (SHOW_WARNING)
+            printf("Warning: Failed to run command, returning\n");
         return files_list;
     }
 
@@ -94,13 +95,13 @@ void removeNewline(char *string) {
  * Credits: https://stackoverflow.com/a/28462221/7924557
  */
 void splitAndSendPaths(char *string) {
-    if (string[MAX_INPUT_LENGHT - 2] != '\0')
+    if (string[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
         printf("Warning: you succeeded the %d char limit, the last path might not be considered\n", MAX_INPUT_LENGHT);
 
     char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
     singlePath = strtok(string, " ");  // Split in space
     while (singlePath != NULL) {
-        char *a[] = {concatenated_path, string};
+        char *a[] = {analyzer_path, string};
         runProgramAndWait(a);
         singlePath = strtok(NULL, " ");
     }
@@ -123,26 +124,8 @@ char *getSelfProcessPath() {
 }
 
 void getAnalytics() {
-    printf("This is the table with all the analytics: TODO\n");
-}
-
-/**
- * Print error from runProgram() output function
- */
-void printError(int errNumber) {
-    // TODO: remove printing when the program runs correctly
-    // if (r == 0)
-    //     printf("Program tarted\n");
-    if (errNumber == 1)
-        printf("Error in forking\n");  // TODO: do something about not being able to fork
-    else if (errNumber == 2)
-        printf("File does not exist, building it\n");
-    else if (errNumber == 3)
-        printf("File is not executable, rebuilding it\n");  // TODO: check for file integrity using an hash function
-    else if (errNumber == 4)
-        printf("File is a directory, rebuilding\n");
-    else if (errNumber == 5)
-        printf("File is soft link, rebuilding\n");
+    if (SHOW_WARNING)
+        printf("This is the table with all the analytics: TODO\n");
 }
 
 /**
@@ -170,15 +153,18 @@ int runProgramAndWait(char **path) {
     if (pid == -1) {  // Error in forking
         return 1;
     } else if (pid == 0) {  // Child section
+        printf("path: %s\n", path[0]);
         execvp(path[0], path);
     } else {
-        printf("I'm the parent waiting for child: %d, I'm: %d\n", pid, getpid());
-        // Wait for a process (the first that comes)
-        wait(pid);
-        printf("Waited, now ending\n");
+        if (SHOW_WARNING)
+            printf("I'm the parent %d, waiting for child: %d\n", getpid(), pid);
+        wait(NULL);
+        if (SHOW_WARNING)
+            printf("Waited, now ending\n");
     }
     return 0;
 }
+
 /**
  * Give a path returns the folder where the file is contained.
  * e.g. /root/bin/main -> /root/bin/main
@@ -251,6 +237,28 @@ int executableChecks(char *path) {
 }
 
 /**
+ * Print error from runProgram() output function
+ */
+void printError(int errNumber) {
+    // TODO: remove printing when the program runs correctly
+    // if (r == 0)
+    //     printf("Program tarted\n");
+    if (SHOW_WARNING) {
+        printf("Warning: ");
+        if (errNumber == 1)
+            printf("Not able to fork, trying again...\n");
+        else if (errNumber == 2)
+            printf("File does not exist, building it\n");
+        else if (errNumber == 3)
+            printf("File is not executable, rebuilding it\n");
+        else if (errNumber == 4)
+            printf("File is a directory, rebuilding\n");
+        else if (errNumber == 5)
+            printf("File is soft link, rebuilding\n");
+    }
+}
+
+/**
  * Returns if path is a file and the file is executable
  * 
  * Credits: https://stackoverflow.com/a/13098645/7924557
@@ -303,6 +311,16 @@ char *concatPaths(char *dir, char *file) {
     retPath = strcat(retPath, dir);
     retPath = strcat(retPath, file);
     return retPath;
+}
+
+/**
+ * Ignore signal and print warning.
+ * 
+ * Credits: https://stackoverflow.com/a/25526951/7924557
+ */
+void ignoreSignal(int signal) {
+    if (SHOW_WARNING)
+        printf("\nWarining: ignoring signal\n");
 }
 
 #endif
