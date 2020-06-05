@@ -73,4 +73,6 @@ int selectFile(map results, int numFile);
 
 void printNames(map results, int nFile);
 
+void sighandler(int sig);
+
 #endif

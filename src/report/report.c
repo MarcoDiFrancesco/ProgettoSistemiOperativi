@@ -188,6 +188,9 @@ int *getValuesFromString(char **str){
 //message functions
 
 map readerMessage(int *numFileRet) {
+
+    kill(0, SIGUSR1);
+
     int i=0, j, nFiles;
     key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
     if (key < 0) report_and_exit("key not gotten...");
@@ -228,12 +231,14 @@ map readerMessage(int *numFileRet) {
     if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
         report_and_exit("trouble removing queue...");
 
-    kill(0, WRITESIGNAL);
-
     return ret;
 }
 
 void report_and_exit(const char* msg) {
     perror(msg);
     exit(-1); /* EXIT_FAILURE */
-    }
+}
+
+void sighandler(int sig){
+
+}

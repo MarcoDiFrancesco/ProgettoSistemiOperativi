@@ -1,5 +1,8 @@
 #include "counter.h"
 
+BOOL cantWrite = FALSE;
+
+
 string *readAndWait(int pipe[], pid_t son) {
     close(pipe[WRITE]);
     string *msg;
@@ -638,6 +641,8 @@ void report_and_exit(const char* msg) {
 }
 
 void sender(map data, int mapDim) {
+    //signal handler
+    signal(SIGUSR1, sighandler);
 
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {      
@@ -661,15 +666,18 @@ void sender(map data, int mapDim) {
         strcpy(msgName.payload, data[j].name);
         msgName.type = cont;
         int msgError=0;
-        msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR );
+        msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
         
         if(msgError<0){
             cantWrite = TRUE;
-            signal(SIGINT, sighandler);
-            while(cantWrite){
-                system("sleep 1");
+            printf(" se si raggiunge il limite di file inviati\n");
+            while(cantWrite==TRUE){
+                system("sleep 2");
+                msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
+                if(msgError == 0) cantWrite = FALSE;
             }
         }
+
         //conversione stats in message
         string *message = statsToString(data[j].stats);
         //invio dati file
@@ -684,9 +692,11 @@ void sender(map data, int mapDim) {
 
                 if(msgError<0){
                     cantWrite = TRUE;
-                    signal(SIGINT, sighandler);
-                    while(cantWrite){
-                        system("sleep 1");
+                    printf(" se si raggiunge il limite di file inviati\n");
+                    while(cantWrite==TRUE){
+                        system("sleep 2");
+                        msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
+                        if(msgError == 0) cantWrite = FALSE;
                     }
                 }
                 printf("\terr (%d): %s\n", i, strerror(errno));
@@ -697,8 +707,6 @@ void sender(map data, int mapDim) {
 }
 
 void sighandler(int sig){
-    if(sig == WRITESIGNAL){
-        printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare");
-        cantWrite = FALSE;
-    }
+    printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare");
+    cantWrite = FALSE;
 }

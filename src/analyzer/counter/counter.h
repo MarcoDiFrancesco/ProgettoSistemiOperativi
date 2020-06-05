@@ -89,9 +89,6 @@ int fileDim(string file);
 
 void nl();
 
-//booleano per gestire i segnali
-BOOL cantWrite = FALSE;
-
 //process function
 
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
