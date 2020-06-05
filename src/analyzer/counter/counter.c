@@ -647,6 +647,7 @@ void sender(map data, int mapDim) {
     int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) 
         report_and_exit("couldn't get queue id...");
+    
     int i;
     queuedMessage msgNum;
     sprintf(msgNum.payload, "%d", mapDim);
@@ -658,8 +659,11 @@ void sender(map data, int mapDim) {
         queuedMessage msgName;
         strcpy(msgName.payload, data[j].name);
         msgName.type = cont;
-        msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
-        printf("err (f): %s\n", strerror(errno));
+        int msgError=0;
+        msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR );
+        if(msgError<0){
+            system("sleep 2");
+        }
         //conversione stats in message
         string *message = statsToString(data[j].stats);
         //invio dati file
@@ -670,8 +674,12 @@ void sender(map data, int mapDim) {
                 msg.type = cont;
                 strcpy(msg.payload, message[i]);
                 /* send the message */
-                msgsnd(qid, &msg, sizeof(msg), MSG_NOERROR | IPC_NOWAIT); /* don't block */
-                printf("\terr (i): %s\n", strerror(errno));
+                msgError = msgsnd(qid, &msg, sizeof(msg), MSG_NOERROR); /* don't block */
+                if(msgError<0){
+                    printf("err: %d", msgError);
+                    printf("err (f %d): %s\n", j, strerror(errno));
+                }
+                printf("\terr (%d): %s\n", i, strerror(errno));
                 cont++;
         }
     }

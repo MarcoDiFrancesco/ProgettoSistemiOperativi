@@ -188,13 +188,7 @@ int *getValuesFromString(char **str){
 //message functions
 
 map readerMessage(int *numFileRet) {
-
-    //string *ret=(char **)malloc(CLUSTER * sizeof(char *));
     int i=0, j, nFiles;
-    //for (i = 0; i < CLUSTER; ++i) {
-        //ret[i] = (char *)malloc(12 * sizeof(int));
-    //}
-    
     key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
     if (key < 0) report_and_exit("key not gotten...");
 
@@ -210,13 +204,7 @@ map readerMessage(int *numFileRet) {
     strcpy(tmp, msg.payload);
     nFiles = atoi(tmp);
     *numFileRet = nFiles;
-
-    /*int types[CLUSTER*nFiles + nFiles];
-    for(i=0; i<CLUSTER*nFiles + nFiles; i++){
-        types[i] = i+2;
-    }*/
     map ret = malloc(nFiles*sizeof(FileMap));
-
     int counter = 2;
     for(j=0; j<nFiles; j++){
         //salvataggio nome file
@@ -228,22 +216,22 @@ map readerMessage(int *numFileRet) {
         for (i = 0; i < CLUSTER; i++) {
             //salvataggio dati file
             if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
-            printf("\telemento %d del cluster\n", i);
+            printf("\terr (%d): %s\n", i, strerror(errno));
             //printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
             strcpy(tmp, msg.payload);
             ret[j].stats[i] = atoi(tmp);
             counter++;
         }
-        printf("File numero %d completo\n", j);
+        printf("err (f %d): %s\n", j, strerror(errno));
     }
     /** remove the queue **/
     if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
         report_and_exit("trouble removing queue...");
 
     return ret;
-    }
+}
 
-    void report_and_exit(const char* msg) {
+void report_and_exit(const char* msg) {
     perror(msg);
     exit(-1); /* EXIT_FAILURE */
-}
+    }
