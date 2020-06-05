@@ -14,6 +14,7 @@
 #include <sys/msg.h>
 #include <assert.h>
 #include <ctype.h>
+#include <signal.h>
 
 #define READ 0
 #define WRITE 1
@@ -23,6 +24,7 @@
 #define FALSE 0
 #define TRUE 1
 #define BUFFSIZE 1000
+#define WRITESIGNAL 1234
 
 //define per il sender
 #define ProjectId 123
@@ -87,6 +89,9 @@ int fileDim(string file);
 
 void nl();
 
+//booleano per gestire i segnali
+BOOL cantWrite = FALSE;
+
 //process function
 
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
@@ -101,5 +106,10 @@ int processQ(int *range, int *dims, char** fname, int f_Psize,
 void report_and_exit(const char* msg);
 
 void sender(map data, int mapDim);
+
+
+//signal functions
+
+void sighandler(int sig);
 
 #endif

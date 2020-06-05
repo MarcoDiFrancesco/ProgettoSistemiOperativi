@@ -638,6 +638,7 @@ void report_and_exit(const char* msg) {
 }
 
 void sender(map data, int mapDim) {
+
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {      
         printf("err: %s\n", strerror(errno));
@@ -661,8 +662,13 @@ void sender(map data, int mapDim) {
         msgName.type = cont;
         int msgError=0;
         msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR );
+        
         if(msgError<0){
-            system("sleep 2");
+            cantWrite = TRUE;
+            signal(SIGINT, sighandler);
+            while(cantWrite){
+                system("sleep 1");
+            }
         }
         //conversione stats in message
         string *message = statsToString(data[j].stats);
@@ -675,13 +681,24 @@ void sender(map data, int mapDim) {
                 strcpy(msg.payload, message[i]);
                 /* send the message */
                 msgError = msgsnd(qid, &msg, sizeof(msg), MSG_NOERROR); /* don't block */
+
                 if(msgError<0){
-                    printf("err: %d", msgError);
-                    printf("err (f %d): %s\n", j, strerror(errno));
+                    cantWrite = TRUE;
+                    signal(SIGINT, sighandler);
+                    while(cantWrite){
+                        system("sleep 1");
+                    }
                 }
                 printf("\terr (%d): %s\n", i, strerror(errno));
                 cont++;
         }
     }
     
+}
+
+void sighandler(int sig){
+    if(sig == WRITESIGNAL){
+        printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare");
+        cantWrite = FALSE;
+    }
 }

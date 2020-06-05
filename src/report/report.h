@@ -24,6 +24,7 @@
 #define ProjectId 123
 #define PathName  "../src/analyzer/counter/counter.h" /* any existing, accessible file would do */
 #define MAX_MSG_SIZE 100
+#define WRITESIGNAL 1234
 
 
 typedef char * string;

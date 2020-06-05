@@ -228,6 +228,8 @@ map readerMessage(int *numFileRet) {
     if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
         report_and_exit("trouble removing queue...");
 
+    kill(0, WRITESIGNAL);
+
     return ret;
 }
 
