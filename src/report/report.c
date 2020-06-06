@@ -91,13 +91,18 @@ int selectFile(map results, int numFile){
     printf("Questi sono i file disponibili.\n");
     printNames(results,numFile);
     printf("Inserisci l'indice del file di cui vuoi conoscere le statistiche\n> ");
-    int input;
-    scanf(" %d", &input);
-    while (!(input >= 1 && input <= numFile)) {
+    char input;
+    int intput;
+    scanf(" %c", &input);
+    intput = input - '0';
+    while (!(intput >= 1 && intput <= numFile)) {
         printf("Inserisci un indice di un file sopra citato\n");
-        scanf(" %d", &input);
+        fflush(stdout);
+        fflush(stdin);
+        scanf(" %c", &input);
+        intput = input - '0';
     }
-    return input-1;
+    return intput-1;
 }
 
 void printSingle(map results, int fileNum){
