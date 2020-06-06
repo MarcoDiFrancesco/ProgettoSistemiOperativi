@@ -33,6 +33,10 @@ int main(int argc, string argv[]) {
 
     int *part = filesPart(files, fileTotal, M);
     int *f_dim = filesDim(files, fileTotal);
+    int *f_Psize = malloc(N * sizeof(int));
+    for (k = 0; k < N; ++k) {
+        f_Psize[k] = 0;
+    }
 
     map fileData = malloc(fileTotal * sizeof(FileMap));
     int i;
@@ -45,12 +49,11 @@ int main(int argc, string argv[]) {
     for (i = 0; i < N; i++) {
         int k = 0;
         string file_P[file_per_p];
-        int f_Psize = 0;
         int fileIndexTemp = fileIndex;
         while (k < file_per_p) {
             if (fileIndexTemp < fileTotal) {
                 file_P[k] = files[fileIndexTemp++];
-                f_Psize++;
+                f_Psize[i]++;
             }
             if (fileIndexTemp - 1 == fileTotal) {
                 file_P[k] = 0;
@@ -67,7 +70,7 @@ int main(int argc, string argv[]) {
             if (PIds[i] == 0) {
                 return_value = processP(PIds[i], p_c, q_p, file_P, N, M, 
                                         fileTotal, fileIndex, part, f_dim, 
-                                        i, file_per_p, f_Psize);                
+                                        i, file_per_p, f_Psize[i]);                
                 kill(getppid(), SIGUSR2);
                 exit(return_value);
             } else {
@@ -86,12 +89,13 @@ int main(int argc, string argv[]) {
     while(boolP==FALSE){
         system("sleep 1");
     }
-    //fileIndexe=0;
-    for(i=0;i<N;i++){
-        string **buffer = readAndWaitN(p_c[i], f_Psize);
-        int **temp = getValuesFromStringN(buffer, f_Psize);
-        storeOnMap(fileData, temp, f_Psize, fileIndex);
+    fileIndex = 0;
+    for (i = 0; i < N; i++) {
+        string **buffer = readAndWaitN(p_c[i], f_Psize[i]);
+        int **temp = getValuesFromStringN(buffer, f_Psize[i]);
+        storeOnMap(fileData, temp, f_Psize[i], fileIndex);
         free(temp);
+        fileIndex += f_Psize[i];
     }
 
     printf("Printing data....\n");
@@ -107,15 +111,15 @@ int main(int argc, string argv[]) {
         printf("\tNumero di spazi calcolato= %d\n", fileData[i].stats[2]);
         printf("\tNumero di punteggiatura calcolato= %d\n", fileData[i].stats[3]);
         printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[4]); 
-        if(fileData[i].stats[0] + fileData[i].stats[1] + fileData[i].stats[2] + fileData[i].stats[3] + fileData[i].stats[4] !=
+        /*if(fileData[i].stats[0] + fileData[i].stats[1] + fileData[i].stats[2] + fileData[i].stats[3] + fileData[i].stats[4] !=
         f_dim[i]){
             puts("\n\n TANTI CAZZI \n\n");
-        }
+        }*/
     }
 
     printf("invio dati...\n");
     printf("\tfile total %d\n",fileTotal);
-    sender(fileData,fileTotal);
+    //sender(fileData,fileTotal);
     printf("dati inviati!\n");
 
     //libero spazio in memoria
