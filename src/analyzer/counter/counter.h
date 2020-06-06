@@ -119,8 +119,10 @@ void sender(map data, int mapDim);
 
 //signal functions
 
-void sighandler(int sig);
+void signalhandler(int sig);
 
-void sighandlerQ(int sig);
+void sighandlerP(int sig);
+
+void sigHandlerQ(int sig);
 
 #endif

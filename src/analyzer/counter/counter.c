@@ -233,9 +233,9 @@ int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, i
     int inizio[n], fine[n];
     i = 0;
 
-    for (i = 0; i < n; i++) {
+    /*for (i = 0; i < n; i++) {
         printf("\tsto analizzando = %s\n", fname[i]);
-    }
+    }*/
     i = 0;
 
     // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
@@ -319,8 +319,7 @@ char **statsToString (int *values) {
     return str;
 }
 
-char ***statsToStringN(int **values, int size)
-{
+char ***statsToStringN(int **values, int size){
 
     char ***str = (char ***)malloc(size * sizeof(char **));
     int i, j;
@@ -556,54 +555,59 @@ void nl() {
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
              int N, int M, int total, int fileIndex, int *part, int *fdim, 
              int index_p,int file_per_p, int f_Psize) {
+    signal(SIGUSR2, sigHandlerQ);
     //creo pipe fra C e P
-    int l, g;
+    int l, g, j;
     int return_value;
-    if (c_son == 0) {
-        //processo P
-        string **qTop[M];
-        int **dataCollected = malloc(f_Psize * sizeof(int *));
-        for (l = 0; l < f_Psize; l++) {
-            dataCollected[l] = malloc(CLUSTER * sizeof(int));
-            for (g = 0; g < CLUSTER; g++) {
-                dataCollected[l][g] = 0;
-            }
+    //processo P
+    string **qTop[M];
+    int **dataCollected = malloc(f_Psize * sizeof(int *));
+    for (l = 0; l < f_Psize; l++) {
+        dataCollected[l] = malloc(CLUSTER * sizeof(int));
+        for (g = 0; g < CLUSTER; g++) {
+            dataCollected[l][g] = 0;
         }
-        printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
-        int j;
-        //creo M processi di tipo Q
-        for (j = 0; j < M; j++) {
-            //creo la pipe fra P e Q
-            pipe(pipe_q[j]);
-            int p_son = fork();
+    }
+    printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
+    //creo M processi di tipo Q
+    for (j = 0; j < M; j++) {
+        //creo la pipe fra P e Q
+        pipe(pipe_q[j]);
+        int p_son = fork();
             if (p_son == -1) {
                 printf("error occurred at line 46\n");
                 return_value = 46;
             } else {
                 if (p_son == 0) {
-                    return_value = processQ(part, fdim, file_P, f_Psize, 
-                                            j, fileIndex, M, pipe_q[j]);
-                    exit(0);
-                } else {
-                    //successive parti del processo P
-                    qTop[j] = readAndWaitN(pipe_q[j], f_Psize);
-                    int **tmp = getValuesFromStringN(qTop[j], f_Psize);
-                    for (l = 0; l < f_Psize; l++) {
-                        for (g = 0; g < CLUSTER; g++) {
-                            dataCollected[l][g] += tmp[l][g];
-                        }
-                    }
-                    nl();
-                    free(tmp);
+                return_value = processQ(part, fdim, file_P, f_Psize, 
+                                        j, fileIndex, M, pipe_q[j]);
+                kill(getppid(), SIGUSR2);
+                exit(return_value);
+            } else {
+                //successive parti del processo P
                 }
-            }                   
+                    
+            }
+        } 
+
+    while(boolQ[index_p]==FALSE){
+        system("sleep 1");
+        printf("while Q\n");
+    }
+    for(j=0;j<M;j++){
+        qTop[j] = readAndWaitN(pipe_q[j], f_Psize);
+        int **tmp = getValuesFromStringN(qTop[j], f_Psize);
+        for (l = 0; l < f_Psize; l++) {
+            for (g = 0; g < CLUSTER; g++) {
+                dataCollected[l][g] += tmp[l][g];
+            }
         }
-        return_value = writePipeN(pipe_c[index_p], statsToStringN(dataCollected, f_Psize), f_Psize);
-        for (g = 0; g < f_Psize; g++) {
-            free(dataCollected[g]);
     }
-        return return_value;
+    return_value = writePipeN(pipe_c[index_p], statsToStringN(dataCollected, f_Psize), f_Psize);
+    for (g = 0; g < f_Psize; g++) {
+        free(dataCollected[g]);
     }
+    return return_value;
 }
 /**
  * @param range     vedi documentazione processoQ_n
@@ -641,7 +645,7 @@ void report_and_exit(const char* msg) {
 
 void sender(map data, int mapDim) {
     //signal handler
-    signal(SIGUSR1, sighandler);
+    signal(SIGUSR1, sighandlerP);
 
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {      
@@ -705,27 +709,30 @@ void sender(map data, int mapDim) {
     
 }
 
-void sighandler(int sig){
+void signalhandler(int sig){
     printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare");
     cantWrite = FALSE;
 }
 
 void sighandlerP(int sig){
+    printf("Signal\n");
     int i, check = 0;
     pid_t end[N];
     for(i=0; i<N; i++){
-        if( waitpid(PIds[i], NULL, WNOHANG) == PIds[i] ){
+        if (waitpid(PIds[i], NULL, WNOHANG) == PIds[i] ){
+            printf("Signal\n");
             end[i] = PIds[i];
             check++;
         }
     }
-    if(check == N){
+    if (check == N){
         //tutti i P sono finiti ora si può leggere
         boolP = TRUE;
     }
 }
 
-void sighandlerQ(int sig){
+void sigHandlerQ(int sig){
+    printf("Signal Q\n");
     int i, j, check = 0;
     pid_t end[M];
     pid_t current_pid = getpid();
@@ -743,7 +750,7 @@ void sighandlerQ(int sig){
             check++;
         }
     }
-    if(check == N){
+    if(check == M){
         //tutti i Q del processo P che gestisce la signal sono finiti ora si può leggere
         boolQ[j] = TRUE;
     }

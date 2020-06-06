@@ -47,7 +47,7 @@ void read_result(map results,int numFile){
 void printAll(map results,int numFile){
     int i;
     char input;
-    printf("Scegli il vormato di visualizzazione: per valore[v] percentuale[p] o entrambi[e]");
+    printf("Scegli il formato di visualizzazione: per valore[v] percentuale[p] o entrambi[e]");
     scanf(" %c", &input);
     while (input != 'v' && input != 'p' && input != 'e') {
         printf("Insermento non valido, inserire esclusivamente [v], [p] o [e]");

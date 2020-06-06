@@ -1,8 +1,8 @@
 #include "counter.h"
 
 int main(int argc, string argv[]) {
+    signal(SIGUSR2, sighandlerP);
     int k = 0;
-
     N = atoi(argv[1]);
     M = atoi(argv[2]);
     PIds=malloc(sizeof(pid_t)*N);
@@ -11,6 +11,10 @@ int main(int argc, string argv[]) {
         QIds[k] = malloc(M * sizeof(pid_t));
     }
     boolQ=malloc(sizeof(BOOL)*N);
+    for (k = 0; k < N; ++k) {
+        boolQ[k] = FALSE;
+    }
+    boolP = FALSE;
 
     int fileTotal = atoi(argv[3]);
 
@@ -75,7 +79,6 @@ int main(int argc, string argv[]) {
                 exit(return_value);
             } else {
                 //successive parti del processo C
-                
             }
         }
         fileIndex += file_per_p;
@@ -88,6 +91,7 @@ int main(int argc, string argv[]) {
 
     while(boolP==FALSE){
         system("sleep 1");
+        printf("while P\n");
     }
     fileIndex = 0;
     for (i = 0; i < N; i++) {
@@ -97,6 +101,7 @@ int main(int argc, string argv[]) {
         free(temp);
         fileIndex += f_Psize[i];
     }
+    free(f_Psize);
 
     printf("Printing data....\n");
     printf("\nHo analizzato i seguenti files:\n\n");
@@ -119,7 +124,7 @@ int main(int argc, string argv[]) {
 
     printf("invio dati...\n");
     printf("\tfile total %d\n",fileTotal);
-    //sender(fileData,fileTotal);
+    sender(fileData,fileTotal);
     printf("dati inviati!\n");
 
     //libero spazio in memoria
