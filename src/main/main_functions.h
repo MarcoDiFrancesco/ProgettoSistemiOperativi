@@ -3,12 +3,12 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <signal.h>
 
 #define FALSE 0
 #define TRUE 1
@@ -56,7 +56,7 @@ node addNode(node head, char *new_str);
 char *concat(const char *s1, const char *s2, const char *s3);
 node listFiles(char *path);
 void removeNewline(char *string);
-void splitAndSendPaths(char *string);
+void splitAndSendPaths(char *string, char *n, char *m);
 char *getSelfProcessPath();
 void getAnalytics();
 int runProgram(char **path);
@@ -72,5 +72,6 @@ int pathIsFolder(char *path);
 int pathIsLink(char *path);
 char *concatPaths(char *dir, char *file);
 void ignoreSignal(int signal);
+int stringIsInt(char *string);
 
 #endif

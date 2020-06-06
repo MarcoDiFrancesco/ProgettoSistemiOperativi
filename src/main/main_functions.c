@@ -91,10 +91,16 @@ void removeNewline(char *string) {
  * 
  * Credits: https://stackoverflow.com/a/28462221/7924557
  */
-void splitAndSendPaths(char *string) {
+void splitAndSendPaths(char *string, char *n, char *m) {
     if (string[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
-        printf("Warning: you succeeded the %d char limit, the last path might not be considered\n", MAX_INPUT_LENGHT);
-    char arguments[MAX_ARG_STRLEN]; // *4 in case the path is "a" there is " -c " chars
+        printf("Warning: hai superato il limite di %d caratteri, l'ulima path potrebbe non essere considerata\n", MAX_INPUT_LENGHT);
+    char arguments[MAX_ARG_STRLEN * 4];       // *4 in case the path is "a" there is " -c " chars
+    strcat(arguments, analyzer_path);
+    strcat(arguments, " -n ");
+    strcat(arguments, n);
+    strcat(arguments, " -m ");
+    strcat(arguments, m);
+
     char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
     singlePath = strtok(string, " ");  // Split in space
     while (singlePath != NULL) {
@@ -102,10 +108,9 @@ void splitAndSendPaths(char *string) {
         strcat(arguments, singlePath);
         singlePath = strtok(NULL, " ");
     }
-    printf("%s\n", arguments);
-    // char *a[] = {analyzer_path, string};
+    system(arguments);
+    // char *a[] = {analyzer_path, arguments};
     // runProgramAndWait(a);
-    // free(arguments);
 }
 
 /**
@@ -322,4 +327,19 @@ char *concatPaths(char *dir, char *file) {
 void ignoreSignal(int signal) {
     if (SHOW_WARNING)
         printf("\nWarining: ignoring signal\n");
+}
+
+/**
+ * Check if string is an integer or not
+ */
+int stringIsInt(char *string) {
+    char *newString;
+    long number = strtol(string, &newString, 10);  // Base 10
+
+    if (*newString != '\0' || newString == string){
+        printf("Scrivi un numero\n");
+    } else {
+        return TRUE;
+    }
+    return FALSE;
 }
