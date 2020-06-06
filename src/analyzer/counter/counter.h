@@ -31,6 +31,14 @@
 #define PathName  "../src/analyzer/counter/counter.h" /* any existing, accessible file would do */
 #define MAX_MSG_SIZE 100
 
+//globals
+int N;
+int M;
+pid_t *PIds;
+pid_t **QIds;
+BOOL boolP;
+BOOL *boolQ;
+
 //structures
 typedef char * string;
 
@@ -63,6 +71,10 @@ int* processoQ(int from, int to, char* fname);
 int* processoQ_n(int *range, int *dims, char** fname, int n, 
                  int q_loop, int index, int M);
 
+
+int **processoQ_n_new (int *range, int *dims, char** fname, 
+                       int n, int q_loop, int index, int M);
+
 char **statsToString(int *values);
 
 char ***statsToStringN(int **values, int size);
@@ -77,7 +89,7 @@ int *filesDim(string *files, int num);
 
 int writePipeN(int pipe[], string **msg, int size);
 
-string **readAndWaitN(int pipe[], pid_t son, int size);
+string **readAndWaitN(int pipe[], int size);
 
 void storeOnMap(map fileData, int **values, int size, int index);
 
@@ -108,5 +120,7 @@ void sender(map data, int mapDim);
 //signal functions
 
 void sighandler(int sig);
+
+void sighandlerQ(int sig);
 
 #endif

@@ -73,7 +73,6 @@ int main(int argc, string argv[]) {
                 stupido += elements_in_folder;
             } else {
                 n_arg++;
-                printf("-c diocan\n");
             }   
         }
     }

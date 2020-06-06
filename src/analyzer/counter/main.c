@@ -1,10 +1,17 @@
 #include "counter.h"
 
-
 int main(int argc, string argv[]) {
+    int k = 0;
 
-    int N = atoi(argv[1]);
-    int M = atoi(argv[2]);
+    N = atoi(argv[1]);
+    M = atoi(argv[2]);
+    PIds=malloc(sizeof(pid_t)*N);
+    QIds=malloc(N * sizeof(pid_t *));
+    for(k = 0; k < N; ++k) {
+        QIds[k] = malloc(M * sizeof(pid_t));
+    }
+    boolQ=malloc(sizeof(BOOL)*N);
+
     int fileTotal = atoi(argv[3]);
 
     string files[fileTotal];
@@ -52,22 +59,20 @@ int main(int argc, string argv[]) {
         }
         
         pipe(p_c[i]);
-        pid_t c_son = fork();
-        if (c_son == -1) {
+        PIds[i] = fork();
+        if (PIds[i] == -1) {
             printf("error occurred at line 35\n");
             return_value=35;
         } else {
-            if (c_son == 0) {
-                return_value = processP(c_son, p_c, q_p, file_P, N, M, 
+            if (PIds[i] == 0) {
+                return_value = processP(PIds[i], p_c, q_p, file_P, N, M, 
                                         fileTotal, fileIndex, part, f_dim, 
-                                        i, file_per_p, f_Psize); 
+                                        i, file_per_p, f_Psize);                
+                kill(getppid(), SIGUSR2);
                 exit(return_value);
             } else {
                 //successive parti del processo C
-                string **buffer = readAndWaitN(p_c[i], c_son, f_Psize);
-                int **temp = getValuesFromStringN(buffer, f_Psize);
-                storeOnMap(fileData, temp, f_Psize, fileIndex);
-                free(temp);
+                
             }
         }
         fileIndex += file_per_p;
@@ -77,6 +82,18 @@ int main(int argc, string argv[]) {
         }
                 
     }
+
+    while(boolP==FALSE){
+        system("sleep 1");
+    }
+    //fileIndexe=0;
+    for(i=0;i<N;i++){
+        string **buffer = readAndWaitN(p_c[i], f_Psize);
+        int **temp = getValuesFromStringN(buffer, f_Psize);
+        storeOnMap(fileData, temp, f_Psize, fileIndex);
+        free(temp);
+    }
+
     printf("Printing data....\n");
     printf("\nHo analizzato i seguenti files:\n\n");
     for (i = 0; i < fileTotal; ++i) {

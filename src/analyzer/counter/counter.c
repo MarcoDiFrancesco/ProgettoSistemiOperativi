@@ -441,7 +441,7 @@ int writePipeN(int pipe[], string **msg, int size)
     return ret;
 }
 
-string **readAndWaitN(int pipe[], pid_t son, int size) {
+string **readAndWaitN(int pipe[], int size) {
 
     close(pipe[WRITE]);
     string **msg;
@@ -464,7 +464,6 @@ string **readAndWaitN(int pipe[], pid_t son, int size) {
         }
     }
     close(pipe[READ]);
-    waitpid(son, NULL, 0);
     return msg;
 }
 
@@ -587,7 +586,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
                     exit(0);
                 } else {
                     //successive parti del processo P
-                    qTop[j] = readAndWaitN(pipe_q[j], p_son, f_Psize);
+                    qTop[j] = readAndWaitN(pipe_q[j], f_Psize);
                     int **tmp = getValuesFromStringN(qTop[j], f_Psize);
                     for (l = 0; l < f_Psize; l++) {
                         for (g = 0; g < CLUSTER; g++) {
@@ -709,4 +708,43 @@ void sender(map data, int mapDim) {
 void sighandler(int sig){
     printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare");
     cantWrite = FALSE;
+}
+
+void sighandlerP(int sig){
+    int i, check = 0;
+    pid_t end[N];
+    for(i=0; i<N; i++){
+        if( waitpid(PIds[i], NULL, WNOHANG) == PIds[i] ){
+            end[i] = PIds[i];
+            check++;
+        }
+    }
+    if(check == N){
+        //tutti i P sono finiti ora si può leggere
+        boolP = TRUE;
+    }
+}
+
+void sighandlerQ(int sig){
+    int i, j, check = 0;
+    pid_t end[M];
+    pid_t current_pid = getpid();
+
+    //cerco l'indice del processo P
+    for(i=0; i<N; i++){
+        if(current_pid == PIds[i]) 
+            break;
+    }
+    //adesso i è l'indice del processo P che gestisce la signal
+    //ora scorro solamente i Q che sono figli di quel P
+    for(j=0; j<M; j++){
+        if( waitpid(QIds[i][j], NULL, WNOHANG) == QIds[i][j] ){
+            end[j] = QIds[i][j];
+            check++;
+        }
+    }
+    if(check == N){
+        //tutti i Q del processo P che gestisce la signal sono finiti ora si può leggere
+        boolQ[j] = TRUE;
+    }
 }
