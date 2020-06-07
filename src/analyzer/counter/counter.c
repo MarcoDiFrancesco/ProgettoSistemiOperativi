@@ -102,21 +102,33 @@ int readFile(char* filename, char* filedata, int start, int stop) {
 void countLetters(int dim, char* s, int* counter) {
     int i = dim - 1;
     for (i; i >= 0; i--) {
-        if (s[i] >= 'a' && s[i] <= 'z' || s[i] >= 'A' && s[i] <= 'Z') {
-            //lettera maiuscola o minuscola
-            counter[0]++;
+        if (s[i] >= 'A' && s[i] <= 'Z') {
+            //lettera maiuscola
+            counter[UPPERCASE]++;
+        } else if (s[i] >= 'a' && s[i] <= 'z') {
+            //lettera minuscola
+            counter[LOWERCASE]++;
         } else if (s[i] >= '0' && s[i] <= '9') {
             //numero
-            counter[1]++;
+            counter[NUMBERS]++;
         } else if (s[i] == ' ') {
             //spazi
-            counter[2]++;
+            counter[SPACES]++;
         } else if (s[i] == '.' || s[i] == ',' || s[i] == ':' || 
                    s[i] == ';' || s[i] == '?' || s[i] == '!') {
             //punteggiatura
-            counter[3]++;
+            counter[PUNCTUATION]++;
+        } else if (s[i] == '(' || s[i] == ')' || s[i] == '[' || 
+		   s[i] == ']' || s[i] == '{' || s[i] == '}' ) {
+            //parentesi
+            counter[PARENTHESIS]++;
+        } else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || 
+                   s[i] == '/' || s[i] == '%' || s[i] == '^' ||
+ 		   s[i] == '<' || s[i] == '>' || s[i] == '=') {
+            //simboli matematici
+            counter[MATH_OPERATORS]++;
         } else {
-            counter[4]++;
+            counter[OTHER]++;
         }
     }
 }

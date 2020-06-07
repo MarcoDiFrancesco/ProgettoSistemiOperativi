@@ -140,11 +140,14 @@ int main(int argc, string argv[]) {
             printf("WARNING: %s has been modified while being analyzed,\nthis data is about the file prior to modification\n", fileData[i].name);
         }
         printf("Old hash= %lu, new hash= %lu\n", fileData[i].fileHash, computeHash(files[i], f_dim[i], TRUE));
-        printf("\tNumero di lettere calcolato= %d\n", fileData[i].stats[0]);
-        printf("\tNumero di numeri calcolato= %d\n", fileData[i].stats[1]);
-        printf("\tNumero di spazi calcolato= %d\n", fileData[i].stats[2]);
-        printf("\tNumero di punteggiatura calcolato= %d\n", fileData[i].stats[3]);
-        printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[4]); 
+        printf("\tNumero di lettere maiuscole calcolato= %d\n", fileData[i].stats[UPPERCASE]);
+        printf("\tNumero di lettere minuscole calcolato= %d\n", fileData[i].stats[LOWERCASE]);
+        printf("\tNumero di numeri calcolato= %d\n", fileData[i].stats[NUMBERS]);
+        printf("\tNumero di spazi calcolato= %d\n", fileData[i].stats[SPACES]);
+        printf("\tNumero di punteggiatura calcolato= %d\n", fileData[i].stats[PUNCTUATION]);
+        printf("\tNumero di parentesi= %d\n", fileData[i].stats[PARENTHESIS]);
+        printf("\tNumero di operatori matematici= %d\n", fileData[i].stats[MATH_OPERATORS]);
+        printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[OTHER]); 
         /*if(fileData[i].stats[0] + fileData[i].stats[1] + fileData[i].stats[2] + fileData[i].stats[3] + fileData[i].stats[4] !=
         f_dim[i]){
             puts("\n\n TANTI CAZZI \n\n");

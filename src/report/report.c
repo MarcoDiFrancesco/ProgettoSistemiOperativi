@@ -1,6 +1,6 @@
 #include "report.h"
 
-void read_result(map results,int numFile){
+void read_result(map results, int numFile) {
     /*int i = 0,
         counter = 0,
         *nval = getValuesFromString(results);*/
@@ -12,14 +12,18 @@ void read_result(map results,int numFile){
         printf("Inserisci solamente [a] o [u]");
         scanf(" %c", &input);
     }
+    int *temp;
     switch (input) {
         case 'a' :
-            printAll(results, numFile);
+            temp = computeOverall(results, numFile);
+            printOverall(temp);
+            //printAll(results, numFile);
             break;
         case 'u' : 
             printSingle(results, selectFile(results, numFile));
             break;
     }
+    free(temp);
     
     /*printf("Choose your result format: values[v] percentage[p] both[a]");
     scanf(" %c", &input);
@@ -155,11 +159,14 @@ void print_percentual(int* results){
 
 string print_type(int n){
     switch(n){
-        case 0 : return "lettere";
-        case 1 : return "numeri";
-        case 2 : return "spazi";
-        case 3 : return "punteggiatura";
-        case 4 : return "altri simboli";
+        case UPPERCASE : return "lettere maiuscole";
+        case LOWERCASE : return "lettere minuscole";
+        case NUMBERS : return "numeri";
+        case SPACES : return "spazi";
+        case PUNCTUATION : return "punteggiatura";
+        case PARENTHESIS : return "parentesi";
+        case MATH_OPERATORS : return "operatori matematici";
+        case OTHER : return "altri simboli";
     }
 };
 
@@ -188,6 +195,44 @@ int *getValuesFromString(char **str){
     }
 
     return values;
+}
+
+int *computeOverall(map results, int numFiles) {
+    int i, j;
+    int *overall = (int *)malloc(CLUSTER * sizeof(int));
+    for (j = 0; j < CLUSTER; ++j) {
+        overall[j] = 0;
+    }
+    for (i = 0; i < numFiles; ++i) {
+        for (j = 0; j < CLUSTER; ++j) {
+            overall[j] += results[i].stats[j];
+        }
+    }
+    return overall;
+}
+
+void printOverall(int *values) {
+    printf("Hai scelto di stampare le statistiche generali\n");
+    char input;
+    printf("Scegli il formato di visualizzazione: per valore[v] percentuale[p] o entrambi[e]");
+    scanf(" %c", &input);
+    while (input != 'v' && input != 'p' && input != 'e') {
+        printf("Insermento non valido, inserire esclusivamente [v], [p] o [e]");
+        scanf(" %c", &input);
+    }
+    switch (input) {
+        case 'v' :
+            print_values(values);
+            break;
+        case 'p' : 
+            print_percentual(values);
+            break;
+        case 'e' : 
+            print_values(values);
+            printf("\n-----------");
+            print_percentual(values);
+            break;
+    }
 }
 
 //message functions

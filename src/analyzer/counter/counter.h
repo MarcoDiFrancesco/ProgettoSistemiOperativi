@@ -19,12 +19,23 @@
 #define READ 0
 #define WRITE 1
 #define MAXLEN 12*sizeof(int)
-#define CLUSTER 5
 #define BOOL char
 #define FALSE 0
 #define TRUE 1
 #define BUFFSIZE 1000
 #define WRITESIGNAL 1234
+
+//define per il cluster
+
+#define CLUSTER 8
+#define UPPERCASE 0
+#define LOWERCASE 1
+#define NUMBERS 2
+#define SPACES 3
+#define PUNCTUATION 4
+#define PARENTHESIS 5
+#define MATH_OPERATORS 6
+#define OTHER CLUSTER - 1
 
 //define per il sender
 #define ProjectId 123
