@@ -12,7 +12,6 @@
 
 #define FALSE 0
 #define TRUE 1
-typedef char *string;
 
 /**
  * Show warnings like "Detected another directory" or "Signal ignored".
@@ -41,20 +40,26 @@ typedef char *string;
  * 
  * Credits: https://stackoverflow.com/a/9449307/7924557
  */
+#ifndef PATH_MAX
 #define PATH_MAX 4096
+#endif
 
 #define MAX_ARG_STRLEN 131072
 
+// TODO: merge with analyzer.h
+#ifndef _LINKED_LIST_
+#define _LINKED_LIST_
 struct LinkedList {
     char *str;
     struct LinkedList *next;
 };
 typedef struct LinkedList *node;
+#endif
 
 node createNode();
 node addNode(node head, char *new_str);
 char *concat(const char *s1, const char *s2, const char *s3);
-node listFiles(char *path);
+node listFiles(node head, char *path);
 void removeNewline(char *string);
 void splitAndSendPaths(char *string, char *n, char *m);
 char *getSelfProcessPath();

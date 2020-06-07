@@ -16,43 +16,56 @@ node createNode() {
 /**
  * Add node to given head of node structure
  */
-node addNode(node head, char *new_str) {
-    char *dest;  // Create new str
-    dest = malloc(sizeof(char) * (strlen(new_str) + 1));
-    strcpy(dest, new_str);  // Copy string into a new string
-
-    node temp, p;
-    temp = createNode();
-
-    temp->str = dest;  // Pointer to new string
-    if (head == NULL) {
-        head = temp;
-    } else {
-        p = head;
-        while (p->next != NULL) {
-            p = p->next;
-        }
-        p->next = temp;
+node addNode(node head, char *path) {
+    removeNewline(path);
+    FILE *fp;
+    char commandReadlink[PATH_MAX] = "";
+    strcat(commandReadlink, "readlink -f ");
+    strcat(commandReadlink, path);
+    fp = popen(commandReadlink, "r");  // Open pointer to command output
+    if (fp == NULL) {
+        if (SHOW_WARNING)
+            printf("Warning: Failed to run command, returning\n");
+        return head;
     }
-    return head;
+
+    char p[PATH_MAX];  // Max lenght of the path
+    printf("Given head: %s\n", head->str);
+    fgets(p, sizeof(p), fp);  // Get only first line
+
+    removeNewline(p);
+    pclose(fp);  // Close pointer to command output
+    node temp = createNode();
+    temp->str = p;  // Pointer to new string
+    printf("Before head: %s\n", head->str);
+    if (head == NULL) {
+        printf("Is null\n");
+        head = temp;
+    } else {  // Go to head
+        printf("Is not null\n");
+        while (head->next != NULL) {
+            head->next = head;
+        }
+        head->next = temp;
+    }
+    printf("After head: %s, %s\n", head->str, head->next->str);
+    return head->next;
 }
 
 /**
  * Given a path of a directory it returns all files inside it.
+ * Used command: find path -type f
  */
-node listFiles(char *path) {
-    node files_list = createNode();  // Tail of the list
-    node head = files_list;
-    FILE *fp;
-
+node listFiles(node head, char *path) {
     char *command = malloc(PATH_MAX);
     command = concat("find ", path, " -type f");
+    FILE *fp;
     fp = popen(command, "r");  // Open pointer to command output
     free(command);
     if (fp == NULL) {
         if (SHOW_WARNING)
             printf("Warning: Failed to run command, returning\n");
-        return files_list;
+        return head;
     }
 
     char p[PATH_MAX];  // Max lenght of the path
@@ -60,8 +73,8 @@ node listFiles(char *path) {
         head = addNode(head, p);
     }
 
-    pclose(fp);               // Close pointer to command output
-    return files_list->next;  // First node is NULL, so return second
+    pclose(fp);   // Close pointer to command output
+    return head;  // First node is NULL, so return second
 }
 
 /**
@@ -82,7 +95,9 @@ char *concat(const char *s1, const char *s2, const char *s3) {
  * Credits: https://stackoverflow.com/a/28462221/7924557
  */
 void removeNewline(char *string) {
+    // printf("Before string: %s\n", string);
     string[strcspn(string, "\n")] = 0;
+    // printf("After string: %s\n", string);
 }
 
 /**
@@ -94,7 +109,7 @@ void removeNewline(char *string) {
 void splitAndSendPaths(char *string, char *n, char *m) {
     if (string[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
         printf("Warning: hai superato il limite di %d caratteri, l'ulima path potrebbe non essere considerata\n", MAX_INPUT_LENGHT);
-    char arguments[MAX_ARG_STRLEN * 4];       // *4 in case the path is "a" there is " -c " chars
+    char arguments[MAX_ARG_STRLEN * 4];  // *4 in case the path is "a" there is " -c " chars
     strcat(arguments, analyzer_path);
     strcat(arguments, " -n ");
     strcat(arguments, n);
@@ -336,7 +351,7 @@ int stringIsInt(char *string) {
     char *newString;
     long number = strtol(string, &newString, 10);  // Base 10
 
-    if (*newString != '\0' || newString == string){
+    if (*newString != '\0' || newString == string) {
         printf("Scrivi un numero\n");
     } else {
         return TRUE;

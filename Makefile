@@ -25,20 +25,21 @@ clean:
 
 # Analyzer
 ADEPS=src/analyzer/analyzer.c src/analyzer/analyzer.h
-bin/analyzer: src/analyzer/main.c $(ADEPS)
-	$(COMPILER) -o $@ $< $(ADEPS) $(FLAGS)
-
 # Main
 MDEPS=src/main/main_functions.c src/main/main_functions.h
+# Report
+RDEPS=src/report/report.c src/report/report.h
+# Counter
+CDEPS=src/analyzer/counter/counter.c src/analyzer/counter/counter.h
+
+bin/analyzer: src/analyzer/main.c $(ADEPS) $(MDEPS)
+	$(COMPILER) -o $@ $< $(ADEPS) $(MDEPS) $(FLAGS)
+
 bin/main: src/main/main.c $(MDEPS)
 	$(COMPILER) -o $@ $< $(MDEPS) $(FLAGS)
 
-# Report
-RDEPS=src/report/report.c src/report/report.h
 bin/report: src/report/main.c $(RDEPS)
 	$(COMPILER) -o $@ $< $(RDEPS) $(FLAGS)
 
-# Counter
-CDEPS=src/analyzer/counter/counter.c src/analyzer/counter/counter.h
 bin/counter:src/analyzer/counter/main.c $(CDEPS)
 	$(COMPILER) -o $@ $< $(CDEPS) $(FLAGS)
