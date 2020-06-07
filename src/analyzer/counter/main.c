@@ -1,6 +1,11 @@
 #include "counter.h"
 
 int main(int argc, string argv[]) {
+    if(argc<4){
+        printf("Counter chiamato con argomenti insufficienti\n");
+        return 1;
+    }
+
     signal(SIGUSR2, sighandlerP);
     int k,b = 0;
     N = atoi(argv[1]);
@@ -59,7 +64,7 @@ int main(int argc, string argv[]) {
         fileData[i].fileHash = computeHash(files[i], f_dim[i], FALSE);
     }
 
-    printf("\n\nProcess C pid=%d\n",getpid());
+    //printf("\n\nProcess C pid=%d\n",getpid());
     for (i = 0; i < N; i++) {
         int k = 0;
         string file_P[file_per_p];
@@ -88,9 +93,9 @@ int main(int argc, string argv[]) {
                                         fileTotal, fileIndex, part, f_dim, 
                                         i, file_per_p, f_Psize[i]);                
                 if(kill(getppid(), SIGUSR2)==0){
-                    printf("P ha mandato una signal qid : %d\n", getpid());
+                    //printf("P ha mandato una signal qid : %d\n", getpid());
                 }else{
-                    printf("!!!!Perror  %s\n", strerror(errno));
+                    //printf("!!!!Perror  %s\n", strerror(errno));
                 }
                     
                 exit(return_value);
@@ -106,10 +111,11 @@ int main(int argc, string argv[]) {
                 
     }
 
+    printf("Sto analizzando...");
     while(boolP==FALSE){
-        system("sleep 3");
-        printf("diocan sto aspettando i P\n");
-
+        system("sleep 1");
+        printf(".");
+        fflush(stdout);
         int tmp_counter = 0;
         for(i=0; i<N; i++){
             for(j=0; j<M; j++){
@@ -132,14 +138,14 @@ int main(int argc, string argv[]) {
     }
     free(f_Psize);
 
-    printf("Printing data....\n");
-    printf("\nHo analizzato i seguenti files:\n\n");
+    //printf("Printing data....\n");
+    //printf("\nHo analizzato i seguenti files:\n\n");
     for (i = 0; i < fileTotal; ++i) {
-        printf("%s\n", fileData[i].name);
+        //printf("%s\n", fileData[i].name);
         if (fileData[i].fileHash != computeHash(files[i], f_dim[i], TRUE)) {
             printf("WARNING: %s has been modified while being analyzed,\nthis data is about the file prior to modification\n", fileData[i].name);
         }
-        printf("Old hash= %lu, new hash= %lu\n", fileData[i].fileHash, computeHash(files[i], f_dim[i], TRUE));
+        /*printf("Old hash= %lu, new hash= %lu\n", fileData[i].fileHash, computeHash(files[i], f_dim[i], TRUE));
         printf("\tNumero di lettere maiuscole calcolato= %d\n", fileData[i].stats[UPPERCASE]);
         printf("\tNumero di lettere minuscole calcolato= %d\n", fileData[i].stats[LOWERCASE]);
         printf("\tNumero di numeri calcolato= %d\n", fileData[i].stats[NUMBERS]);
@@ -147,17 +153,19 @@ int main(int argc, string argv[]) {
         printf("\tNumero di punteggiatura calcolato= %d\n", fileData[i].stats[PUNCTUATION]);
         printf("\tNumero di parentesi= %d\n", fileData[i].stats[PARENTHESIS]);
         printf("\tNumero di operatori matematici= %d\n", fileData[i].stats[MATH_OPERATORS]);
-        printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[OTHER]); 
+        printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[OTHER]); */
         /*if(fileData[i].stats[0] + fileData[i].stats[1] + fileData[i].stats[2] + fileData[i].stats[3] + fileData[i].stats[4] !=
         f_dim[i]){
             puts("\n\n TANTI CAZZI \n\n");
         }*/
     }
 
-    printf("invio dati...\n");
-    printf("\tfile total %d\n",fileTotal);
+    //printf("invio dati...\n");
+    printf("\n\n");
+    printf("Numero di file analizzati: %d\n",fileTotal);
+    printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");
     sender(fileData,fileTotal);
-    printf("dati inviati!\n");
+    printf("Dati inviati con successo!\n");
 
     //libero spazio in memoria
     free(part);

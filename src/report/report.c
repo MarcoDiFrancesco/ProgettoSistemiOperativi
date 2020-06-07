@@ -6,47 +6,31 @@ void read_result(map results, int numFile) {
         *nval = getValuesFromString(results);*/
     char input;
 
-    printf("Vuoi le statistiche di tutti i file [a]\no di un file singolo [u]?\n");
+    printf("Vuoi le statistiche di tutti i file [a]\ndi un file singolo [u]\noppure le statistiche complessive [s]?\n");
     scanf(" %c", &input);
-    while (input != 'a' && input != 'u') {
-        printf("Inserisci solamente [a] o [u]");
+    while (input != 'a' && input != 'u'&& input != 's') {
+        printf("Inserisci solamente [a], [u] o [s]");
         scanf(" %c", &input);
     }
-    int *temp;
+    long *temp;
     switch (input) {
         case 'a' :
-            temp = computeOverall(results, numFile);
-            printOverall(temp);
-            //printAll(results, numFile);
+            printAll(results, numFile);
             break;
         case 'u' : 
             printSingle(results, selectFile(results, numFile));
             break;
+        case 's':
+            temp = computeOverall(results, numFile);
+            printOverall(temp);
+            //printSummary(results, numFile);
+            break;
     }
     free(temp);
-    
-    /*printf("Choose your result format: values[v] percentage[p] both[a]");
-    scanf(" %c", &input);
-    while (input != 'v' && input != 'p' && input != 'a') {
-        printf("Insert only [v], [p] or [a]");
-        scanf(" %c", &input);
-    }
-    switch (input) {
-        case 'v' :
-            print_values(nval);
-            break;
-        case 'p' : 
-            print_values(nval);
-            break;
-        case 'a' : 
-            print_values(nval);
-            printf("\n-----------");
-            print_percentual(nval);
-            break;
-    }*/
 }
 
 //new print functions
+
 
 void printAll(map results,int numFile){
     int i;
@@ -197,9 +181,9 @@ int *getValuesFromString(char **str){
     return values;
 }
 
-int *computeOverall(map results, int numFiles) {
+long *computeOverall(map results, int numFiles) {
     int i, j;
-    int *overall = (int *)malloc(CLUSTER * sizeof(int));
+    long *overall = (long *)malloc(CLUSTER * sizeof(long));
     for (j = 0; j < CLUSTER; ++j) {
         overall[j] = 0;
     }
@@ -211,7 +195,7 @@ int *computeOverall(map results, int numFiles) {
     return overall;
 }
 
-void printOverall(int *values) {
+void printOverall(long *values) {
     printf("Hai scelto di stampare le statistiche generali\n");
     char input;
     printf("Scegli il formato di visualizzazione: per valore[v] percentuale[p] o entrambi[e]");
@@ -222,15 +206,15 @@ void printOverall(int *values) {
     }
     switch (input) {
         case 'v' :
-            print_values(values);
+            print_values_long(values);
             break;
         case 'p' : 
-            print_percentual(values);
+            print_percentual_long(values);
             break;
         case 'e' : 
-            print_values(values);
+            print_values_long(values);
             printf("\n-----------");
-            print_percentual(values);
+            print_percentual_long(values);
             break;
     }
 }
@@ -240,6 +224,7 @@ void printOverall(int *values) {
 map readerMessage(int *numFileRet) {
 
     kill(0, SIGUSR1);
+    printf("Per iniziare a ricevere dati è necessiario lanciare analyzer [bin/analyzer]\n\n");
 
     int i=0, j, nFiles;
     key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
@@ -248,11 +233,11 @@ map readerMessage(int *numFileRet) {
     int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
     if (qid < 0) report_and_exit("no access to queue...");
 
-    printf("key : %d\nqid : %d\n", key, qid);
+    //printf("key : %d\nqid : %d\n", key, qid);
 
     queuedMessage msg; 
     if (msgrcv(qid, &msg, sizeof(msg), 1, MSG_NOERROR) < 0)   puts("msgrcv (num) trouble...");
-    printf("%s (num) received as type %i\n", msg.payload, (int) msg.type);
+        printf("%s (num) received as type %i\n", msg.payload, (int) msg.type);
     string tmp = malloc(sizeof(100));
     strcpy(tmp, msg.payload);
     nFiles = atoi(tmp);
@@ -269,13 +254,13 @@ map readerMessage(int *numFileRet) {
         for (i = 0; i < CLUSTER; i++) {
             //salvataggio dati file
             if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
-            printf("\terr (%d): %s\n", i, strerror(errno));
+            //printf("\terr (%d): %s\n", i, strerror(errno));
             //printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
             strcpy(tmp, msg.payload);
             ret[j].stats[i] = atoi(tmp);
             counter++;
         }
-        printf("err (f %d): %s\n", j, strerror(errno));
+        //printf("err (f %d): %s\n", j, strerror(errno));
     }
     /** remove the queue **/
     if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
@@ -291,4 +276,24 @@ void report_and_exit(const char* msg) {
 
 void sighandler(int sig){
 
+}
+
+void print_values_long(long* results){
+    int i = 0;
+
+    for (i = 0; i < CLUSTER; i++) {
+        printf("\n> Numero di %s: %ld", print_type(i), results[i]);
+    }
+    printf("\n");
+}
+
+void print_percentual_long(long* results){
+    int i = 0, dim = 0;
+    for(i=0; i<CLUSTER; i++){
+        dim += results[i];
+    }
+    for(i=0; i<CLUSTER; i++){
+        printf("\n> percentuale di %s: %0.2f percento", print_type(i), ((float)results[i]/((float)dim))*100.0 );
+    }
+    printf("\n");
 }

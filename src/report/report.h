@@ -14,6 +14,7 @@
 #include <sys/msg.h>
 #include <assert.h>
 #include <ctype.h>
+#include <time.h>
 
 #define BOOL char
 #define FALSE 0
@@ -34,7 +35,7 @@
 
 //define per il sender
 #define ProjectId 123
-#define PathName  "../src/analyzer/counter/counter.h" /* any existing, accessible file would do */
+#define PathName  "/root/src/analyzer/counter/counter.h" /* any existing, accessible file would do */
 #define MAX_MSG_SIZE 100
 #define WRITESIGNAL 1234
 
@@ -60,7 +61,11 @@ void read_result(map results,int numFIle);
 
 void print_values(int* results);
 
+void print_values_long(long* results);
+
 void print_percentual(int* results);
+
+void print_percentual_long(long* results);
 
 string print_type(int n);
 
@@ -70,9 +75,9 @@ string *statsToString(int *values);
 
 int *getValuesFromString(char **str);
 
-int *computeOverall(map results, int numFiles);
+long *computeOverall(map results, int numFiles);
 
-void printOverall(int *values);
+void printOverall(long *values);
 
 //message functions
 void report_and_exit(const char* msg);

@@ -580,7 +580,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
             dataCollected[l][g] = 0;
         }
     }
-    printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
+    //printf("P created pid=%d ppid=%d\n", getpid(), getppid());                
     //creo M processi di tipo Q
     for (j = 0; j < M; j++) {
         //creo la pipe fra P e Q
@@ -595,9 +595,9 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
                 //printf("pid processo Q: %d vs quello che abbiamo %d\n", getpid(), QIds[index_p][j]);
                 return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, M, pipe_q[j]);
                 if( kill(getppid(), SIGUSR2) == 0 ){
-                    printf("Q ha mandato una signal qid : %d\n", getpid());
+                    //printf("Q ha mandato una signal qid : %d\n", getpid());
                 }else{
-                    printf("!!!!Qerror  %s\n", strerror(errno));
+                    //printf("!!!!Qerror  %s\n", strerror(errno));
                 }
                 exit(return_value);
             } else {
@@ -605,11 +605,11 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
             }
                     
         }
-    } 
-
+    }
     while(boolQ[index_p]==FALSE) {
-        system("sleep 3");
-        printf("while Q\n");
+        system("sleep 1");
+        printf(".");
+        fflush(stdout);
         int tmp_count = 0;
         int i, index;
         for(j=0; j<M; j++){
@@ -648,7 +648,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
  */
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
              int q_loop, int index, int m, int pipe_q[]) {
-    printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
+    //printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
     int i, j;
     int** counter = processoQ_n_new(range, dims, fname, f_Psize,
                                     q_loop, index, m);
@@ -743,10 +743,9 @@ void signalhandler(int sig){
 
 void sighandlerP(int sig){
     checkP++;
-    printf("check P: %d\n", checkP);
+    //printf("check P: %d\n", checkP);
     if (checkP == N){
         //tutti i P sono finiti ora si può leggere
-        printf("\tTRUE MERDE\n");
         boolP = TRUE;
     }
 }
@@ -761,12 +760,8 @@ void sigHandlerQ(int sig){
             break;
     }
     checkQ[i]++;
-    printf("Signal Q --> %d\n", current_pid);
-    
-    printf("checkQ (%d): %d\n",i, checkQ[i]);
     if(checkQ[i] == M){
         //tutti i Q del processo P che gestisce la signal sono finiti ora si può leggere
         boolQ[i] = TRUE;
-        printf("---------------->>>>>TRUE STRONZI %d <<<<<<-------\n", i);
     }
 }

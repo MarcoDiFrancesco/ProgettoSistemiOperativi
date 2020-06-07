@@ -17,6 +17,7 @@ build:
 	@$(MAKE) bin/main
 	@$(MAKE) bin/counter
 	@$(MAKE) bin/report
+	@$(MAKE) bin/cleanBuffer
 	@echo "Files successfully built"
 
 clean:
@@ -42,3 +43,8 @@ bin/report: src/report/main.c $(RDEPS)
 CDEPS=src/analyzer/counter/counter.c src/analyzer/counter/counter.h
 bin/counter:src/analyzer/counter/main.c $(CDEPS)
 	$(COMPILER) -o $@ $< $(CDEPS) $(FLAGS)
+
+# Cleaner Buffer
+CBDEPS=src/report/report.c src/report/report.h
+bin/cleanBuffer:src/report/cleanBuffer.c $(CBDEPS)
+	$(COMPILER) -o $@ $< $(CBDEPS) $(FLAGS)

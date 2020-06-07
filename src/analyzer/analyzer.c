@@ -163,3 +163,13 @@ node listFiles(char *path) {
     return files_list->next;  // First node is NULL, so return second
 }
 
+BOOL containsDot(string str){
+    int len = strlen(str);
+    int i;
+    BOOL ret = FALSE;
+    for(i=len-1; len>=0 && str[i] != '/'; i--){
+        if(str[i] == '.')
+            ret = TRUE;
+    }
+    return ret;
+}

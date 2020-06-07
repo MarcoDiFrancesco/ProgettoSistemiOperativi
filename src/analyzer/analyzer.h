@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <sys/stat.h>
+#include <time.h>
 
 #define READ 0
 #define WRITE 1
@@ -50,6 +51,8 @@ int file_exists(char *filename);
 int is_folder(char *folder);
 char *concat(const char *s1, const char *s2, const char *s3);
 node listFiles(char *path);
+
+BOOL containsDot(string str);
 
 
 #endif
