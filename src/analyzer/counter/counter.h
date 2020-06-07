@@ -38,6 +38,8 @@ pid_t *PIds;
 pid_t **QIds;
 BOOL boolP;
 BOOL *boolQ;
+int *checkQ;
+int checkP;
 
 //structures
 typedef char * string;

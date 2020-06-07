@@ -2,19 +2,29 @@
 
 int main(int argc, string argv[]) {
     signal(SIGUSR2, sighandlerP);
-    int k = 0;
+    int k,b = 0;
     N = atoi(argv[1]);
     M = atoi(argv[2]);
-    PIds=malloc(sizeof(pid_t)*N);
+    PIds=malloc(N * sizeof(pid_t));
     QIds=malloc(N * sizeof(pid_t *));
     for(k = 0; k < N; ++k) {
+        PIds[k] = 0;
         QIds[k] = malloc(M * sizeof(pid_t));
+        for(b = 0; b < M; ++b) {
+            QIds[k][b] = 0;
+        }
     }
     boolQ=malloc(sizeof(BOOL)*N);
     for (k = 0; k < N; ++k) {
         boolQ[k] = FALSE;
     }
     boolP = FALSE;
+
+    checkQ=malloc(sizeof(int)*N);
+    for(k=0; k<N; k++){
+        checkQ[k] = 0;
+    }
+    checkP = 0;
 
     int fileTotal = atoi(argv[3]);
 
@@ -67,15 +77,18 @@ int main(int argc, string argv[]) {
         
         pipe(p_c[i]);
         PIds[i] = fork();
+        //printf("qui pids[%d]=%d e N=%d\n", i, PIds[i], N);
         if (PIds[i] == -1) {
             printf("error occurred at line 35\n");
             return_value=35;
         } else {
             if (PIds[i] == 0) {
+                PIds[i] = getpid();
                 return_value = processP(PIds[i], p_c, q_p, file_P, N, M, 
                                         fileTotal, fileIndex, part, f_dim, 
                                         i, file_per_p, f_Psize[i]);                
-                kill(getppid(), SIGUSR2);
+                if(kill(getppid(), SIGUSR2)==0)
+                    printf("P ha mandato una signal qid : %d\n", getpid());
                 exit(return_value);
             } else {
                 //successive parti del processo C
@@ -91,7 +104,7 @@ int main(int argc, string argv[]) {
 
     while(boolP==FALSE){
         system("sleep 1");
-        printf("while P\n");
+        printf("diocan sto aspettando i P\n");
     }
     fileIndex = 0;
     for (i = 0; i < N; i++) {

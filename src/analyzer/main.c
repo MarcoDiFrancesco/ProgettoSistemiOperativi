@@ -86,24 +86,24 @@ int main(int argc, string argv[]) {
     //controllo sul nome dei file passati come argomento
     BOOL filesOk[argc - n_arg];
     int fileErrati = 0;
-    printf("nome corretto: ");
+    //printf("nome corretto: ");
     for (i = n_arg; i < argc; i++) {
         int lunghezza_nome = strlen(arg[i]);
         if(isTxt(arg[i], lunghezza_nome)==TRUE || isC(arg[i], lunghezza_nome)==TRUE  ||
            isCpp(arg[i], lunghezza_nome)==TRUE || isPy(arg[i], lunghezza_nome)==TRUE ||
            isJava(arg[i], lunghezza_nome)==TRUE) {
             filesOk[i] = TRUE;
-            printf("> %s OK (%d)\n", arg[i], i);
+            //printf("> %s OK (%d)\n", arg[i], i);
         } else {
             filesOk[i] = FALSE;
             fileErrati++;
-            printf("> %s NO (%d)\n", arg[i], i);
+            //printf("> %s NO (%d)\n", arg[i], i);
         }
     }
 
     // Controllo sull'esistenza dei file passati
     int fileInesistenti = 0;
-    puts("\n\nControllo l'esistenza dei file validi\n");
+    //puts("\n\nControllo l'esistenza dei file validi\n");
     for (i = n_arg; i < argc ; ++i) {
         if (filesOk[i]) {
             if (access(arg[i], F_OK) == -1) {

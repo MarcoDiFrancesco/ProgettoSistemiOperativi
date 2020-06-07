@@ -364,7 +364,7 @@ int **getValuesFromStringN(char ***str, int size)
             values[i][j] = atoi(str[i][j]);
             
         }
-        nl();
+        ////nl();
     }
 
     return values;
@@ -573,28 +573,31 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
     for (j = 0; j < M; j++) {
         //creo la pipe fra P e Q
         pipe(pipe_q[j]);
-        int p_son = fork();
-            if (p_son == -1) {
-                printf("error occurred at line 46\n");
-                return_value = 46;
-            } else {
-                if (p_son == 0) {
+        QIds[index_p][j] = fork();
+        if (QIds[index_p][j] == -1) {
+            printf("error occurred at line 46\n");
+            return_value = 46;
+        } else {
+            if (QIds[index_p][j] == 0) {
+                QIds[index_p][j] = getpid();
+                //printf("pid processo Q: %d vs quello che abbiamo %d\n", getpid(), QIds[index_p][j]);
                 return_value = processQ(part, fdim, file_P, f_Psize, 
                                         j, fileIndex, M, pipe_q[j]);
                 kill(getppid(), SIGUSR2);
+                printf("Q ha mandato una signal qid : %d\n", getpid());
                 exit(return_value);
             } else {
-                //successive parti del processo P
-                }
-                    
+            //successive parti del processo P
             }
-        } 
+                    
+        }
+    } 
 
-    while(boolQ[index_p]==FALSE){
+    while(boolQ[index_p]==FALSE) {
         system("sleep 1");
         printf("while Q\n");
     }
-    for(j=0;j<M;j++){
+    for (j = 0; j < M; j++) {
         qTop[j] = readAndWaitN(pipe_q[j], f_Psize);
         int **tmp = getValuesFromStringN(qTop[j], f_Psize);
         for (l = 0; l < f_Psize; l++) {
@@ -631,8 +634,8 @@ int processQ(int *range, int *dims, char** fname, int f_Psize,
         free(counter[i]);
         free(message[i]);
     }
-    free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
-    free(message);
+    //free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
+    //free(message);
     return err;
 }
 
@@ -715,43 +718,30 @@ void signalhandler(int sig){
 }
 
 void sighandlerP(int sig){
-    printf("Signal\n");
-    int i, check = 0;
-    pid_t end[N];
-    for(i=0; i<N; i++){
-        if (waitpid(PIds[i], NULL, WNOHANG) == PIds[i] ){
-            printf("Signal\n");
-            end[i] = PIds[i];
-            check++;
-        }
-    }
-    if (check == N){
+    checkP++;
+    printf("check P: %d\n", checkP);
+    if (checkP == N){
         //tutti i P sono finiti ora si può leggere
+        printf("\tTRUE MERDE\n");
         boolP = TRUE;
     }
 }
 
 void sigHandlerQ(int sig){
     printf("Signal Q\n");
-    int i, j, check = 0;
-    pid_t end[M];
     pid_t current_pid = getpid();
-
+    int i;
     //cerco l'indice del processo P
     for(i=0; i<N; i++){
+        //printf("(%d) current pid=%d, PIDS[%d]=%d\n",i,current_pid,i,PIds[i]);
         if(current_pid == PIds[i]) 
             break;
     }
-    //adesso i è l'indice del processo P che gestisce la signal
-    //ora scorro solamente i Q che sono figli di quel P
-    for(j=0; j<M; j++){
-        if( waitpid(QIds[i][j], NULL, WNOHANG) == QIds[i][j] ){
-            end[j] = QIds[i][j];
-            check++;
-        }
-    }
-    if(check == M){
+    checkQ[i]++;
+    printf("checkQ (%d): %d\n",i, checkQ[i]);
+    if(checkQ[i] == M){
         //tutti i Q del processo P che gestisce la signal sono finiti ora si può leggere
-        boolQ[j] = TRUE;
+        boolQ[i] = TRUE;
+        printf("---------------->>>>>TRUE STRONZI<<<<<<-------\n");
     }
 }
