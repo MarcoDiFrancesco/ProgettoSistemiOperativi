@@ -581,10 +581,12 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
             if (QIds[index_p][j] == 0) {
                 QIds[index_p][j] = getpid();
                 //printf("pid processo Q: %d vs quello che abbiamo %d\n", getpid(), QIds[index_p][j]);
-                return_value = processQ(part, fdim, file_P, f_Psize, 
-                                        j, fileIndex, M, pipe_q[j]);
-                kill(getppid(), SIGUSR2);
-                printf("Q ha mandato una signal qid : %d\n", getpid());
+                return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, M, pipe_q[j]);
+                if( kill(getppid(), SIGUSR2) == 0 ){
+                    printf("Q ha mandato una signal qid : %d\n", getpid());
+                }else{
+                    printf("!!!!Qerror  %s\n", strerror(errno));
+                }
                 exit(return_value);
             } else {
             //successive parti del processo P
@@ -594,9 +596,19 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
     } 
 
     while(boolQ[index_p]==FALSE) {
-        system("sleep 1");
+        system("sleep 3");
         printf("while Q\n");
+        int tmp_count = 0;
+        int i, index;
+        for(j=0; j<M; j++){
+            if( waitpid(QIds[index_p][j], NULL, WNOHANG) == QIds[index_p][j] ){
+                tmp_count++;
+            }
+        }
+        if(tmp_count == M)
+            boolQ[index_p] = TRUE;
     }
+
     for (j = 0; j < M; j++) {
         qTop[j] = readAndWaitN(pipe_q[j], f_Psize);
         int **tmp = getValuesFromStringN(qTop[j], f_Psize);
@@ -728,9 +740,8 @@ void sighandlerP(int sig){
 }
 
 void sigHandlerQ(int sig){
-    printf("Signal Q\n");
-    pid_t current_pid = getpid();
     int i;
+    pid_t current_pid = getpid();
     //cerco l'indice del processo P
     for(i=0; i<N; i++){
         //printf("(%d) current pid=%d, PIDS[%d]=%d\n",i,current_pid,i,PIds[i]);
@@ -738,10 +749,12 @@ void sigHandlerQ(int sig){
             break;
     }
     checkQ[i]++;
+    printf("Signal Q --> %d\n", current_pid);
+    
     printf("checkQ (%d): %d\n",i, checkQ[i]);
     if(checkQ[i] == M){
         //tutti i Q del processo P che gestisce la signal sono finiti ora si può leggere
         boolQ[i] = TRUE;
-        printf("---------------->>>>>TRUE STRONZI<<<<<<-------\n");
+        printf("---------------->>>>>TRUE STRONZI %d <<<<<<-------\n", i);
     }
 }
