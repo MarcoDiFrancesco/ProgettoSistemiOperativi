@@ -26,7 +26,6 @@
 #define WRITESIGNAL 1234
 
 //define per il cluster
-
 #define CLUSTER 8
 #define UPPERCASE 0
 #define LOWERCASE 1
@@ -73,20 +72,14 @@ int writePipe(int pipe[],string *msg);
 
 string *readAndWait(int pipe[], pid_t son);
 
-int * filesPart(string *files,int num,int M);
+int * filesPart(string *files,int num, int M);
 
 int readFile(char* filename, char* filedata, int start, int stop);
 
 void countLetters(int dim, char* s, int* counter);
 
-int* processoQ(int from, int to, char* fname);
-
-int* processoQ_n(int *range, int *dims, char** fname, int n, 
-                 int q_loop, int index, int M);
-
-
-int **processoQ_n_new (int *range, int *dims, char** fname, 
-                       int n, int q_loop, int index, int M);
+int **processoQ_n (int *range, int *dims, char** fname, 
+                   int n, int q_loop, int index);
 
 char **statsToString(int *values);
 
@@ -117,11 +110,11 @@ void nl();
 //process function
 
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
-             int N, int M, int ceil, int fileIndex, int *part, int *fdim, 
+             int ceil, int fileIndex, int *part, int *fdim, 
              int index_p,int file_per_p, int f_Psize);
 
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
-             int q_loop, int index, int m, int pipe_q[]);
+             int q_loop, int index, int pipe_q[]);
 
 //IPC functions
 

@@ -133,31 +133,6 @@ void countLetters(int dim, char* s, int* counter) {
     }
 }
 
-int* processoQ(int from, int to, char* fname) {
-    char* testo;
-    int* stats;
-    int i;
-    int inizio = from;
-    int fine = to;
-
-    testo = malloc(fine * sizeof(char));
-    stats = malloc(5 * sizeof(int));
-    i = 0;
-
-    for (i; i < CLUSTER; i++) {
-        stats[i] = 0;
-    }
-
-    i = readFile(fname, testo, inizio, fine);
-
-    countLetters(fine - inizio, testo, stats);
-
-
-    if (i==0)
-        return stats;
-    else 
-        return (int *)-1;
-}
 /**
  * Questa è la funzione in cui avviene l'analisi vera e propria della porzione di file. 
  * Inizialmente recupera gli indizi di inizio e fine degli n files da analizzare;
@@ -178,67 +153,11 @@ int* processoQ(int from, int to, char* fname) {
  * @param index Prodotto tra l'iterazione tra i processi P e il numero di file che ogni P può
  *              analizzare; utile per sapere a quale elemento siamo arrivati nelle liste che non
  *              distinguono i file tra i vari processi P.
- * @param M Numero complessivo di sottoprocessi Q.
  *              
  * @return Vettore di interi che contiene i risultati dell'analisi, -1 in caso d'errore.
  */
-int* processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int index, int M) {
-    char* testo;
-    int* stats;
-    int i, j, k, alloc_value;
-    int inizio[n], fine[n];
-    i = 0;
-    // Recupero degli indici di inizio e fine, per ciascuno degli n file: 
-    // si parte da index e si itera n volte.
-    for (j = index; j < (index + n); j++) {
 
-        // Controllo per gestire i casi in cui la dimensione del file non
-        // è un multiplo di M.
-        inizio[i] = range[j]*q_loop;
-        if ((range[j] * (q_loop + 1) <= dims[j])) {
-            fine[i] = range[j]*(q_loop + 1);
-        } else {
-            fine[i] = dims[j]; 
-        } 
-        
-        // Controllo per i file di dimensione inferiore a M - 1.
-        if (inizio[i] > fine[i]) {
-            inizio[i] = fine[i] = 0;
-        }   
-        ++i;
-    }
-    stats = malloc(CLUSTER * sizeof(int));
-    i = 0;
-
-    for (i; i < CLUSTER; i++) {
-        stats[i] = 0;
-    }
-
-    k = index;
-    // In questa iterazione si assegna dinamicamente la dimensione del buffer di testo
-    // e la si libera subito, per evitare sprechi di memoria. La funzione readFile()
-    // deposita una porzione di file, ricavata sulla base degli indici, nel buffer 
-    // appena allocato, conservando il ritorno in caso di errori.
-    for (j = 0; j < n; j++) {  
-        alloc_value = ceiling(dims[k + j], M);
-        testo = malloc(alloc_value);
-        i = readFile(fname[j], testo, inizio[j], fine[j]);
-        countLetters(fine[j] - inizio[j], testo, stats);
-        free(testo);
-        if (i < 0) {
-            break;
-        }
-    }
-
-
-    if (i == 0)
-        return stats;
-    else
-        return (int *) - 1;
-    
-}
-
-int **processoQ_n_new (int *range, int *dims, char** fname, int n, int q_loop, int index, int M) {
+int **processoQ_n (int *range, int *dims, char** fname, int n, int q_loop, int index) {
     char *testo;
     int **stats;
     int i, j, k, alloc_value;
@@ -565,7 +484,7 @@ void nl() {
  * @param file_per_p  numero di file che deve analizzare questo processo P
  */
 int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
-             int N, int M, int total, int fileIndex, int *part, int *fdim, 
+             int total, int fileIndex, int *part, int *fdim, 
              int index_p,int file_per_p, int f_Psize) {
     signal(SIGUSR2, sigHandlerQ);
     //creo pipe fra C e P
@@ -593,7 +512,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
             if (QIds[index_p][j] == 0) {
                 QIds[index_p][j] = getpid();
                 //printf("pid processo Q: %d vs quello che abbiamo %d\n", getpid(), QIds[index_p][j]);
-                return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, M, pipe_q[j]);
+                return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, pipe_q[j]);
                 if( kill(getppid(), SIGUSR2) == 0 ){
                     //printf("Q ha mandato una signal qid : %d\n", getpid());
                 }else{
@@ -647,11 +566,11 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
  * @param pipe_q    pipe di comunicazione tra P e Q
  */
 int processQ(int *range, int *dims, char** fname, int f_Psize, 
-             int q_loop, int index, int m, int pipe_q[]) {
+             int q_loop, int index, int pipe_q[]) {
     //printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
     int i, j;
-    int** counter = processoQ_n_new(range, dims, fname, f_Psize,
-                                    q_loop, index, m);
+    int** counter = processoQ_n(range, dims, fname, f_Psize,
+                                q_loop, index);
     string **message = statsToStringN(counter, f_Psize);
     int err = writePipeN(pipe_q, message, f_Psize);
     for (i = 0; i < f_Psize; ++i) {

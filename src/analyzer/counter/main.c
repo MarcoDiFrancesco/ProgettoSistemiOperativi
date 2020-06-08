@@ -89,7 +89,7 @@ int main(int argc, string argv[]) {
         } else {
             if (PIds[i] == 0) {
                 PIds[i] = getpid();
-                return_value = processP(PIds[i], p_c, q_p, file_P, N, M, 
+                return_value = processP(PIds[i], p_c, q_p, file_P, 
                                         fileTotal, fileIndex, part, f_dim, 
                                         i, file_per_p, f_Psize[i]);                
                 if(kill(getppid(), SIGUSR2)==0){
