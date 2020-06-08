@@ -694,21 +694,20 @@ void sender(map data, int mapDim) {
         //invio dati file
         cont++;
         for (i = 0; i < CLUSTER; i++) {
-                /* build the message */
-                queuedMessage msg;
-                msg.type = cont;
-                strcpy(msg.payload, message[i]);
-                /* send the message */
-                msgError = msgsnd(qid, &msg, sizeof(msg), MSG_NOERROR); /* don't block */
+            /* build the message */
+            queuedMessage msg;
+            msg.type = cont;
+            strcpy(msg.payload, message[i]);
+            /* send the message */
+            msgError = msgsnd(qid, &msg, sizeof(msg), MSG_NOERROR); /* don't block */
 
-                if(msgError<0){
-                    cantWrite = TRUE;
-                    printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
-                    while(cantWrite==TRUE){
-                        //system("sleep 2");
-                        msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
-                        if(msgError == 0) cantWrite = FALSE;
-                    }
+            if(msgError<0){
+                cantWrite = TRUE;
+                printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
+                while(cantWrite==TRUE){
+                    //system("sleep 2");
+                    msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
+                    if(msgError == 0) cantWrite = FALSE;
                 }
             }
             //printf("\terr (%d): %s\n", i, strerror(errno));
