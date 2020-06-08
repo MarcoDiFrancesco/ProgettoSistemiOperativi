@@ -35,27 +35,27 @@ int main() {
         memset(choice13, 0, sizeof choice13);
         memset(choice2, 0, sizeof choice2);
 
-        printf("What do you want to do now?\n");
-        printf("1. Add files to analyze\n");
-        printf("2. Get file analytics\n");
-        printf("3. Close the program\n");
-        printf("Enter Your choice: ");
+        printf("Cosa vuoi fare ora?\n");
+        printf("1. Aggiungi file da analizzare\n");
+        printf("2. Visualizza dati analizzati\n");
+        printf("3. Chiudi il programma\n");
+        printf("Inserisci la tua scelta: ");
         fgets(mainChoice, MAX_INPUT_LENGHT, stdin);  // Input main choice
         removeNewline(mainChoice);
 
         if (!strcmp(mainChoice, "1")) {  // If choice equals 1
-            printf("Enter space-separeted paths: ");
+            printf("Inserisci il percorso delle cartelle che vuoi analizzare: ");
             fgets(choice11, MAX_INPUT_LENGHT, stdin);
             removeNewline(choice11);
 
             do {
-                printf("Quanti m: ");
+                printf("Quanti il numero di processi P: ");
                 fgets(choice12, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice12);
             } while (!stringIsInt(choice12));
 
             do {
-                printf("Quanti n: ");
+                printf("Quanti il numero di processi Q: ");
                 fgets(choice13, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice13);
             } while (!stringIsInt(choice13));
@@ -65,10 +65,10 @@ int main() {
             getAnalytics();
         } else if (!strcmp(mainChoice, "3")) {  // If choice equals 2
             char *a[] = {clean_path};
-            runProgram(a);
+            runProgramAsProcess(a);
             return 0;
         } else {
-            printf("This is not a valid choice, type one of the following:\n");
+            printf("Non hai fatto una scelta corretta, inserisci il numero di una tra una delle seguenti funzioni:\n");
         }
     }
     return 0;

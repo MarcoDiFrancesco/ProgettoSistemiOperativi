@@ -133,12 +133,42 @@ char *getSelfProcessPath() {
 
 void getAnalytics() {
     char *path[] = {report_path, NULL};
-    execvp(path[0], path);
+    executableChecks(path[0]);
+    int pid = fork();
+    if (pid == -1)  // Error in forking
+        return;
+    else if (pid == 0) {  // Child section
+        execvp(path[0], path);
+    }
 }
 
 /**
- * This function runs the program specified on path, in a completely separated process.
- * The program is checked for existance
+ * Run program as a saparate process
+ * 
+ * Credits: https://stackoverflow.com/a/2605313/7924557
+ */
+int runProgramAsProcess(char **path) {
+    executableChecks(path[0]);
+    system(strcat(path[0], " &"));
+    // execve("/bin/bash", path[0], path);
+    // int pipefd[2];
+    // pipe(pipefd);
+    // int pid = fork();
+    // if (pid == -1)  // Error in forking
+    //     return 1;
+    // else if (pid == 0) {     // Child section
+    //     close(pipefd[0]);    // close reading end in the child
+    //     dup2(pipefd[1], 1);  // send stdout to the pipe
+    //     dup2(pipefd[1], 2);  // send stderr to the pipe
+    //     execvp(path[0], path);
+    //     // system(path[0]);
+    //     close(pipefd[1]);
+    // }
+    return 0;
+}
+
+/**
+ * Run program as child
  * 
  * Credits: https://stackoverflow.com/a/2605313/7924557
  */
@@ -154,10 +184,8 @@ int runProgram(char **path) {
         dup2(pipefd[1], 1);  // send stdout to the pipe
         dup2(pipefd[1], 2);  // send stderr to the pipe
         execvp(path[0], path);
+        // system(path[0]);
         close(pipefd[1]);
-        // int fd = open("/tmp/runProgram", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    } else {
-        // system(report_path);
     }
     return 0;
 }

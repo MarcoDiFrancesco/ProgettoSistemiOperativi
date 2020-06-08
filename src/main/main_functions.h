@@ -59,6 +59,7 @@ void removeNewline(char *string);
 void splitAndSendPaths(char *string, char *n, char *m);
 char *getSelfProcessPath();
 void getAnalytics();
+int runProgramAsProcess(char **path);
 int runProgram(char **path);
 int runProgramAndWait(char **path);
 char *baseName(char *path);

@@ -15,7 +15,9 @@ Filippo Daniotti    204679  filippo.daniotti@unitn.it            00000004
 
 ## How to use
 
-Run `run.sh` to run all these commands in once.
+Run `run.sh` to run docker using the DockerFile (a kind of docker-compose).
+
+If you don't want to run `run.sh` use the docker comamnds below.
 
 ## Docker commands
 
@@ -37,7 +39,7 @@ docker image build --tag osproject:latest .
 
 - `rm` deletes the container once closed
 - `$(pwd)` mount volume in the local folder
-- `/home` is the folder inside the docker instance
+- `/root` is the folder inside the docker instance
 
 ``` Docker
 docker container run \
@@ -45,7 +47,7 @@ docker container run \
 --interactive \
 --tty \
 --rm \
---volume $(pwd):/home \
+--volume $(pwd):/root \
 osproject:latest
 ```
 
@@ -61,6 +63,12 @@ Compile (inside the continer):
 
 ``` shell
 make build
+```
+
+Clean (inside the continer):
+
+``` shell
+make clean
 ```
 
 ## How it works
