@@ -190,6 +190,7 @@ int runProgram(char **path) {
         close(pipefd[1]);
     } else {
         wait(pid);
+        printf("Waited\n");
     }
     return 0;
 }
@@ -374,6 +375,19 @@ void ignoreSignal(int signal) {
     if (SHOW_WARNING)
         printf("\nWarining: ignoring signal\n");
 }
+
+
+/**
+ * Reras
+ * 
+ * Credits: https://stackoverflow.com/a/25526951/7924557
+ */
+void runReport(int signal) {
+    printf("Running reports...\n");
+    getAnalytics();
+}
+
+
 
 /**
  * Check if string is an integer or not

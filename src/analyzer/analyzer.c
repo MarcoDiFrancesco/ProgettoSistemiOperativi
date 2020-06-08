@@ -315,3 +315,12 @@ int stringIsInt(char *string) {
     }
     return FALSE;
 }
+
+void sendSignal(int signal) {
+    printf("Signal sent\n");
+    kill(getppid(), SIGUSR2);
+}
+
+void ignoreSignal(int signal) {
+    printf("Signal 1\n");
+}

@@ -1,6 +1,13 @@
 #include "counter.h"
 
 int main(int argc, string argv[]) {
+    BOOL flagMain=FALSE;
+    if(strcmp(argv[argc-1], "-a")){
+        //flag main setted
+        flagMain=TRUE;
+        printf("Flag set\n");
+    }
+
     printf("start counter\n");
     if (argc < 4) {
         printf("Counter chiamato con argomenti insufficienti\n");
@@ -181,9 +188,13 @@ int main(int argc, string argv[]) {
     //printf("invio dati...\n");
     printf("\n\n");
     printf("Numero di file analizzati: %d\n", fileTotal);
-    printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");
+    if(flagMain==TRUE){
+        kill(getppid(), SIGUSR2);
+    }else{
+        printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");
+    }
     sender(fileData, fileTotal);
-    printf("Dati inviati con successo!\n");
+    //printf("Dati inviati con successo!\n");
 
     //libero spazio in memoria
     free(part);

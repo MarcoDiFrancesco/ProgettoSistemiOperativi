@@ -7,17 +7,22 @@ string nS = "3";
 string mS = "4";
 
 int main(int argc, string argv[]) {
+    signal(1, ignoreSignal);
+    signal(SIGUSR2, sendSignal);
+    BOOL flagMain=FALSE;
     if(strcmp(argv[argc-1], "-a")){
-        
+        //flag main setted
+        flagMain=TRUE;
+        printf("Flag set\n");
     }
     //scrivo qui controllo degli argomenti per il C
-    if (argc > 2 && strcmp(argv[1], "-n") == 0 && argv[2] > 0 && argv[2] < MAXQ) {
+    if (argc > 2 && strcmp(argv[1], "-n") == 0) {
         //printf("N1");
         n_arg++;
         nS = argv[2];
         N = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-n") == 0 && argv[4] > 0 && argv[4] < MAXQ) {
+    } else if (argc > 4 && strcmp(argv[3], "-n") == 0) {
         //printf("N2");
         n_arg++;
         nS = argv[4];
@@ -25,13 +30,13 @@ int main(int argc, string argv[]) {
         n_arg++;
     }
 
-    if (argc > 2 && strcmp(argv[1], "-m" && argv[2] > 0 && argv[2] < MAXQ) == 0) {
+    if (argc > 2 && strcmp(argv[1], "-m") == 0) {
         //printf("M1");
         n_arg++;
         mS = argv[2];
         M = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-m") == 0 && argv[4] > 0 && argv[4] < MAXQ) {
+    } else if (argc > 4 && strcmp(argv[3], "-m") == 0) {
         //printf("M2");
         n_arg++;
         mS = argv[4];
@@ -176,11 +181,15 @@ int main(int argc, string argv[]) {
     pid_t CounterPid;
     CounterPid = fork();
     if (CounterPid == 0) {
+        if(flagMain==TRUE){
+            cmdList[--cmdListCount]="-a";
+            cmdList[cmdListCount++] = NULL;
+        }
         execv(cmdList[0], cmdList);
     } else {
         system("sleep 5");
         fflush(stdout);
-        printf("vuoi inserire roba nuova testina di cazz0? [y/n]\n");
+        printf("\nvuoi inserire roba nuova testina di cazz0? [y/n]\n");
         char input;
         fflush(stdin);
         scanf(" %c", &input);
@@ -226,6 +235,7 @@ int main(int argc, string argv[]) {
             }
             printf("> new message: %s", totalPipeMessage);
         }
+        waitpid(CounterPid, NULL, 0);
     }
 
     /*
@@ -241,6 +251,6 @@ int main(int argc, string argv[]) {
 
     free(cmd);
     free(files);
-
+    printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
     return 0;
 }

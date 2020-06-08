@@ -72,6 +72,7 @@ int pathIsFile(char *path);
 int pathIsFolder(char *path);
 int pathIsLink(char *path);
 char *concatPaths(char *dir, char *file);
+void runReport(int signal);
 void ignoreSignal(int signal);
 int stringIsInt(char *string);
 

@@ -86,5 +86,6 @@ string addFile();
 
 string changeNM();
 
-
+void sendSignal(int signal);
+void ignoreSignal(int signal);
 #endif
