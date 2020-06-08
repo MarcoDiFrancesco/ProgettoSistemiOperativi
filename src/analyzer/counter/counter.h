@@ -26,7 +26,6 @@
 #define WRITESIGNAL 1234
 
 //define per il cluster
-
 #define CLUSTER 8
 #define UPPERCASE 0
 #define LOWERCASE 1
@@ -68,7 +67,8 @@ struct FileMap{
 
 typedef struct FileMap *map;
 
-//declarations
+//Function declaration
+
 int writePipe(int pipe[],string *msg);
 
 string *readAndWait(int pipe[], pid_t son);

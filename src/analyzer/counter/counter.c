@@ -700,7 +700,7 @@ void sender(map data, int mapDim) {
         
         if(msgError<0){
             cantWrite = TRUE;
-            printf(" se si raggiunge il limite di file inviati\n");
+            printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
             while(cantWrite==TRUE){
                 //system("sleep 2");
                 msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
@@ -722,7 +722,7 @@ void sender(map data, int mapDim) {
 
                 if(msgError<0){
                     cantWrite = TRUE;
-                    printf(" se si raggiunge il limite di file inviati\n");
+                    printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
                     while(cantWrite==TRUE){
                         //system("sleep 2");
                         msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);

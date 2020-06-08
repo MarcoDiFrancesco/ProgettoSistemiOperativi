@@ -156,6 +156,8 @@ int main(int argc, string argv[]) {
     sprintf(str, "%d", fileTotal);
 
     printf("\nFile Totali trovati da analizzare: %d\n", fileTotal);
+    system("/root/bin/cleanBuffer");
+    //printf("message buffer clean!\n");
     string cmd = malloc(sizeof(char) * fileTotal * 1000 + 100);
     strcat(cmd, "/root/bin/counter ");
     strcat(cmd, nS);
@@ -169,7 +171,6 @@ int main(int argc, string argv[]) {
         //free(files[i]);
         strcat(cmd, " ");
     }
-
     //printf("%s\n", cmd);
     system(cmd);
 
