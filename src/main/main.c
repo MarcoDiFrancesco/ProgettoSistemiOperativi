@@ -52,13 +52,13 @@ int main() {
                 printf("Quanti m: ");
                 fgets(choice12, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice12);
-            } while(!stringIsInt(choice12));
+            } while (!stringIsInt(choice12));
 
             do {
                 printf("Quanti n: ");
                 fgets(choice13, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice13);
-            } while(!stringIsInt(choice13));
+            } while (!stringIsInt(choice13));
 
             splitAndSendPaths(choice11, choice12, choice13);
         } else if (!strcmp(mainChoice, "2")) {  // If choice equals 2
