@@ -159,22 +159,58 @@ int main(int argc, string argv[]) {
     sprintf(str, "%d", fileTotal);
 
     printf("\nFile Totali trovati da analizzare: %d\n", fileTotal);
-    string cmd = malloc(sizeof(char)*fileTotal*1000 + 100);
-    strcat(cmd, "/root/bin/counter ");
-    strcat(cmd, nS);
-    strcat(cmd, " ");
-    strcat(cmd, mS);
-    strcat(cmd, " ");
-    strcat(cmd, str);
-    strcat(cmd, " ");
-    for(i=0; i<fileTotal; i++){
-        strcat(cmd, files[i]);
-        //free(files[i]);
-        strcat(cmd, " ");
+    
+    system("/root/bin/cleanBuffer");
+    string cmdList[fileTotal + 4];
+    int cmdListCount = 1;
+    string cmd = malloc(sizeof(char) * fileTotal * 1000 + 100);
+    cmdList[0] = "./bin/counter";
+    cmdList[cmdListCount++] = nS;
+    cmdList[cmdListCount++] = mS;
+    cmdList[cmdListCount++] = str;
+    for (i = 0; i < fileTotal; i++) {
+        cmdList[cmdListCount++] = files[i];
     }
+    cmdList[cmdListCount++] = NULL;
 
-    //printf("%s\n", cmd);
-    system(cmd); 
+    pid_t CounterPid;
+    CounterPid = fork();
+    if(CounterPid==0){
+
+        execv(cmdList[0], cmdList);
+    }else{
+        string backCounter = recConfirm(2);
+        printf("recived : %s\n", backCounter);
+        fflush(stdout);
+        printf("Porcoddio tocca a me\n");
+        if(strcmp(backCounter, "y") == 0){
+        printf("vuoi inserire roba nuova testina di cazz0?\n");
+        char input;
+        fflush(stdin);
+        scanf(" %c", &input);
+        if(input == 'n'){
+            printf("Ammazzati merda\n");
+            sendConfirm("n", 3);
+        }
+        else if(input == 'y'){
+            printf("Finisci merda\n");
+            sendConfirm("y", 3);
+        }
+    }
+}
+     
+
+    
+    /*
+    msgrcv(hai finito?)
+    if(si)
+        roba dei file nuovi
+        if (sì)
+            msgsnd(file)
+            
+        else
+            msgsnd(continua)
+    */
 
     free(cmd);
     free(files);

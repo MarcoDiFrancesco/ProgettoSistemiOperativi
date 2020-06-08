@@ -684,3 +684,48 @@ void sigHandlerQ(int sig){
         boolQ[i] = TRUE;
     }
 }
+
+//funzioni messaggi per aggiungere roba
+
+void sendConfirm(string messaggio, int projID){
+    key_t key = ftok(PathName, projID);
+    if (key < 0) {      
+        printf("err: %s\n", strerror(errno));
+        report_and_exit("couldn't get key...");
+    }
+
+    int qid = msgget(key, 0666 | IPC_CREAT);
+    if (qid < 0) 
+        report_and_exit("couldn't get queue id...");
+
+    queuedMessage msg;
+    strcpy(msg.payload, messaggio);
+    msg.type = 1;
+
+    if(msgsnd(qid, &msg, strlen(msg.payload)+1, MSG_NOERROR | IPC_NOWAIT) >=0 )
+        printf("Ho inviato %s (counter)\n", msg.payload);
+}
+
+string recConfirm(int projID){
+    key_t key = ftok(PathName, projID);
+    if (key < 0) {      
+        printf("err: %s\n", strerror(errno));
+        report_and_exit("couldn't get key...");
+    }
+
+    int qid = msgget(key, 0666 | IPC_CREAT);
+    if (qid < 0) 
+        report_and_exit("couldn't get queue id...");
+
+    queuedMessage msg;
+    if (msgrcv(qid, &msg, MAX_MSG_SIZE, 1, MSG_NOERROR) < 0)   
+        printf("err counter: %s", strerror(errno));
+
+    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+        report_and_exit("trouble removing queue...");
+
+    string ret = malloc(strlen(msg.payload));
+    strcpy(ret, msg.payload);
+
+    return ret;
+}

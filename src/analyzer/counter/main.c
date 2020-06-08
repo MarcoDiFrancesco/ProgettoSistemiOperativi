@@ -1,6 +1,7 @@
 #include "counter.h"
 
 int main(int argc, string argv[]) {
+    printf("start counter\n");
     if(argc<4){
         printf("Counter chiamato con argomenti insufficienti\n");
         return 1;
@@ -137,6 +138,23 @@ int main(int argc, string argv[]) {
         fileIndex += f_Psize[i];
     }
     free(f_Psize);
+    printf("invio conferma (counter)\n");
+    sendConfirm("y", 2);
+    
+    string back = recConfirm(3);
+    printf("Ho ricevuto gli ordini da analyzer\n");
+    if (strcmp(back, "y") == 0) {
+        puts("lol mi ammazzo");
+        exit(0);
+    }
+    /*
+    msgsnd(ho finito con nowait);
+    msgrcv(cosa devo fare? )
+    if (ho file nuovi) {
+        msgsnd(mi ammazzo);
+        exit(0);
+    }
+    */
 
     //printf("Printing data....\n");
     //printf("\nHo analizzato i seguenti files:\n\n");

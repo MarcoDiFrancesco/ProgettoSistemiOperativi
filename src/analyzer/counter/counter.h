@@ -131,4 +131,12 @@ void sighandlerP(int sig);
 
 void sigHandlerQ(int sig);
 
+//funzioni messaggi per aggiungere roba
+
+void report_and_exit(const char* msg);
+
+void sendConfirm(string messaggio, int projID);
+
+string recConfirm(int projID);
+
 #endif

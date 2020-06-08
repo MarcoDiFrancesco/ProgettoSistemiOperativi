@@ -173,3 +173,51 @@ BOOL containsDot(string str){
     }
     return ret;
 }
+
+//funzioni messaggi per aggiungere roba
+
+void report_and_exit(const char* msg) {
+  perror(msg);
+  exit(-1); /* EXIT_FAILURE */
+}
+
+void sendConfirm(string messaggio, int projID){
+    key_t key = ftok(PathName, projID);
+    if (key < 0) {      
+        printf("err: %s\n", strerror(errno));
+        report_and_exit("couldn't get key...");
+    }
+
+    int qid = msgget(key, 0666 | IPC_CREAT);
+    if (qid < 0) 
+        report_and_exit("couldn't get queue id...");
+
+    queuedMessage msg;
+    strcpy(msg.payload, messaggio);
+    msg.type = 1;
+
+    msgsnd(qid, &msg, strlen(msg.payload)+1, MSG_NOERROR | IPC_NOWAIT);
+}
+
+string recConfirm(int projID){
+    key_t key = ftok(PathName, projID);
+    if (key < 0) {      
+        printf("err: %s\n", strerror(errno));
+        report_and_exit("couldn't get key...");
+    }
+
+    int qid = msgget(key, 0666 | IPC_CREAT);
+    if (qid < 0) 
+        report_and_exit("couldn't get queue id...");
+
+    queuedMessage msg;
+    if (msgrcv(qid, &msg, MAX_MSG_SIZE, 1, MSG_NOERROR) < 0)   puts("AAAAAAAAAAAAAAAAAAAAAAAA trouble...");
+
+    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+        report_and_exit("trouble removing queue...");
+
+    string ret = malloc(strlen(msg.payload));
+    strcpy(ret, msg.payload);
+
+    return ret;
+}
