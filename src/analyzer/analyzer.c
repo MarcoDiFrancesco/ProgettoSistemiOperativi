@@ -182,7 +182,7 @@ void report_and_exit(const char* msg) {
 }
 
 void sendConfirm(string messaggio, int projID){
-    key_t key = ftok(PathName, projID);
+    key_t key = ftok(PathName2, projID);
     if (key < 0) {      
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
@@ -200,7 +200,7 @@ void sendConfirm(string messaggio, int projID){
 }
 
 string recConfirm(int projID){
-    key_t key = ftok(PathName, projID);
+    key_t key = ftok(PathName2, projID);
     if (key < 0) {      
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
@@ -220,4 +220,80 @@ string recConfirm(int projID){
     strcpy(ret, msg.payload);
 
     return ret;
+}
+
+//funzioni per aggiungere roba al volo
+
+string addThingsToCounter(){
+    printf("\nL'analisi dei file inseriti e' stata avviata...\nVuoi modificare i file? [f]\nVuoi modificare N o M? [n]\nNon modificare nulla (non potrai più modificare nulla in seguito)[x]\n");
+        char input;
+        scanf(" %c", &input);
+        while(input != 'f' && input != 'n' && input != 'x'){
+            printf("Inserisci solamente [f] o [n] o [x]\n");
+            fflush(stdin);
+            fflush(stdout);
+            scanf(" %c", &input);
+        }
+        switch(input){
+            case 'f': return addFile();
+            case 'n': return changeNM();
+            case 'x': return "X";
+        }
+}
+
+string addFile(){
+    string input = malloc(MAXLEN);
+    string ret = malloc(MAXLEN +3);
+    strcat (ret, "-f ");
+    BOOL space = TRUE;
+    printf("Inserisci il file con il suo percorso\n");
+    while(space==TRUE){
+        fflush(stdin);
+        fflush(stdout);
+        fgets(input, MAXLEN, stdin);
+        int i;
+        space = FALSE;
+        for(i=0; i<strlen(input); i++){
+            if(input[i] == ' '){
+                space = TRUE;
+                printf("Forse hai inserito due file\nInseriscine solo uno\n");
+            }
+        }
+    }
+    strcat(ret, input);
+    return ret; 
+}
+
+string changeNM(){
+    char input;
+    string ret = malloc(10);
+    strcat(ret, "-");
+    int input_int;
+    printf("Vuoi cambiare N o M? [n]/[m]\n");
+    scanf(" %c", &input);
+    while(input != 'n' && input != 'm'){
+        printf("Inserisci solamente [n] o [m]\n");
+        fflush(stdin);
+        fflush(stdout);
+        scanf(" %c", &input);
+    }
+    string tmp;
+    switch(input){
+        case 'n':
+            strcat(ret, "n ");
+            printf("inserisci n: ");
+            scanf(" %d", &input_int);
+            tmp = malloc(7);
+            sprintf(tmp, "%d", input_int);
+            strcat(ret, tmp);
+            return ret;
+        case 'm':
+            strcat(ret, "m ");
+            printf("inserisci m: ");
+            scanf(" %d", &input_int);
+            tmp = malloc(7);
+            sprintf(tmp, "%d", input_int);
+            strcat(ret, tmp);
+            return ret;      
+    }
 }

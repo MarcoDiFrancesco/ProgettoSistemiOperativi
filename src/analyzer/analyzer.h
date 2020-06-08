@@ -36,6 +36,7 @@ int n_arg = 1;*/
 //define per il sender
 #define ProjectId 123
 #define PathName  "/root/src/analyzer/analyzer.h"  /* any existing, accessible file would do */
+#define PathName2  "/root/src/analyzer/analyzer.h"
 #define MAX_MSG_SIZE 100
 
 typedef struct {
@@ -75,6 +76,14 @@ void report_and_exit(const char* msg);
 void sendConfirm(string messaggio, int projID);
 
 string recConfirm(int projID);
+
+//funzioni per aggiungere roba al volo
+
+string addThingsToCounter();
+
+string addFile();
+
+string changeNM();
 
 
 #endif

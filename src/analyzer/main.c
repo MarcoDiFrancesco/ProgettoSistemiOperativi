@@ -176,28 +176,60 @@ int main(int argc, string argv[]) {
     pid_t CounterPid;
     CounterPid = fork();
     if(CounterPid==0){
-
         execv(cmdList[0], cmdList);
     }else{
-        string backCounter = recConfirm(2);
-        printf("recived : %s\n", backCounter);
+        system("sleep 5");
         fflush(stdout);
-        printf("Porcoddio tocca a me\n");
-        if(strcmp(backCounter, "y") == 0){
-        printf("vuoi inserire roba nuova testina di cazz0?\n");
+        printf("vuoi inserire roba nuova testina di cazz0? [y/n]\n");
         char input;
         fflush(stdin);
         scanf(" %c", &input);
+        while (input != 'n' && input != 'y') {
+            puts("Inserisci solamente [y/n]");
+            fflush(stdin);
+            scanf(" %c", &input);
+        }
         if(input == 'n'){
-            printf("Ammazzati merda\n");
             sendConfirm("n", 3);
         }
         else if(input == 'y'){
-            printf("Finisci merda\n");
             sendConfirm("y", 3);
+            string pipemsg = malloc(MAXLEN);
+            string *allChanges = malloc(0);
+            int contchanges = 0;
+            do {
+                allChanges = realloc(allChanges, (contchanges+1)*sizeof(string));
+                allChanges[contchanges] = malloc(MAXLEN);
+                strcpy(pipemsg, addThingsToCounter());
+                strcpy(allChanges[contchanges], pipemsg);    
+                contchanges++;
+            }while(strcmp(pipemsg, "X") != 0);
+            
+            string lastN = malloc(10);
+            string lastM = malloc(10);
+            for(i=contchanges-1; i>=0; i--){
+                if(strcmp(lastN, " ") == 0 && allChanges[i][1] == 'n'){
+                    strcpy(lastN, allChanges[i]);
+                }
+                if(strcmp(lastN, " ") == 0 && allChanges[i][1] == 'm'){
+                    strcpy(lastN, allChanges[i]);
+                }
+            }
+            string totalPipeMessage = malloc(sizeof(char)*contchanges*MAXLEN + 100);
+            strcat(totalPipeMessage, lastN);
+            strcat(totalPipeMessage, " ");
+            strcat(totalPipeMessage, lastM);
+            for(i=0; i<contchanges-1; i++){
+                if(allChanges[i][1] != 'n' && allChanges[i][1] != 'm'){
+                    strcat(totalPipeMessage, " ");
+                    strcat(totalPipeMessage, allChanges[i]);
+                }
+            }
+            printf("> new message: %s", totalPipeMessage);
+
+            
         }
     }
-}
      
 
     

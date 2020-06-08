@@ -707,7 +707,7 @@ void sendConfirm(string messaggio, int projID){
 }
 
 string recConfirm(int projID){
-    key_t key = ftok(PathName, projID);
+    key_t key = ftok(PathName2, projID);
     if (key < 0) {      
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");

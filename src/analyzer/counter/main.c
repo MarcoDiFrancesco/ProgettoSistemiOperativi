@@ -138,10 +138,11 @@ int main(int argc, string argv[]) {
         fileIndex += f_Psize[i];
     }
     free(f_Psize);
-    printf("invio conferma (counter)\n");
-    sendConfirm("y", 2);
-    
     string back = recConfirm(3);
+    while(strcmp(back, "y") != 0 && strcmp(back, "n") != 0){
+        system("sleep 1");
+        back = recConfirm(3);
+    }
     printf("Ho ricevuto gli ordini da analyzer\n");
     if (strcmp(back, "y") == 0) {
         puts("lol mi ammazzo");

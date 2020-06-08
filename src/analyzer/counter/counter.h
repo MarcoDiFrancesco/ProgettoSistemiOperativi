@@ -39,6 +39,7 @@
 //define per il sender
 #define ProjectId 123
 #define PathName  "/root/src/analyzer/counter/counter.h"  /* any existing, accessible file would do */
+#define PathName2  "/root/src/analyzer/analyzer.h"
 #define MAX_MSG_SIZE 100
 
 //globals
