@@ -68,7 +68,8 @@ struct FileMap{
 
 typedef struct FileMap *map;
 
-//declarations
+//Function declaration
+
 int writePipe(int pipe[],string *msg);
 
 string *readAndWait(int pipe[], pid_t son);

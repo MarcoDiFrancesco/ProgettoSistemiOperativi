@@ -2,32 +2,32 @@
 
 int main(int argc, string argv[]) {
     printf("start counter\n");
-    if(argc<4){
+    if (argc < 4) {
         printf("Counter chiamato con argomenti insufficienti\n");
         return 1;
     }
 
     signal(SIGUSR2, sighandlerP);
-    int k,b = 0;
+    int k, b = 0;
     N = atoi(argv[1]);
     M = atoi(argv[2]);
-    PIds=malloc(N * sizeof(pid_t));
-    QIds=malloc(N * sizeof(pid_t *));
-    for(k = 0; k < N; ++k) {
+    PIds = malloc(N * sizeof(pid_t));
+    QIds = malloc(N * sizeof(pid_t *));
+    for (k = 0; k < N; ++k) {
         PIds[k] = 0;
         QIds[k] = malloc(M * sizeof(pid_t));
-        for(b = 0; b < M; ++b) {
+        for (b = 0; b < M; ++b) {
             QIds[k][b] = 0;
         }
     }
-    boolQ=malloc(sizeof(BOOL)*N);
+    boolQ = malloc(sizeof(BOOL) * N);
     for (k = 0; k < N; ++k) {
         boolQ[k] = FALSE;
     }
     boolP = FALSE;
 
-    checkQ=malloc(sizeof(int)*N);
-    for(k=0; k<N; k++){
+    checkQ = malloc(sizeof(int) * N);
+    for (k = 0; k < N; k++) {
         checkQ[k] = 0;
     }
     checkP = 0;
@@ -36,9 +36,9 @@ int main(int argc, string argv[]) {
 
     string files[fileTotal];
     int j;
-    for(j=0; j<fileTotal; j++){
-        files[j]=malloc(sizeof(char)*100);
-        strcpy(files[j], argv[j+4]);
+    for (j = 0; j < fileTotal; j++) {
+        files[j] = malloc(sizeof(char) * 100);
+        strcpy(files[j], argv[j + 4]);
     }
     int fileIndex = 0;
     int file_restanti = fileTotal;
@@ -77,28 +77,28 @@ int main(int argc, string argv[]) {
             }
             if (fileIndexTemp - 1 == fileTotal) {
                 file_P[k] = 0;
-                }
+            }
             ++k;
         }
-        
+
         pipe(p_c[i]);
         PIds[i] = fork();
         //printf("qui pids[%d]=%d e N=%d\n", i, PIds[i], N);
         if (PIds[i] == -1) {
             printf("error occurred at line 35\n");
-            return_value=35;
+            return_value = 35;
         } else {
             if (PIds[i] == 0) {
                 PIds[i] = getpid();
-                return_value = processP(PIds[i], p_c, q_p, file_P, 
-                                        fileTotal, fileIndex, part, f_dim, 
-                                        i, file_per_p, f_Psize[i]);                
-                if(kill(getppid(), SIGUSR2)==0){
+                return_value = processP(PIds[i], p_c, q_p, file_P,
+                                        fileTotal, fileIndex, part, f_dim,
+                                        i, file_per_p, f_Psize[i]);
+                if (kill(getppid(), SIGUSR2) == 0) {
                     //printf("P ha mandato una signal qid : %d\n", getpid());
-                }else{
+                } else {
                     //printf("!!!!Perror  %s\n", strerror(errno));
                 }
-                    
+
                 exit(return_value);
             } else {
                 //successive parti del processo C
@@ -109,23 +109,22 @@ int main(int argc, string argv[]) {
         if (i != N - 1) {
             file_per_p = ceiling(file_restanti, N - i - 1);
         }
-                
     }
 
     printf("Sto analizzando...");
-    while(boolP==FALSE){
+    while (boolP == FALSE) {
         system("sleep 1");
         printf(".");
         fflush(stdout);
         int tmp_counter = 0;
-        for(i=0; i<N; i++){
-            for(j=0; j<M; j++){
-                if(waitpid(QIds[i][j], NULL, WNOHANG) == QIds[i][j]){
+        for (i = 0; i < N; i++) {
+            for (j = 0; j < M; j++) {
+                if (waitpid(QIds[i][j], NULL, WNOHANG) == QIds[i][j]) {
                     tmp_counter++;
                 }
             }
         }
-        if(tmp_counter == N*M)
+        if (tmp_counter == N * M)
             boolP = TRUE;
     }
 
@@ -139,7 +138,7 @@ int main(int argc, string argv[]) {
     }
     free(f_Psize);
     string back = recConfirm(3);
-    while(strcmp(back, "y") != 0 && strcmp(back, "n") != 0){
+    while (strcmp(back, "y") != 0 && strcmp(back, "n") != 0) {
         system("sleep 1");
         back = recConfirm(3);
     }
@@ -181,9 +180,9 @@ int main(int argc, string argv[]) {
 
     //printf("invio dati...\n");
     printf("\n\n");
-    printf("Numero di file analizzati: %d\n",fileTotal);
+    printf("Numero di file analizzati: %d\n", fileTotal);
     printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");
-    sender(fileData,fileTotal);
+    sender(fileData, fileTotal);
     printf("Dati inviati con successo!\n");
 
     //libero spazio in memoria

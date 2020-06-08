@@ -94,22 +94,23 @@ void removeNewline(char *string) {
 void splitAndSendPaths(char *string, char *n, char *m) {
     if (string[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
         printf("Warning: hai superato il limite di %d caratteri, l'ulima path potrebbe non essere considerata\n", MAX_INPUT_LENGHT);
-    char arguments[MAX_ARG_STRLEN * 4];  // *4 in case the path is "a" there is " -c " chars
-    strcat(arguments, analyzer_path);
-    strcat(arguments, " -n ");
-    strcat(arguments, n);
-    strcat(arguments, " -m ");
-    strcat(arguments, m);
+    int argumentsC = 0;
+    char *argumentsV[MAX_ARG_STRLEN];  // *4 in case the path is "a" there is " -c " chars
+    argumentsV[argumentsC++] = analyzer_path;
+    argumentsV[argumentsC++] = "-n";
+    argumentsV[argumentsC++] = n;
+    argumentsV[argumentsC++] = "-m";
+    argumentsV[argumentsC++] = m;
 
     char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
     singlePath = strtok(string, " ");  // Split in space
     while (singlePath != NULL) {
-        strcat(arguments, " -c ");
-        strcat(arguments, singlePath);
+        argumentsV[argumentsC++] = "-c";
+        argumentsV[argumentsC++] = singlePath;
         singlePath = strtok(NULL, " ");
     }
-    char *a[] = {arguments};
-    runProgram(a);
+    argumentsV[argumentsC++] = NULL;
+    runProgram(argumentsV);
     // char *a[] = {analyzer_path, arguments};
     // runProgramAndWait(a);
 }
@@ -131,21 +132,60 @@ char *getSelfProcessPath() {
 }
 
 void getAnalytics() {
-    system(report_path);
-}
-
-/**
- * This function runs the program specified on path, in a completely separated process.
- * The program is checked for existance
- */
-int runProgram(char **path) {
+    char *path[] = {report_path, NULL};
     executableChecks(path[0]);
     int pid = fork();
     if (pid == -1)  // Error in forking
-        return 1;
+        return;
     else if (pid == 0) {  // Child section
-        strcat(path[0], " &");
-        system(path[0]);
+        execvp(path[0], path);
+    }
+}
+
+/**
+ * Run program as a saparate process
+ * 
+ * Credits: https://stackoverflow.com/a/2605313/7924557
+ */
+int runProgramAsProcess(char **path) {
+    executableChecks(path[0]);
+    system(strcat(path[0], " &"));
+    // execve("/bin/bash", path[0], path);
+    // int pipefd[2];
+    // pipe(pipefd);
+    // int pid = fork();
+    // if (pid == -1)  // Error in forking
+    //     return 1;
+    // else if (pid == 0) {     // Child section
+    //     close(pipefd[0]);    // close reading end in the child
+    //     dup2(pipefd[1], 1);  // send stdout to the pipe
+    //     dup2(pipefd[1], 2);  // send stderr to the pipe
+    //     execvp(path[0], path);
+    //     // system(path[0]);
+    //     close(pipefd[1]);
+    // }
+    return 0;
+}
+
+/**
+ * Run program as child
+ * 
+ * Credits: https://stackoverflow.com/a/2605313/7924557
+ */
+int runProgram(char **path) {
+    executableChecks(path[0]);
+    int pipefd[2];
+    pipe(pipefd);
+    int pid = fork();
+    if (pid == -1)  // Error in forking
+        return 1;
+    else if (pid == 0) {     // Child section
+        close(pipefd[0]);    // close reading end in the child
+        dup2(pipefd[1], 1);  // send stdout to the pipe
+        dup2(pipefd[1], 2);  // send stderr to the pipe
+        execvp(path[0], path);
+        // system(path[0]);
+        close(pipefd[1]);
     }
     return 0;
 }
