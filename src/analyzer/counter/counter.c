@@ -2,26 +2,6 @@
 
 BOOL cantWrite = FALSE;
 
-string *readAndWait(int pipe[], pid_t son) {
-    close(pipe[WRITE]);
-    string *msg;
-    msg = malloc(CLUSTER * sizeof(char *));
-    int i;
-    int rd;
-    int err = 0;
-    for (i = 0; i < CLUSTER; i++) {
-        msg[i] = malloc(MAXLEN);
-        rd = read(pipe[READ], msg[i], MAXLEN);
-        if (rd == -1) {
-            err = rd;
-        }
-        msg[i][rd] = 0;
-    }
-    close(pipe[READ]);
-    waitpid(son, NULL, 0);
-    return msg;
-}
-
 int writePipe(int pipe[], string *msg) {
     int ret = 0;  //per eventuali errori
     close(pipe[READ]);
@@ -653,7 +633,7 @@ void report_and_exit(const char *msg) {
 
 void sender(map data, int mapDim) {
     //signal handler
-    signal(SIGUSR1, sighandlerP);
+    signal(SIGUSR1, signalhandler);
 
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {
@@ -682,7 +662,7 @@ void sender(map data, int mapDim) {
         if (msgError < 0) {
             cantWrite = TRUE;
             printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
-            while(cantWrite==TRUE){
+            while (cantWrite == TRUE) {
                 //system("sleep 2");
                 msgError = msgsnd(qid, &msgName, strlen(msgName.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
                 if (msgError == 0) cantWrite = FALSE;
@@ -704,21 +684,21 @@ void sender(map data, int mapDim) {
                 if(msgError<0){
                     cantWrite = TRUE;
                     printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
-                    while(cantWrite==TRUE){
+                    while (cantWrite == TRUE) {
                         //system("sleep 2");
                         msgError = msgsnd(qid, &msgName, strlen(msgName.payload)+1, MSG_NOERROR | IPC_NOWAIT);
-                        if(msgError == 0) cantWrite = FALSE;
+                        if (msgError == 0) cantWrite = FALSE;
                     }
                 }
             }
             //printf("\terr (%d): %s\n", i, strerror(errno));
             cont++;
         }
-    }
 }
 
+
 void signalhandler(int sig) {
-    printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare");
+    printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare\n");
     cantWrite = FALSE;
 }
 

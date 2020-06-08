@@ -157,24 +157,64 @@ int main(int argc, string argv[]) {
 
     printf("\nFile Totali trovati da analizzare: %d\n", fileTotal);
     system("/root/bin/cleanBuffer");
-    //printf("message buffer clean!\n");
+    string cmdList[fileTotal + 4];
+    int cmdListCount = 1;
     string cmd = malloc(sizeof(char) * fileTotal * 1000 + 100);
-    strcat(cmd, "/root/bin/counter ");
-    strcat(cmd, nS);
-    strcat(cmd, " ");
-    strcat(cmd, mS);
-    strcat(cmd, " ");
-    strcat(cmd, str);
-    strcat(cmd, " ");
+    cmdList[0] = "./counter";
+    cmdList[cmdListCount++] = nS;
+    cmdList[cmdListCount++] = mS;
+    cmdList[cmdListCount++] = str;
     for (i = 0; i < fileTotal; i++) {
-        strcat(cmd, files[i]);
-        //free(files[i]);
-        strcat(cmd, " ");
+        cmdList[cmdListCount++] = files[i];
     }
-    //printf("%s\n", cmd);
-    system(cmd);
+    cmdList[cmdListCount++] = NULL;
 
-    free(cmd);
+    pid_t cProcess;
+    int controlPipe[2];
+    pipe(controlPipe);
+    cProcess = fork();
+    if (cProcess == 0) {
+        //figlio
+        counter(cmdListCount, cmdList, controlPipe);
+        //("error %s\n", strerror(errno));
+    }else{
+        //waitpid(cProcess, NULL, 0);
+        //processo analyzer     
+        string pipemsg = malloc(MAXLEN);
+        string *allChanges = malloc(0);
+        int contchanges = 0;
+        do {
+            allChanges = realloc(allChanges, (contchanges+1)*sizeof(string));
+            strcpy(pipemsg, addThingsToCounter());
+            strcpy(allChanges[contchanges++], pipemsg);            
+        }while(strcmp(pipemsg, "X") != 0);
+
+        string lastN = " ";
+        string lastM = " ";
+
+        for(i=contchanges-1; i>=0; i--){
+            if(strcmp(lastN, " ") == 0 && allChanges[i][1] == 'n'){
+                strcpy(lastN, allChanges[i]);
+            }
+            if(strcmp(lastN, " ") == 0 && allChanges[i][1] == 'm'){
+                strcpy(lastN, allChanges[i]);
+            }
+        }
+
+        string totalPipeMessage = "";
+        strcat(totalPipeMessage, lastN);
+        strcat(totalPipeMessage, " ");
+        strcat(totalPipeMessage, lastM);
+        for(i=0; i<contchanges-1; i++){
+            if(allChanges[i][1] == 'n' && allChanges[i][1] == 'm'){
+                strcat(totalPipeMessage, " ");
+                strcat(totalPipeMessage, allChanges[i]);
+            }
+        }
+        printf("> new message: %s", totalPipeMessage);
+        //sendMessage(controlPipe, pipemsg);       
+    }
+    
     free(files);
 
     return 0;

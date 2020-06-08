@@ -1,6 +1,7 @@
 #include "counter.h"
 
 int main(int argc, string argv[]) {
+    printf("Counter started\n");
     if (argc < 4) {
         printf("Counter chiamato con argomenti insufficienti\n");
         return 1;
@@ -110,6 +111,8 @@ int main(int argc, string argv[]) {
         }
     }
 
+    //dynamicReadAnalyzer(controlPipe);
+
     printf("Sto analizzando...");
     while (boolP == FALSE) {
         system("sleep 1");
@@ -153,13 +156,8 @@ int main(int argc, string argv[]) {
         printf("\tNumero di parentesi= %d\n", fileData[i].stats[PARENTHESIS]);
         printf("\tNumero di operatori matematici= %d\n", fileData[i].stats[MATH_OPERATORS]);
         printf("\tNumero di altro calcolato= %d\n", fileData[i].stats[OTHER]); */
-        /*if(fileData[i].stats[0] + fileData[i].stats[1] + fileData[i].stats[2] + fileData[i].stats[3] + fileData[i].stats[4] !=
-        f_dim[i]){
-            puts("\n\n TANTI CAZZI \n\n");
-        }*/
     }
 
-    //printf("invio dati...\n");
     printf("\n\n");
     printf("Numero di file analizzati: %d\n", fileTotal);
     printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");

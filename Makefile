@@ -15,7 +15,7 @@ build:
 	@mkdir -p bin
 	@$(MAKE) bin/analyzer
 	@$(MAKE) bin/main
-	@$(MAKE) bin/counter
+	#@$(MAKE) bin/counter
 	@$(MAKE) bin/report
 	@$(MAKE) bin/cleanBuffer
 	@echo "Files successfully built"

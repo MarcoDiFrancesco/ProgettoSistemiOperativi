@@ -57,7 +57,7 @@ docker exec --interactive --tty osproject bash
 
 ## Compiler commands
 
-Compile (inside the continer):
+Compile (inside the container):
 
 ``` shell
 make build
@@ -79,7 +79,7 @@ It is used to manage Analyzer and Report.
 To run **main** run `./bin/main`.  
 It requires the file `./bin/analyzer` to exist.
 
-It is used to run Analyzer and open a named pipe with it, than require analyzed data, than it will close analyzer than finish.
+It is used to run Analyzer and open a named pipe with it, then require analyzed data, then it will close analyzer then finish.
 
 ### Analyzer
 

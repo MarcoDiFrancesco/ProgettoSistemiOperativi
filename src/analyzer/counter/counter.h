@@ -71,8 +71,6 @@ typedef struct FileMap *map;
 
 int writePipe(int pipe[],string *msg);
 
-string *readAndWait(int pipe[], pid_t son);
-
 int * filesPart(string *files,int num,int M);
 
 int readFile(char* filename, char* filedata, int start, int stop);
@@ -137,5 +135,8 @@ void signalhandler(int sig);
 void sighandlerP(int sig);
 
 void sigHandlerQ(int sig);
+
+//gestione dinamica
+
 
 #endif
