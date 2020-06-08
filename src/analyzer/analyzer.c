@@ -198,12 +198,15 @@ string addThingsToCounter(){
 }
 
 string addFile(){
-    string input = malloc(12*sizeof(int));
-    string ret = "-f ";
+    string input = malloc(MAXLEN);
+    string ret = malloc(MAXLEN +3);
+    strcat (ret, "-f ");
     BOOL space = TRUE;
     printf("Inserisci il file con il suo percorso\n");
-    while(space){
-        fgets(input, 12*sizeof(int), stdin);
+    while(space==TRUE){
+        fflush(stdin);
+        fflush(stdout);
+        fgets(input, MAXLEN, stdin);
         int i;
         space = FALSE;
         for(i=0; i<strlen(input); i++){
@@ -219,7 +222,8 @@ string addFile(){
 
 string changeNM(){
     char input;
-    string ret = "-";
+    string ret = malloc(10);
+    strcat(ret, "-");
     int input_int;
     printf("Vuoi cambiare N o M? [n]/[m]\n");
     scanf(" %c", &input);
@@ -913,6 +917,7 @@ unsigned long computeHash(string fname, int dim, BOOL compare) {
             hash += content[i];
         }
     }
+    hash+=2000;
     free(content);
     int current = countDigits(hash);
 

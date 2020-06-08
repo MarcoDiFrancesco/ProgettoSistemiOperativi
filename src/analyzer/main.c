@@ -176,22 +176,21 @@ int main(int argc, string argv[]) {
     if (cProcess == 0) {
         //figlio
         counter(cmdListCount, cmdList, controlPipe);
-        //("error %s\n", strerror(errno));
     }else{
         //waitpid(cProcess, NULL, 0);
-        //processo analyzer     
+        //processo analyzer   
         string pipemsg = malloc(MAXLEN);
         string *allChanges = malloc(0);
         int contchanges = 0;
         do {
             allChanges = realloc(allChanges, (contchanges+1)*sizeof(string));
+            allChanges[contchanges] = malloc(MAXLEN);
             strcpy(pipemsg, addThingsToCounter());
-            strcpy(allChanges[contchanges++], pipemsg);            
+            strcpy(allChanges[contchanges], pipemsg);    
+            contchanges++;
         }while(strcmp(pipemsg, "X") != 0);
-
-        string lastN = " ";
-        string lastM = " ";
-
+        string lastN = malloc(10);
+        string lastM = malloc(10);
         for(i=contchanges-1; i>=0; i--){
             if(strcmp(lastN, " ") == 0 && allChanges[i][1] == 'n'){
                 strcpy(lastN, allChanges[i]);
@@ -200,19 +199,18 @@ int main(int argc, string argv[]) {
                 strcpy(lastN, allChanges[i]);
             }
         }
-
-        string totalPipeMessage = "";
+        string totalPipeMessage = malloc(sizeof(char)*contchanges*MAXLEN + 100);;
         strcat(totalPipeMessage, lastN);
         strcat(totalPipeMessage, " ");
         strcat(totalPipeMessage, lastM);
         for(i=0; i<contchanges-1; i++){
-            if(allChanges[i][1] == 'n' && allChanges[i][1] == 'm'){
+            if(allChanges[i][1] != 'n' && allChanges[i][1] != 'm'){
                 strcat(totalPipeMessage, " ");
                 strcat(totalPipeMessage, allChanges[i]);
             }
         }
         printf("> new message: %s", totalPipeMessage);
-        //sendMessage(controlPipe, pipemsg);       
+        sendMessage(controlPipe, pipemsg);       
     }
     
     free(files);

@@ -1,9 +1,6 @@
 #include "report.h"
 
 void read_result(map results, int numFile) {
-    /*int i = 0,
-        counter = 0,
-        *nval = getValuesFromString(results);*/
     char input;
 
     printf("Vuoi le statistiche di tutti i file [a]\ndi un file singolo [u]\noppure le statistiche complessive [s]?\n");
