@@ -139,6 +139,8 @@ void getAnalytics() {
         return;
     else if (pid == 0) {  // Child section
         execvp(path[0], path);
+    }else{
+        wait(pid);
     }
 }
 
@@ -181,11 +183,13 @@ int runProgram(char **path) {
         return 1;
     else if (pid == 0) {     // Child section
         close(pipefd[0]);    // close reading end in the child
-        dup2(pipefd[1], 1);  // send stdout to the pipe
-        dup2(pipefd[1], 2);  // send stderr to the pipe
+        // dup2(pipefd[1], 1);  // send stdout to the pipe
+        // dup2(pipefd[1], 2);  // send stderr to the pipe
         execvp(path[0], path);
         // system(path[0]);
         close(pipefd[1]);
+    } else {
+        wait(pid);
     }
     return 0;
 }

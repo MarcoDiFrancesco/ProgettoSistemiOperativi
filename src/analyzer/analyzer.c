@@ -1,71 +1,72 @@
 #include "analyzer.h"
 
-BOOL isTxt(string file, int length) {
+BOOL isTxt(string file, int length){
     BOOL ret = FALSE;
-    if (file[length - 1] == '\n' && file[length - 5] == '.' && file[length - 4] == 't' && file[length - 3] == 'x' && file[length - 2] == 't') {
-        file[length - 1] = '\0';
+    if(file[length-1] == '\n' && file[length - 5] == '.' && file[length -4] == 't' && file[length - 3] == 'x' && file[length - 2] == 't'){
+        file[length-1] = '\0';
         return TRUE;
     }
-    if (file[length - 4] == '.' && file[length - 3] == 't' &&
+    if (file[length - 4] == '.' && file[length - 3] == 't' && 
         file[length - 2] == 'x' && file[length - 1] == 't') {
         ret = TRUE;
-    }
+    }  
     return ret;
 }
 
-BOOL isCpp(string file, int length) {
+BOOL isCpp(string file, int length){
     BOOL ret = FALSE;
-    if (file[length - 1] == '\n' && file[length - 5] == '.' && file[length - 4] == 'c' && file[length - 3] == 'p' && file[length - 2] == 'p') {
-        file[length - 1] = '\0';
+    if(file[length-1] == '\n' && file[length - 5] == '.' && file[length -4] == 'c' && file[length - 3] == 'p' && file[length - 2] == 'p'){
+        file[length-1] = '\0';
         return TRUE;
     }
-    if (file[length - 4] == '.' && file[length - 3] == 'c' &&
+    if (file[length - 4] == '.' && file[length - 3] == 'c' && 
         file[length - 2] == 'p' && file[length - 1] == 'p') {
         ret = TRUE;
-    }
+    }  
     return ret;
 }
 
-BOOL isC(string file, int length) {
+BOOL isC(string file, int length){
     BOOL ret = FALSE;
-    if (file[length - 1] == '\n' && file[length - 3] == '.' && file[length - 2] == 'c') {
-        file[length - 1] = '\0';
+    if(file[length-1] == '\n' && file[length - 3] == '.' && file[length - 2] == 'c'){
+        file[length-1] = '\0';
         return TRUE;
     }
     if (file[length - 2] == '.' && file[length - 1] == 'c') {
         ret = TRUE;
-    }
+    }  
     return ret;
 }
 
-BOOL isJava(string file, int length) {
+BOOL isJava(string file, int length){
     BOOL ret = FALSE;
-    if (file[length - 1] == '\n' &&
-        file[length - 6] == '.' && file[length - 5] == 'j' &&
+    if(file[length-1] == '\n' &&
+        file[length - 6] == '.' && file[length - 5] == 'j' && 
         file[length - 4] == 'a' && file[length - 3] == 'v' &&
-        file[length - 2] == 'a') {
-        file[length - 1] = '\0';
+        file[length-2]=='a'){
+            file[length-1] = '\0';
         return TRUE;
     }
-    if (file[length - 5] == '.' && file[length - 4] == 'j' &&
+    if (file[length - 5] == '.' && file[length - 4] == 'j' && 
         file[length - 3] == 'a' && file[length - 2] == 'v' &&
-        file[length - 1] == 'a') {
+        file[length-1]=='a') {
         ret = TRUE;
-    }
+    }  
     return ret;
 }
 
-BOOL isPy(string file, int length) {
+BOOL isPy(string file, int length){
     BOOL ret = FALSE;
-    if (file[length - 1] == '\n' && file[length - 4] == '.' && file[length - 3] == 'p' && file[length - 2] == 'y') {
-        file[length - 1] = '\0';
+    if(file[length-1] == '\n' && file[length - 4] == '.' && file[length - 3] == 'p' && file[length - 2] == 'y'){
+        file[length-1] = '\0';
         return TRUE;
     }
-    if (file[length - 3] == '.' &&
-        file[length - 2] == 'p' &&
+    if (file[length - 3] == '.' && 
+        file[length - 2] == 'p' && 
         file[length - 1] == 'y') {
+
         ret = TRUE;
-    }
+    }  
     return ret;
 }
 
@@ -162,12 +163,12 @@ node listFiles(char *path) {
     return files_list->next;  // First node is NULL, so return second
 }
 
-BOOL containsDot(string str) {
+BOOL containsDot(string str){
     int len = strlen(str);
     int i;
     BOOL ret = FALSE;
-    for (i = len - 1; len >= 0 && str[i] != '/'; i--) {
-        if (str[i] == '.')
+    for(i=len-1; len>=0 && str[i] != '/'; i--){
+        if(str[i] == '.')
             ret = TRUE;
     }
     return ret;
@@ -245,7 +246,7 @@ string addFile(){
     string ret = malloc(MAXLEN +3);
     strcat (ret, "-f ");
     BOOL space = TRUE;
-    printf("Inserisci il file con il suo percorso\n");
+    printf("Inserisci il file con il suo percorso: ");
     while(space==TRUE){
         fflush(stdin);
         fflush(stdout);
@@ -265,6 +266,7 @@ string addFile(){
 
 string changeNM(){
     char input;
+    string input_str = malloc(7);
     string ret = malloc(10);
     strcat(ret, "-");
     int input_int;
@@ -281,18 +283,35 @@ string changeNM(){
         case 'n':
             strcat(ret, "n ");
             printf("inserisci n: ");
-            scanf(" %d", &input_int);
-            tmp = malloc(7);
-            sprintf(tmp, "%d", input_int);
-            strcat(ret, tmp);
+            fgets(input_str, 7, stdin);
+            while(stringIsInt(input_str) == FALSE){
+                fgets(input_str, 7, stdin);
+            }
+            strcat(ret, input_str);
             return ret;
         case 'm':
             strcat(ret, "m ");
             printf("inserisci m: ");
-            scanf(" %d", &input_int);
-            tmp = malloc(7);
-            sprintf(tmp, "%d", input_int);
-            strcat(ret, tmp);
+            fgets(input_str, 7, stdin);
+            while(stringIsInt(input_str) == FALSE){
+                fgets(input_str, 7, stdin);
+            }
+            strcat(ret, input_str);
             return ret;      
     }
+}
+
+/**
+ * Check if string is a > 0 integer or not
+ */
+int stringIsInt(char *string) {
+    char *newString;
+    long number = strtol(string, &newString, 10);  // Base 10
+
+    if (*newString != '\0' || newString == string || number < 1) {
+        printf("Scrivi un numero maggiore di 0\n");
+    } else {
+        return TRUE;
+    }
+    return FALSE;
 }

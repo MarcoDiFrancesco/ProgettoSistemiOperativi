@@ -7,14 +7,17 @@ string nS = "3";
 string mS = "4";
 
 int main(int argc, string argv[]) {
+    if(strcmp(argv[argc-1], "-a")){
+        
+    }
     //scrivo qui controllo degli argomenti per il C
-    if (argc > 2 && strcmp(argv[1], "-n") == 0) {
+    if (argc > 2 && strcmp(argv[1], "-n") == 0 && argv[2] > 0 && argv[2] < MAXQ) {
         //printf("N1");
         n_arg++;
         nS = argv[2];
         N = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-n") == 0) {
+    } else if (argc > 4 && strcmp(argv[3], "-n") == 0 && argv[4] > 0 && argv[4] < MAXQ) {
         //printf("N2");
         n_arg++;
         nS = argv[4];
@@ -22,13 +25,13 @@ int main(int argc, string argv[]) {
         n_arg++;
     }
 
-    if (argc > 2 && strcmp(argv[1], "-m") == 0) {
+    if (argc > 2 && strcmp(argv[1], "-m" && argv[2] > 0 && argv[2] < MAXQ) == 0) {
         //printf("M1");
         n_arg++;
         mS = argv[2];
         M = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-m") == 0) {
+    } else if (argc > 4 && strcmp(argv[3], "-m") == 0 && argv[4] > 0 && argv[4] < MAXQ) {
         //printf("M2");
         n_arg++;
         mS = argv[4];

@@ -27,6 +27,7 @@
 #define FALSE 0
 #define TRUE 1
 #define MAXLEN 12*sizeof(int)
+#define MAXQ 10000
 
 //costanti funzionali
 /*int N = 3;
