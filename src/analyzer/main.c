@@ -139,7 +139,6 @@ int main(int argc, string argv[]) {
     for (i = n_arg; i < argc; i++) {
         //printf("indice di avanzamento %d\n", i);
         if (filesOk[i] == TRUE) {
-            //printf("---IL ROMPICAZZO %s ()\n", arg[i]);
             files[next] = arg[i];
             next++;
         }

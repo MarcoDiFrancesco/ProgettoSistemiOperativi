@@ -235,27 +235,31 @@ map readerMessage(int *numFileRet) {
     queuedMessage msg; 
     if (msgrcv(qid, &msg, sizeof(msg), 1, MSG_NOERROR) < 0)   puts("msgrcv (num) trouble...");
         printf("%s (num) received as type %i\n", msg.payload, (int) msg.type);
+
     string tmp = malloc(sizeof(100));
     strcpy(tmp, msg.payload);
     nFiles = atoi(tmp);
     *numFileRet = nFiles;
     map ret = malloc(nFiles*sizeof(FileMap));
-    int counter = 2;
+    int counterType = 2;
+
     for(j=0; j<nFiles; j++){
         //salvataggio nome file
-        if (msgrcv(qid, &msg, MAX_MSG_SIZE, counter, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
-        //printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
+        printf("%d\n", j);
+        if (msgrcv(qid, &msg, MAX_MSG_SIZE, counterType, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
+        printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
         ret[j].name=malloc(strlen(msg.payload));
         strcpy(ret[j].name, msg.payload);
-        counter++;
+        counterType++;
         for (i = 0; i < CLUSTER; i++) {
+            printf("%d.%d\n", j, i);
             //salvataggio dati file
-            if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
-            //printf("\terr (%d): %s\n", i, strerror(errno));
-            //printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
+            if (msgrcv(qid, &msg, sizeof(msg), counterType, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
+            printf("\terr (%d): %s\n", i, strerror(errno));
+            printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
             strcpy(tmp, msg.payload);
             ret[j].stats[i] = atoi(tmp);
-            counter++;
+            counterType++;
         }
         //printf("err (f %d): %s\n", j, strerror(errno));
     }
