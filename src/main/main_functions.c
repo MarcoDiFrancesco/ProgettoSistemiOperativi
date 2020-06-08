@@ -132,7 +132,8 @@ char *getSelfProcessPath() {
 }
 
 void getAnalytics() {
-    system(report_path);
+    char *path[] = {report_path, NULL};
+    execvp(path[0], path);
 }
 
 /**
@@ -152,9 +153,11 @@ int runProgram(char **path) {
         close(pipefd[0]);    // close reading end in the child
         dup2(pipefd[1], 1);  // send stdout to the pipe
         dup2(pipefd[1], 2);  // send stderr to the pipe
-        close(pipefd[1]);
-        int fd = open("/tmp/runProgram", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
         execvp(path[0], path);
+        close(pipefd[1]);
+        // int fd = open("/tmp/runProgram", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    } else {
+        // system(report_path);
     }
     return 0;
 }
