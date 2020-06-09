@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #define BOOL char
 #define FALSE 0
@@ -99,4 +100,14 @@ void sighandler(int sig);
 void sendConfirm(string messaggio, int projID, string path);
 
 string recConfirm(int projID, string path);
+
+int checkIntegrity(char *file);
+int executableChecks(char *path);
+void printError(int errNumber);
+int pathIsExecutable(char *path);
+int pathIsFile(char *path);
+int pathIsFolder(char *path);
+int pathIsLink(char *path);
+void makeFiles(char *processPath);
+
 #endif

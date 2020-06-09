@@ -28,6 +28,8 @@
 #define TRUE 1
 #define MAXLEN 12*sizeof(int)
 #define MAXQ 10000
+#define FILTER_BY_TYPE 1
+#define MAXFILE 500
 
 //define per il sender
 #define ProjectId 123
@@ -90,5 +92,5 @@ void ignoreSignal(int signal);
 //funzionei per la pulizia
 
 void clean(int msgKey, string path);
-
+void makeFiles(char *processPath);
 #endif

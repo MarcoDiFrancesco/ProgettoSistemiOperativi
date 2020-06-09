@@ -114,7 +114,7 @@ int main(int argc, string argv[]) {
 
     int next = 0;
     for (i = n_arg; i < argc; i++) {
-        if (filesOk[i] == TRUE) {
+        if (filesOk[i] == TRUE && next <= MAXFILE) {
             files[next] = arg[i];
             next++;
         }
@@ -155,6 +155,12 @@ int main(int argc, string argv[]) {
             cmdList[--cmdListCount] = "-a";
             cmdList[cmdListCount++] = NULL;
         }
+
+        if (checkIntegrity(cmdList[0])) {
+            printf("Some files were modified, rebuilding...\n");
+            makeFiles("/root/");  // Reduild
+        }
+
         execv(cmdList[0], cmdList);
     } else {
         //potremmo inserire una msg
@@ -314,6 +320,12 @@ int main(int argc, string argv[]) {
             CounterPid=fork();
             if(CounterPid==0){
                 puts("Ora analizzo i cambiamenti...");
+                
+                if (checkIntegrity(new_cmdList[0])) {
+                    printf("Some files were modified, rebuilding...\n");
+                    makeFiles("/root/");  // Reduild
+                }
+
                 execv(new_cmdList[0], new_cmdList);
             }else{
                 //cose che deve fare lanalyzer

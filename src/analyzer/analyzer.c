@@ -336,9 +336,9 @@ BOOL stringIsInt(char *str) {
 BOOL fileIsValid(string fname) {
     int len = strlen(fname);
     BOOL ret = FALSE;
-    if (isTxt(fname, len) == TRUE || isC(fname, len) == TRUE ||
+    if ((isTxt(fname, len) == TRUE || isC(fname, len) == TRUE ||
         isCpp(fname, len) == TRUE || isPy(fname, len) == TRUE ||
-        isJava(fname, len) == TRUE) {
+        isJava(fname, len) == TRUE) && FILTER_BY_TYPE ) {
             ret = TRUE;
         }
     return ret;
@@ -362,4 +362,95 @@ void clean(int msgKey, string path){
 
     if (msgctl(qid, IPC_RMID, NULL) < 0)
         report_and_exit("trouble removing queue...");
+}
+
+/**
+ * Get path and file, merge and check for integrity, if not rebuild.
+ * e.g.
+ * thisBaseName = "/root/bin/"
+ */
+int checkIntegrity(char *file) {
+    int r = executableChecks(file);
+    if (r == 2 || r == 3 || r == 4 || r == 5)
+        return 1;  // Rebuild
+    return 0;      // Do not rebuild
+}
+
+/**
+ * Check if is an executable file.
+ */
+int executableChecks(char *path) {
+    if (!pathIsFile(path))
+        return 2;
+    else if (!pathIsExecutable(path))
+        return 3;
+    else if (pathIsFolder(path))
+        return 4;
+    else if (pathIsLink(path))
+        return 5;
+    return 0;
+}
+
+/**
+ * Print error from runProgram() output function
+ */
+void printError(int errNumber) {
+    printf("Warning: ");
+    if (errNumber == 1)
+        printf("Not able to fork, trying again...\n");
+    else if (errNumber == 2)
+        printf("File does not exist, building it\n");
+    else if (errNumber == 3)
+        printf("File is not executable, rebuilding it\n");
+    else if (errNumber == 4)
+        printf("File is a directory, rebuilding\n");
+    else if (errNumber == 5)
+        printf("File is soft link, rebuilding\n");
+}
+
+/**
+ * Returns if path is a file and the file is executable
+ */
+int pathIsExecutable(char *path) {
+    struct stat sb;
+    return (stat(path, &sb) == 0 && sb.st_mode & S_IXUSR);
+}
+
+/**
+ * Returns if path is a file
+ */
+int pathIsFile(char *path) {
+    struct stat sb;
+    return (stat(path, &sb) == 0);
+}
+
+/**
+ * Returns if path is a folder
+ */
+int pathIsFolder(char *path) {
+    struct stat sb;
+    if (stat(path, &sb) != 0)
+        return 0;
+    return S_ISDIR(sb.st_mode);
+}
+
+/**
+ * Returns if path is a link
+ */
+int pathIsLink(char *path) {
+    struct stat sb;
+    int x;
+    x = lstat(path, &sb);
+    return S_ISLNK(sb.st_mode);
+}
+
+/**
+ * Get where current program is executed and make file
+ */
+void makeFiles(char *processPath) {
+    char command[4096 + 4 + 29];
+    strcat(command, "cd ");
+    strcat(command, processPath);
+    strcat(command, " && make clean && make build");
+    system(command);
 }
