@@ -7,7 +7,6 @@ int main(int argc, string argv[]) {
         flagMain=TRUE;
     }
 
-    
     if (argc < 4) {
         printf("Counter chiamato con argomenti insufficienti\n");
         return 1;

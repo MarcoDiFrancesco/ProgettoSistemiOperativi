@@ -10,7 +10,7 @@ Componenti del gruppo:
 Riccardo Parola     202343  riccardo.parola@studenti.unitn.it    00000001  
 Riccardo Peron      202369  riccardo.peron@studenti.unitn.it     00000002  
 Marco Di Francesco  202351  marco.difrancesco@studenti.unitn.it  00000003  
-Filippo Daniotti    204679  filippo.daniotti@unitn.it            00000004  
+Filippo Daniotti    204679  filippo.daniotti@studenti.unitn.it   00000004  
 ```
 
 ## How to use
@@ -73,25 +73,30 @@ make clean
 
 ## How it works
 
-![Graph](https://i.imgur.com/r1lvqIh.png)
+![Graph](https://i.imgur.com/7D2PV6L.png)
+
+It's possible to run the program in two ways:
+
+- Using main binary (`/root/bin/main`)
+- Running the program Analyzer (`/root/bin/analyzer`), then running Report (`/root/bin/report`)
 
 ### Main
 
-To run **main** run `./bin/main`.  
-It requires the files `./bin/analyzer` and `./bin/report` to exist.
+To run **main** run `/root/bin/main`.  
+It requires the files `/root/bin/analyzer` and `/root/bin/report` to exist.
 
 It is used to manage Analyzer and Report.
 
 ### Report
 
-To run **main** run `./bin/main`.  
-It requires the file `./bin/analyzer` to exist.
+To run **main** run `/root/bin/main`.  
+It requires the file `/root/bin/analyzer` to exist.
 
 It is used to run Analyzer and open a named pipe with it, than require analyzed data, than it will close analyzer than finish.
 
 ### Analyzer
 
-To run **analyzer** run `./bin/analyzer`.  
+To run **analyzer** run `/root/bin/analyzer`.  
 
 It is used to create Counter and calulate which process P analyze which file. If Counter already exist, it will recalculate the processes P assigned files. Once this is completed it will close, it won't wait for Counter to close.
 
@@ -99,10 +104,7 @@ It is used to create Counter and calulate which process P analyze which file. If
 
 Counter is run in [Analyzer](#Analyzer).
 
-Counter is the only process (except Main) that won't be stopped by anything.  
-When it's created, it will create all P processes.
-
-It is used to gather all the information in a struct:
+Is the process that manage and starts P and Q processes, based on the values N and M, gathers informations from theyir analysis and sends them trought messages to the process [Report](#Report).
 
 ``` C
 struct CounterStruct {
@@ -117,10 +119,22 @@ struct CounterStruct {
 
 P is run in [Counter](#Counter).
 
-When P is started, it will get the path of the file that it needs to analyze and it spowns the child processes Q and it waits for them to finish.
+When P is started, it will get the path of the file that it needs to analyze and it spowns the all the child processes Q.
 
 ### Q
 
 Q is run in [P](#P).
 
 When Q is started, it will get the path of the file that it needs to analyze and which part. When the process finishes, it communicates the results to P.
+
+### Limitations
+
+This program has limits that we couldn't solve in time:
+
+- Max analyzable files is 500 (limited by the message to [Report](#Report))
+- Max analyzable files in [Counter](#Counter) is 3077
+- You can only add files on the fly but it's not possible to add folder once the program is started
+- Max lenght of the analyzable path is 48 char
+- Max number of [Q](#Q) process is 10000
+- There is one `sleep` in the [P](#P) process to slow down the control of the termination of all the [Q](#Q) process
+- It's possible to run the programs only if they're placed under `/root/bin/`

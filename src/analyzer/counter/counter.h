@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <sys/shm.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <math.h>
 #include <sys/ipc.h>
@@ -142,5 +143,13 @@ void report_and_exit(const char* msg);
 void sendConfirm(string messaggio, int projID, string path);
 
 string recConfirm(int projID, string path);
+
+int checkIntegrity(char *file);
+int executableChecks(char *path);
+int pathIsExecutable(char *path);
+int pathIsFile(char *path);
+int pathIsFolder(char *path);
+int pathIsLink(char *path);
+void makeFiles(char *processPath);
 
 #endif

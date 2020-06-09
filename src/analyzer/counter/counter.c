@@ -455,6 +455,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
              int total, int fileIndex, int *part, int *fdim,
              int index_p, int file_per_p, int f_Psize) {
     signal(SIGUSR2, sigHandlerQ);
+    puts("Processo P creato");
     //creo pipe fra C e P
     int l, g, j;
     int return_value;
@@ -487,7 +488,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
         }
     }
     while (boolQ[index_p] == FALSE) {
-        system("sleep 1");
+        system("sleep 0.1");
         int tmp_count = 0;
         int i, index;
         for (j = 0; j < M; j++) {
@@ -526,6 +527,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
  */
 int processQ(int *range, int *dims, char **fname, int f_Psize,
              int q_loop, int index, int pipe_q[]) {
+    puts("Processo Q creato");
     int i, j;
     int **counter = processoQ_n(range, dims, fname, f_Psize,
                                 q_loop, index);
@@ -547,7 +549,6 @@ void report_and_exit(const char *msg) {
 void sender(map data, int mapDim) {
     //signal handler
     signal(SIGUSR2, signalhandler);
-    //system("sleep 1");//dovremmo mandare messaggi
     string back = recConfirm(7, "/root/src/main/main_functions.h");
     while (strcmp(back, "e") != 0) {
         back = recConfirm(7, "/root/src/main/main_functions.h");
@@ -682,4 +683,79 @@ string recConfirm(int projID, string path) {
     strcpy(ret, msg.payload);
 
     return ret;
+}
+
+/**
+ * Get path and file, merge and check for integrity, if not rebuild.
+ * e.g.
+ * thisBaseName = "/root/bin/"
+ */
+int checkIntegrity(char *file) {
+    int r = executableChecks(file);
+    if (r == 2 || r == 3 || r == 4 || r == 5)
+        return 1;  // Rebuild
+    return 0;      // Do not rebuild
+}
+
+/**
+ * Check if is an executable file.
+ */
+int executableChecks(char *path) {
+    if (!pathIsFile(path))
+        return 2;
+    else if (!pathIsExecutable(path))
+        return 3;
+    else if (pathIsFolder(path))
+        return 4;
+    else if (pathIsLink(path))
+        return 5;
+    return 0;
+}
+
+
+/**
+ * Returns if path is a file and the file is executable
+ */
+int pathIsExecutable(char *path) {
+    struct stat sb;
+    return (stat(path, &sb) == 0 && sb.st_mode & S_IXUSR);
+}
+
+/**
+ * Returns if path is a file
+ */
+int pathIsFile(char *path) {
+    struct stat sb;
+    return (stat(path, &sb) == 0);
+}
+
+/**
+ * Returns if path is a folder
+ */
+int pathIsFolder(char *path) {
+    struct stat sb;
+    if (stat(path, &sb) != 0)
+        return 0;
+    return S_ISDIR(sb.st_mode);
+}
+
+/**
+ * Returns if path is a link
+ */
+int pathIsLink(char *path) {
+    struct stat sb;
+    int x;
+    x = lstat(path, &sb);
+    return S_ISLNK(sb.st_mode);
+}
+
+/**
+ * Get where current program is executed and make file
+ */
+void makeFiles(char *processPath) {
+    char command[4096 + 4 + 29];
+    strcat(command, "cd ");
+    strcat(command, processPath);
+    strcat(command, " && make clean && make build");
+    system(command);
 }

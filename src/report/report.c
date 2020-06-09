@@ -324,3 +324,14 @@ string recConfirm(int projID, string path) {
 
     return ret;
 }
+
+/**
+ * Get where current program is executed and make file
+ */
+void makeFiles(char *processPath) {
+    char command[4096 + 4 + 29];
+    strcat(command, "cd ");
+    strcat(command, processPath);
+    strcat(command, " && make clean && make build");
+    system(command);
+}
