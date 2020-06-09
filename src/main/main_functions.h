@@ -64,7 +64,7 @@ int runProgram(char **path);
 int runProgramAndWait(char **path);
 char *baseName(char *path);
 void makeFiles(char *processPath);
-int checkIntegrity(char *file, char *processPath);
+int checkIntegrity(char *file);
 int executableChecks(char *path);
 void printError(int errNumber);
 int pathIsExecutable(char *path);

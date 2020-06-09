@@ -1,6 +1,13 @@
 #include "main_functions.h"
 
-char clean_path[] = "/root/bin/clean";
+#ifndef BINARY_PATHS
+#define BINARY_PATHS
+char analyzer_path[] = "/root/bin/analyzer";
+char counter_path[] = "/root/bin/counter";
+char clean_path[] = "/root/bin/cleanBuffer";
+char main_path[] = "/root/bin/main";
+char report_path[] = "/root/bin/report";
+#endif
 
 int main() {
     if (!DEBUG) {
@@ -12,15 +19,13 @@ int main() {
     signal(SIGUSR2, ignoreSignal);
     signal(SIGUSR1, runReport);
 
-    char *fullProcessPath = getSelfProcessPath();
-    char *processPath = baseName(fullProcessPath);
-
-    if (SHOW_WARNING && strcmp(processPath, "/root/bin/"))
-        printf("Warning: /root/bin/ not detected, new folder is: %s\n", processPath);
-
-    if (checkIntegrity("analyzer", processPath) || checkIntegrity("report", processPath)) {
+    if (checkIntegrity(analyzer_path) ||
+        checkIntegrity(counter_path) ||
+        checkIntegrity(clean_path) ||
+        checkIntegrity(main_path) ||
+        checkIntegrity(report_path)) {
         printf("Some files were modified, rebuilding...\n");
-        makeFiles(processPath);  // Reduild
+        makeFiles("/root/");  // Reduild
     }
 
     char mainChoice[MAX_INPUT_LENGHT];

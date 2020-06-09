@@ -1,8 +1,5 @@
 #include "main_functions.h"
 
-char report_path[] = "/root/bin/report";
-char analyzer_path[] = "/root/bin/analyzer";
-
 /**
  * Create tail of the list
  */
@@ -96,7 +93,7 @@ void splitAndSendPaths(char *string, char *n, char *m) {
         printf("Warning: hai superato il limite di %d caratteri, l'ulima path potrebbe non essere considerata\n", MAX_INPUT_LENGHT);
     int argumentsC = 0;
     char *argumentsV[MAX_ARG_STRLEN];  // *4 in case the path is "a" there is " -c " chars
-    argumentsV[argumentsC++] = analyzer_path;
+    argumentsV[argumentsC++] = "/root/bin/analyzer";
     argumentsV[argumentsC++] = "-n";
     argumentsV[argumentsC++] = n;
     argumentsV[argumentsC++] = "-m";
@@ -112,8 +109,6 @@ void splitAndSendPaths(char *string, char *n, char *m) {
     argumentsV[argumentsC++] = "-a";
     argumentsV[argumentsC++] = NULL;
     runProgram(argumentsV);
-    // char *a[] = {analyzer_path, arguments};
-    // runProgramAndWait(a);
 }
 
 /**
@@ -133,7 +128,7 @@ char *getSelfProcessPath() {
 }
 
 void getAnalytics() {
-    char *path[] = {report_path, NULL};
+    char *path[] = {"/root/bin/report", NULL};
     executableChecks(path[0]);
     int pid = fork();
     if (pid == -1)  // Error in forking
@@ -255,7 +250,7 @@ char *baseName(char *path) {
 void makeFiles(char *processPath) {
     char command[PATH_MAX + 4 + 29];
     strcat(command, "cd ");
-    strcat(command, baseName(processPath));
+    strcat(command, processPath);
     strcat(command, " && make clean && make build");
     system(command);
 }
@@ -265,14 +260,11 @@ void makeFiles(char *processPath) {
  * e.g.
  * thisBaseName = "/root/bin/"
  */
-int checkIntegrity(char *file, char *processPath) {
-    char *concatenatedPath = malloc(PATH_MAX);
-    concatenatedPath = concatPaths(processPath, file);
-    int r = executableChecks(concatenatedPath);
+int checkIntegrity(char *file) {
+    int r = executableChecks(file);
     if (r == 2 || r == 3 || r == 4 || r == 5)
         return 1;  // Rebuild
-    free(concatenatedPath);
-    return 0;  // Do not rebuild
+    return 0;      // Do not rebuild
 }
 
 /**
