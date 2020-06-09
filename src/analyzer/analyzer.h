@@ -29,14 +29,9 @@
 #define MAXLEN 12*sizeof(int)
 #define MAXQ 10000
 
-//costanti funzionali
-/*int N = 3;
-int M = 4;
-int n_arg = 1;*/
-
 //define per il sender
 #define ProjectId 123
-#define PathName  "/root/src/analyzer/analyzer.h"  /* any existing, accessible file would do */
+#define PathName  "/root/src/analyzer/analyzer.h"
 #define PathName2  "/root/src/analyzer/analyzer.h"
 #define MAX_MSG_SIZE 100
 
@@ -47,7 +42,6 @@ typedef struct {
 
 typedef char * string;
 
-// https://www.hackerearth.com/practice/data-structures/linked-list/singly-linked-list/tutorial/
 struct LinkedList {
     char *str;
     struct LinkedList *next;

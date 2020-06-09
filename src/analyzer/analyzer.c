@@ -99,19 +99,16 @@ node addNode(node head, char *new_str) {
     return head;
 }
 
-// https://stackoverflow.com/a/13098645/7924557
 int file_is_executable(char *path) {
     struct stat sb;
     return (stat(path, &sb) == 0 && sb.st_mode & S_IXUSR);
 }
 
-// https://stackoverflow.com/a/230070/7924557
 int file_exists(char *path) {
     struct stat sb;
     return (stat(path, &sb) == 0);
 }
 
-// https://stackoverflow.com/a/4553053/7924557
 int is_folder(char *path) {
     struct stat sb;
     if (stat(path, &sb) != 0)
@@ -119,7 +116,6 @@ int is_folder(char *path) {
     return S_ISDIR(sb.st_mode);
 }
 
-// https://stackoverflow.com/a/3985085/7924557
 int is_link(char *path) {
     struct stat sb;
     int x;
@@ -177,7 +173,7 @@ BOOL containsDot(string str) {
 
 void report_and_exit(const char *msg) {
     perror(msg);
-    exit(-1); /* EXIT_FAILURE */
+    exit(-1);
 }
 
 void sendConfirm(string messaggio, int projID, string path) {
@@ -212,7 +208,7 @@ string recConfirm(int projID, string path) {
     queuedMessage msg;
     if (msgrcv(qid, &msg, MAX_MSG_SIZE, 1, MSG_NOERROR) < 0) puts("AAAAAAAAAAAAAAAAAAAAAAAA trouble...");
 
-    if (msgctl(qid, IPC_RMID, NULL) < 0) /* NULL = 'no flags' */
+    if (msgctl(qid, IPC_RMID, NULL) < 0)
         report_and_exit("trouble removing queue...");
 
     string ret = malloc(strlen(msg.payload));
@@ -314,24 +310,13 @@ string changeNM(){
  * Check if string is a > 0 integer or not
  */
 BOOL stringIsInt(char *str) {
-    /*char *newString;
-    long number = strtol(str, &newString, 10);  // Base 10
-
-    if (*newString != '\0' || number < 1) {
-        printf("Scrivi un numero maggiore di 0\n");
-    } else {
-        return TRUE;
-    }
-    return FALSE;*/
     int i,
         len = 0;
 
     BOOL ret = TRUE;
     
     len = strlen(str);
-    //printf("strlen %d\n", len);
     for (i = 0; i < len - 1; ++i) {
-        //printf("%c ", str[i]);
         if (isdigit(str[i]) == 0) {
             ret = FALSE;
             break;
@@ -360,23 +345,21 @@ BOOL fileIsValid(string fname) {
 }
 
 void sendSignal(int signal) {
-    //printf("Alanyzer sent sigusr1 to main\n");
     kill(getppid(), SIGUSR1);
 }
 
 void ignoreSignal(int signal) {
-    //printf("Signal ignored from analyzer\n");
 }
 
 //funzioni per pulizia
 
 void clean(int msgKey, string path){
-    key_t key= ftok(path, msgKey); /* key to identify the queue */
+    key_t key= ftok(path, msgKey);
     if (key < 0) report_and_exit("key not gotten...");
 
-    int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
+    int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) report_and_exit("no access to queue...");
 
-    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+    if (msgctl(qid, IPC_RMID, NULL) < 0)
         report_and_exit("trouble removing queue...");
 }

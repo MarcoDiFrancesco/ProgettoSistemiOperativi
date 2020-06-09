@@ -96,4 +96,7 @@ void printNames(map results, int nFile);
 
 void sighandler(int sig);
 
+void sendConfirm(string messaggio, int projID, string path);
+
+string recConfirm(int projID, string path);
 #endif

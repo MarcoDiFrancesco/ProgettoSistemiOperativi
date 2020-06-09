@@ -17,7 +17,7 @@ Filippo Daniotti    204679  filippo.daniotti@unitn.it            00000004
 
 Run `run.sh` to run docker using the DockerFile (a kind of docker-compose).
 
-If you don't want to run `run.sh` use the docker comamnds below.
+If you don't want to run `run.sh` use the docker [comamnds below](#docker-commands).
 
 ## Docker commands
 

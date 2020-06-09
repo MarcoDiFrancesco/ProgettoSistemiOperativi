@@ -1,9 +1,6 @@
 #include "report.h"
 
 void read_result(map results, int numFile) {
-    /*int i = 0,
-        counter = 0,
-        *nval = getValuesFromString(results);*/
     char input;
 
     printf("Vuoi le statistiche di tutti i file [a]\ndi un file singolo [u]\noppure le statistiche complessive [s]?\n");
@@ -23,14 +20,12 @@ void read_result(map results, int numFile) {
         case 's':
             temp = computeOverall(results, numFile);
             printOverall(temp);
-            //printSummary(results, numFile);
             break;
     }
     free(temp);
 }
 
 //new print functions
-
 
 void printAll(map results,int numFile){
     int i;
@@ -57,9 +52,9 @@ void printAll(map results,int numFile){
             break;
         case 'e' :
             for(i=0;i<numFile;i++){
-                printf("Nome del file : %s\n",results[i].name);
+                printf("\nNome del file : %s\n",results[i].name);
                 print_values(results[i].stats);
-                printf("\n-----------");
+                printf("\n-----------\n");
                 print_percentual(results[i].stats);
             }
             
@@ -111,14 +106,13 @@ void printSingle(map results, int fileNum){
             break;
         case 'e' : 
             print_values(results[fileNum].stats);
-            printf("\n-----------");
+            printf("\n-----------\n");
             print_percentual(results[fileNum].stats);
             break;
     }
 }
 
 //old print functions
-
 void print_values(int* results){
     int i = 0;
 
@@ -155,7 +149,6 @@ string print_type(int n){
 };
 
 //phin functions
-
 char **statsToString(int *values){
 
     int i;
@@ -227,17 +220,15 @@ map readerMessage(int *numFileRet) {
     printf("Per iniziare a ricevere dati è necessiario lanciare analyzer [bin/analyzer]\n\n");
 
     int i=0, j, nFiles;
-    key_t key= ftok(PathName, ProjectId); /* key to identify the queue */
+    key_t key= ftok(PathName, ProjectId);
     if (key < 0) report_and_exit("key not gotten...");
 
-    int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
+    int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) report_and_exit("no access to queue...");
-
-    //printf("key : %d\nqid : %d\n", key, qid);
 
     queuedMessage msg; 
     if (msgrcv(qid, &msg, sizeof(msg), 1, MSG_NOERROR) < 0)   puts("msgrcv (num) trouble...");
-        printf("%s (num) received as type %i\n", msg.payload, (int) msg.type);
+
     string tmp = malloc(sizeof(100));
     strcpy(tmp, msg.payload);
     nFiles = atoi(tmp);
@@ -247,23 +238,18 @@ map readerMessage(int *numFileRet) {
     for(j=0; j<nFiles; j++){
         //salvataggio nome file
         if (msgrcv(qid, &msg, MAX_MSG_SIZE, counter, MSG_NOERROR) < 0)   puts("msgrcv (name) trouble...");
-        //printf("%s (name) received as type %i\n", msg.payload, (int) msg.type);
         ret[j].name=malloc(strlen(msg.payload));
         strcpy(ret[j].name, msg.payload);
         counter++;
         for (i = 0; i < CLUSTER; i++) {
             //salvataggio dati file
             if (msgrcv(qid, &msg, sizeof(msg), counter, MSG_NOERROR) < 0)   puts("msgrcv trouble...");
-            //printf("\terr (%d): %s\n", i, strerror(errno));
-            //printf("%s (%d) received as type %i\n", msg.payload, j, (int) msg.type);
             strcpy(tmp, msg.payload);
             ret[j].stats[i] = atoi(tmp);
             counter++;
         }
-        //printf("err (f %d): %s\n", j, strerror(errno));
     }
-    /** remove the queue **/
-    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+    if (msgctl(qid, IPC_RMID, NULL) < 0) 
         report_and_exit("trouble removing queue...");
 
     return ret;
@@ -271,7 +257,7 @@ map readerMessage(int *numFileRet) {
 
 void report_and_exit(const char* msg) {
     perror(msg);
-    exit(-1); /* EXIT_FAILURE */
+    exit(-1);
 }
 
 void sighandler(int sig){
@@ -296,4 +282,45 @@ void print_percentual_long(long* results){
         printf("\n> percentuale di %s: %0.2f percento", print_type(i), ((float)results[i]/((float)dim))*100.0 );
     }
     printf("\n");
+}
+
+void sendConfirm(string messaggio, int projID, string path) {
+    key_t key = ftok(path, projID);
+    if (key < 0) {
+        printf("err: %s\n", strerror(errno));
+        report_and_exit("couldn't get key...");
+    }
+
+    int qid = msgget(key, 0666 | IPC_CREAT);
+    if (qid < 0)
+        report_and_exit("couldn't get queue id...");
+
+    queuedMessage msg;
+    strcpy(msg.payload, messaggio);
+    msg.type = 1;
+
+    msgsnd(qid, &msg, strlen(msg.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
+}
+
+string recConfirm(int projID, string path) {
+    key_t key = ftok(path, projID);
+    if (key < 0) {
+        printf("err: %s\n", strerror(errno));
+        report_and_exit("couldn't get key...");
+    }
+
+    int qid = msgget(key, 0666 | IPC_CREAT);
+    if (qid < 0)
+        report_and_exit("couldn't get queue id...");
+
+    queuedMessage msg;
+    if (msgrcv(qid, &msg, MAX_MSG_SIZE, 1, MSG_NOERROR) < 0) puts("AAAAAAAAAAAAAAAAAAAAAAAA trouble...");
+
+    if (msgctl(qid, IPC_RMID, NULL) < 0)
+        report_and_exit("trouble removing queue...");
+
+    string ret = malloc(strlen(msg.payload));
+    strcpy(ret, msg.payload);
+
+    return ret;
 }
