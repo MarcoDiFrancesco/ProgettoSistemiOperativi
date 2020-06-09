@@ -94,11 +94,15 @@ void splitAndSendPaths(char *string, char *n, char *m) {
     int argumentsC = 0;
     char *argumentsV[MAX_ARG_STRLEN];  // *4 in case the path is "a" there is " -c " chars
     argumentsV[argumentsC++] = "/root/bin/analyzer";
-    argumentsV[argumentsC++] = "-n";
-    argumentsV[argumentsC++] = n;
-    argumentsV[argumentsC++] = "-m";
-    argumentsV[argumentsC++] = m;
 
+    if (n[0] != '\0') {
+        argumentsV[argumentsC++] = "-n";
+        argumentsV[argumentsC++] = n;
+    }
+    if (m[0] != '\0') {
+        argumentsV[argumentsC++] = "-m";
+        argumentsV[argumentsC++] = m;
+    }
     char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
     singlePath = strtok(string, " ");  // Split in space
     while (singlePath != NULL) {
@@ -387,7 +391,7 @@ int stringIsInt(char *string) {
     long number = strtol(string, &newString, 10);  // Base 10
 
     if (*newString != '\0' || newString == string) {
-        printf("Scrivi un numero\n");
+        printf("Scrivi un numero oppure lascia vuoto per il valore di default\n");
     } else {
         return TRUE;
     }
