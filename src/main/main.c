@@ -60,15 +60,13 @@ int main() {
                 printf("Specificare il numero di processi P [default 3]: ");
                 fgets(choice12, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice12);
-                ok = isProcessNumberOk(choice12);
-            } while (!choice12[0] == '\0' && !stringIsInt(choice12));
+            } while (!choice12[0] == '\0' && (!stringIsInt(choice12) || !isProcessNumberOk(choice12)));
 
             do {
                 printf("Specificare il numero di processi Q [default 4]: ");
                 fgets(choice13, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice13);
-                // printf("%d, %d, %d\n", choice13[0] != '\0',  !stringIsInt(choice13), isProcessNumberOkV2(choice12, choice13));
-            } while (!choice13[0] == '\0' && !stringIsInt(choice13));
+            } while (!choice13[0] == '\0' && (!stringIsInt(choice13) || !isProcessNumberOkV2(choice12, choice13)));
 
             splitAndSendPaths(choice11, choice12, choice13, choice14);
         } else if (!strcmp(mainChoice, "2")) {  // If choice equals 2

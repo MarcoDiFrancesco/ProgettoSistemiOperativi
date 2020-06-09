@@ -94,10 +94,16 @@ void splitAndSendPaths(char *files, char *n, char *m, char *folders) {
     if (n[0] != '\0') {
         argumentsV[argumentsC++] = "-n";
         argumentsV[argumentsC++] = n;
+    } else {
+        argumentsV[argumentsC++] = "-n";
+        argumentsV[argumentsC++] = "3";
     }
     if (m[0] != '\0') {
         argumentsV[argumentsC++] = "-m";
         argumentsV[argumentsC++] = m;
+    } else {
+        argumentsV[argumentsC++] = "-m";
+        argumentsV[argumentsC++] = "4";
     }
 
     char *singlePathFolders;                   // Contains the splited path, e.g. /root/src
@@ -369,16 +375,17 @@ int isProcessNumberOk(char *string) {
     else
         number = atoi(string);
     printf("-%s-, %d\n", string, number);
-    if (number > 15)
+    if (number > 15) {
         printf("Il numero di processi P e' troppo alto, scegli un numero minore o uguale a 15.\n");
-    else if(number <= 0)
-        printf("Il numero di processi P e' troppo basso, scegli un numero piu' grande di 0.\n");
-    else {
-        printf("return true v1");
         return FALSE;
+    } else if(number <= 0) {
+        printf("Il numero di processi P e' troppo basso, scegli un numero piu' grande di 0.\n");
+        return FALSE;
+    }else{
+        return TRUE;
     }
         
-    return TRUE;
+    return FALSE;
 }
 
 
@@ -391,15 +398,15 @@ int isProcessNumberOkV2(char *string1, char *string2) {
         number1 = atoi(string1);
 
     if (string2[0] == '\0')
-        number2 = 3;
+        number2 = 4;
     else
         number2 = atoi(string2);
 
-    printf("-%s-, -%s-, %d, %d\n", string1, string2, number1, number2);
-    if (number1 + (number1 * number2) >= 150) {
-        printf("Il numero di processi P*Q e' troppo alto, scegli un numero in modo che P*Q sia piu' piccolo di 150: ");
-    } else {
-        printf("return true v2");
+    if (number1 + (number1 * number2) >= 165) {
+        printf("Il numero di processi P*Q e' troppo alto, scegli un numero in modo che P*Q sia piu' piccolo di 150\n");
+        return FALSE;
+    } else if (number2 <= 0) {
+        printf("Il numero di processi Q e' troppo basso, scegli un numero di processi piu' grande di 1\n");
         return FALSE;
     }
     return TRUE;
