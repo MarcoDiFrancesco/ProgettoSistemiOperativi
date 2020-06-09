@@ -20,7 +20,7 @@ typedef char *string;
 
 //define clean
 #define ProjectId 123
-#define PathName  "/root/src/analyzer/analyzer.h"  /* any existing, accessible file would do */
+#define PathName  "/root/src/analyzer/analyzer.h"
 #define PathName2  "/root/src/analyzer/analyzer.h"
 #define MAX_MSG_SIZE 100
 

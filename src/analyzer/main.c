@@ -17,13 +17,11 @@ int main(int argc, string argv[]) {
     }
     //scrivo qui controllo degli argomenti per il C
     if (argc > 2 && strcmp(argv[1], "-n") == 0 && atoi(argv[2]) > 0 && atoi(argv[2]) < MAXQ) {
-        //printf("N1");
         n_arg++;
         nS = argv[2];
         N = atoi(argv[2]);
         n_arg++;
     } else if (argc > 4 && strcmp(argv[3], "-n") == 0 && atoi(argv[4]) > 0 && atoi(argv[4])  < MAXQ) {
-        //printf("N2");
         n_arg++;
         nS = argv[4];
         N = atoi(argv[4]);
@@ -31,13 +29,11 @@ int main(int argc, string argv[]) {
     }
 
     if (argc > 2 && strcmp(argv[1], "-m") == 0 && atoi(argv[2]) > 0 && atoi(argv[2]) < MAXQ) {
-        //printf("M1");
         n_arg++;
         mS = argv[2];
         M = atoi(argv[2]);
         n_arg++;
     } else if (argc > 4 && strcmp(argv[3], "-m") == 0 && atoi(argv[4]) > 0 && atoi(argv[4]) < MAXQ) {
-        //printf("M2");
         n_arg++;
         mS = argv[4];
         M = atoi(argv[4]);
@@ -45,8 +41,6 @@ int main(int argc, string argv[]) {
     }
 
     int a, i, j;
-    //printf("\n (%d) files inseriti =  %d",argc,  argc - n_arg);
-
     string *arg = malloc(sizeof(string) * argc);
     for (i = 0; i < argc; i++) {
         arg[i] = argv[i];
@@ -138,14 +132,13 @@ int main(int argc, string argv[]) {
 
     printf("\nFile Totali trovati da analizzare: %d\n", fileTotal);
 
-    //system("/root/bin/cleanBuffer");
     clean(ProjectId, PathName);
     clean(3, PathName2);
     clean(6, "/root/src/main/main.c");
+    clean(7, "/root/src/main/main_functions.h");
 
     string cmdList[fileTotal + 4];
     int cmdListCount = 1;
-    //string cmd = malloc(sizeof(char) * fileTotal * 1000 + 100);
     cmdList[0] = "/root/bin/counter";
     cmdList[cmdListCount++] = nS;
     cmdList[cmdListCount++] = mS;
@@ -170,12 +163,12 @@ int main(int argc, string argv[]) {
             back = recConfirm(6, "/root/src/main/main.c");
         }
         fflush(stdout);
-        printf("\nvuoi inserire roba nuova testina di cazz0? [y/n]\n");
+        printf("\nVuoi fare delle modifiche ad N o M oppure aggiungere dei file? [y]/[n]\n");
         char input;
         fflush(stdin);
         scanf(" %c", &input);
         while (input != 'n' && input != 'y') {
-            puts("Inserisci solamente [y/n]");
+            puts("Inserisci solamente [y]/[n]");
             fflush(stdin);
             scanf(" %c", &input);
         }
@@ -196,10 +189,6 @@ int main(int argc, string argv[]) {
                     contchanges++;
                 }
             } while (strcmp(pipemsg, "X") != 0);
-
-            for (i = 0; i < contchanges; i++) {
-                printf(">"); puts(allChanges[i]);
-            }
 
             string lastN = malloc(10);
             strcpy(lastN, " ");
@@ -225,8 +214,6 @@ int main(int argc, string argv[]) {
                     strcat(totalPipeMessage, allChanges[i]);
                 }
             }       
-            printf("> new message: %s\n", totalPipeMessage);
-            printf("strlen pipemessage: %ld\n", strlen(totalPipeMessage));
             i = 0;
             BOOL flag_n,
                  flag_m,
@@ -238,7 +225,6 @@ int main(int argc, string argv[]) {
             while(i < strlen(totalPipeMessage)){ //finchè non arrivo in fondo alla stringa
                 //finchè non trovo un carattere '-'
                 while(totalPipeMessage[i] != '-' && totalPipeMessage[i] != '\0'){
-                    //printf(".%c",totalPipeMessage[i]);
                     i++;
                 }
                 //prendo l'elemento dopo il carattere '-'
@@ -255,8 +241,7 @@ int main(int argc, string argv[]) {
                         while(totalPipeMessage[i] != ' ' && totalPipeMessage[i] != '\0'){
                             new_n[j++] = totalPipeMessage[i++];
                         }
-                        new_n[j] = '\0';
-                        //printf("\n");
+                        new_n[j] = '\0';;
                         break;
                     case 'm':
                         flag_m = TRUE;
@@ -266,7 +251,6 @@ int main(int argc, string argv[]) {
                             new_m[j++] = totalPipeMessage[i++];
                         }
                         new_m[j] = '\0';
-                        printf("\n");
                         break;
                     case 'f':
                         flag_f = TRUE;
@@ -293,28 +277,22 @@ int main(int argc, string argv[]) {
 
             if (flag_n == TRUE) {
                 puts(new_n);
-                //strcpy(new_cmdList[1], new_n);
                 new_cmdList[1] = new_n;
             } else {
-                //strcpy(new_cmdList[1], cmdList[1]);
                 new_cmdList[1] = cmdList[1];
             }
             if (flag_m == TRUE) {
                 puts(new_m);
-                //strcpy(new_cmdList[2], new_m);
                 new_cmdList[2] = new_m;
             } else {
-                //strcpy(new_cmdList[2], cmdList[2]);
                 new_cmdList[2] = cmdList[2];
             }
             
             string new_filetotal = malloc(MAXLEN); 
             sprintf(new_filetotal, "%d", fileTotal + n_new_file_k);
-            //strcpy(new_cmdList[3], new_filetotal);
             new_cmdList[3] = new_filetotal;
 
             for(i=4; i<fileTotal+4; i++){
-                //strcpy(new_cmdList[i], cmdList[i]);
                 new_cmdList[i] = cmdList[i];
             }
 
@@ -323,32 +301,19 @@ int main(int argc, string argv[]) {
             printf("numero nuovi file inseriti: %d\n", n_new_file_k );
             if(flag_f == TRUE){
                 for(i = 0; i < n_new_file_k ; i++){
-                    //printf("%d ", i);
-                    //puts(new_file_list[i]);
-                    //strcpy(new_cmdList[cmdListCount++], new_file_list[i]);
-                    puts(" OOOOOOOOOOOOOO nuovo file inserito");
                     new_cmdList[cmdListCount++] = new_file_list[i];
                 }
             }
-            //flag che vuoi tu
-            //new_cmdList[cmdListCount++] = NULL;
+            //flag che vuoi tu;
             if (flagMain == TRUE) {
                 new_cmdList[cmdListCount++] = "-a";
                 puts("areo");
             }
             new_cmdList[cmdListCount] = NULL;
 
-            //debug
-            i=0;
-            while(new_cmdList[i]!=NULL){
-                puts(new_cmdList[i++]);
-            }
-            puts(new_cmdList[cmdListCount - 1]);
-            printf("I=%d\n",i);
-
             CounterPid=fork();
             if(CounterPid==0){
-                puts("ho lanciato counter di nuovo");
+                puts("Ora analizzo i cambiamenti...");
                 execv(new_cmdList[0], new_cmdList);
             }else{
                 //cose che deve fare lanalyzer
@@ -357,7 +322,6 @@ int main(int argc, string argv[]) {
         }
         waitpid(CounterPid, NULL, 0);
     }
-    //free(cmd);
     free(files);
     return 0;
 }

@@ -23,7 +23,7 @@ string *readAndWait(int pipe[], pid_t son) {
 }
 
 int writePipe(int pipe[], string *msg) {
-    int ret = 0;  //per eventuali errori
+    int ret = 0;
     close(pipe[READ]);
     int i, err;
 
@@ -60,8 +60,6 @@ int *filesPart(string *files, int num, int M) {
     }
     return ret;
 }
-
-//---------------------------ric functions------------------------------------
 
 /**
  * Funzione che legge i caratteri in un dato intervallo passato e li ripone
@@ -163,11 +161,6 @@ int **processoQ_n(int *range, int *dims, char **fname, int n, int q_loop, int in
     int inizio[n], fine[n];
     i = 0;
 
-    /*for (i = 0; i < n; i++) {
-        printf("\tsto analizzando = %s\n", fname[i]);
-    }*/
-    i = 0;
-
     // Recupero degli indici di inizio e fine, per ciascuno degli n file:
     // si parte da index e si itera n volte.
     for (j = index; j < (index + n); j++) {
@@ -175,7 +168,6 @@ int **processoQ_n(int *range, int *dims, char **fname, int n, int q_loop, int in
         // è un multiplo di M.
         inizio[i] = range[j] * q_loop;
         if ((range[j] * (q_loop + 1) <= dims[j])) {
-            // printf("%d",range[j]*q_loop + j);
             fine[i] = range[j] * (q_loop + 1);
         } else {
             fine[i] = dims[j];
@@ -185,12 +177,6 @@ int **processoQ_n(int *range, int *dims, char **fname, int n, int q_loop, int in
         if (inizio[i] > fine[i]) {
             inizio[i] = fine[i] = 0;
         }
-
-        /*if(inizio[i] != fine[i]) {
-            printf("\tinizio=%d, fine=%d\n",inizio[i],fine[i]);
-        } else {
-            printf("\t---------\n");
-        }*/
         ++i;
     }
 
@@ -222,8 +208,6 @@ int **processoQ_n(int *range, int *dims, char **fname, int n, int q_loop, int in
     else
         return (int **)-1;
 }
-
-//---------------------------phil functions------------------------------------
 
 /**
  * Funzione per trasformare un vettore di interi in una stringa che contenga
@@ -287,7 +271,6 @@ int **getValuesFromStringN(char ***str, int size) {
         for (j = 0; j < CLUSTER; ++j) {
             values[i][j] = atoi(str[i][j]);
         }
-        ////nl();
     }
 
     return values;
@@ -344,7 +327,7 @@ int ceiling(int first, int second) {
 }
 
 int writePipeN(int pipe[], string **msg, int size) {
-    int ret = 0;  //per eventuali errori
+    int ret = 0;
     close(pipe[READ]);
     int i, j, err;
 
@@ -452,8 +435,7 @@ void nl() {
     printf("\n");
 }
 
-//------------------------ process function section-----------------------
-
+ 
 /**
  * Logica del processo P
  * @param c_son       pid del processo figlio
@@ -485,7 +467,6 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
             dataCollected[l][g] = 0;
         }
     }
-    //printf("P created pid=%d ppid=%d\n", getpid(), getppid());
     //creo M processi di tipo Q
     for (j = 0; j < M; j++) {
         //creo la pipe fra P e Q
@@ -497,13 +478,8 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
         } else {
             if (QIds[index_p][j] == 0) {
                 QIds[index_p][j] = getpid();
-                //printf("pid processo Q: %d vs quello che abbiamo %d\n", getpid(), QIds[index_p][j]);
                 return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, pipe_q[j]);
-                if (kill(getppid(), SIGUSR2) == 0) {
-                    //printf("Q ha mandato una signal qid : %d\n", getpid());
-                } else {
-                    //printf("!!!!Qerror  %s\n", strerror(errno));
-                }
+                if (kill(getppid(), SIGUSR2) == 0) 
                 exit(return_value);
             } else {
                 //successive parti del processo P
@@ -512,8 +488,6 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
     }
     while (boolQ[index_p] == FALSE) {
         system("sleep 1");
-        //printf(".");
-        //fflush(stdout);
         int tmp_count = 0;
         int i, index;
         for (j = 0; j < M; j++) {
@@ -552,7 +526,6 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
  */
 int processQ(int *range, int *dims, char **fname, int f_Psize,
              int q_loop, int index, int pipe_q[]) {
-    //printf("\tQ created pid=%d ppid=%d\n", getpid(), getppid());
     int i, j;
     int **counter = processoQ_n(range, dims, fname, f_Psize,
                                 q_loop, index);
@@ -562,22 +535,24 @@ int processQ(int *range, int *dims, char **fname, int f_Psize,
         free(counter[i]);
         free(message[i]);
     }
-    //free(counter);//new: counter non ci serve più perchè il suo valore viene passato a message
-    //free(message);
     return err;
 }
 
-///////////funzioni di messaggistica
 
 void report_and_exit(const char *msg) {
     perror(msg);
-    exit(-1); /* EXIT_FAILURE */
+    exit(-1);
 }
 
 void sender(map data, int mapDim) {
     //signal handler
     signal(SIGUSR2, signalhandler);
-    system("sleep 1");//dovremmo mandare messaggi
+    //system("sleep 1");//dovremmo mandare messaggi
+    string back = recConfirm(7, "/root/src/main/main_functions.h");
+    while (strcmp(back, "e") != 0) {
+        back = recConfirm(7, "/root/src/main/main_functions.h");
+    }
+
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {
         printf("err: %s\n", strerror(errno));
@@ -604,7 +579,6 @@ void sender(map data, int mapDim) {
 
         if (msgError < 0) {
             cantWrite = TRUE;
-            printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
             while (cantWrite == TRUE) {
                 msgError = msgsnd(qid, &msgName, strlen(msgName.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
                 if (msgError == 0) cantWrite = FALSE;
@@ -625,27 +599,22 @@ void sender(map data, int mapDim) {
 
             if (msgError < 0) {
                 cantWrite = TRUE;
-                printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
                 while (cantWrite == TRUE) {
-                    //system("sleep 2");
                     msgError = msgsnd(qid, &msgName, strlen(msgName.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
                     if (msgError == 0) cantWrite = FALSE;
                 }
             }
-            //printf("\terr (%d): %s\n", i, strerror(errno));
             cont++;
         }
     }
 }
 
 void signalhandler(int sig) {
-    printf("report ha letto i file in attesa di lettura\nOra analyzer puo ricominciare ad inviare");
     cantWrite = FALSE;
 }
 
 void sighandlerP(int sig) {
     checkP++;
-    //printf("check P: %d\n", checkP);
     if (checkP == N) {
         //tutti i P sono finiti ora si può leggere
         boolP = TRUE;
@@ -657,7 +626,6 @@ void sigHandlerQ(int sig) {
     pid_t current_pid = getpid();
     //cerco l'indice del processo P
     for (i = 0; i < N; i++) {
-        //printf("(%d) current pid=%d, PIDS[%d]=%d\n",i,current_pid,i,PIds[i]);
         if (current_pid == PIds[i])
             break;
     }
@@ -669,7 +637,6 @@ void sigHandlerQ(int sig) {
 }
 
 void ignore(int sig){
-    printf("IGNORED SG1\n");
 }
 
 //funzioni messaggi per aggiungere roba
@@ -689,8 +656,8 @@ void sendConfirm(string messaggio, int projID, string path) {
     strcpy(msg.payload, messaggio);
     msg.type = 1;
 
-    if (msgsnd(qid, &msg, strlen(msg.payload) + 1, MSG_NOERROR | IPC_NOWAIT) >= 0)
-        printf("Ho inviato %s (counter)\n", msg.payload);
+    msgsnd(qid, &msg, strlen(msg.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
+       
 }
 
 string recConfirm(int projID, string path) {

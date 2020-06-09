@@ -75,8 +75,6 @@ char *concat(const char *s1, const char *s2, const char *s3) {
 /**
  * Removes new line character from a given string
  * e.g. "/root/bin/main\n" -> "/root/bin/main"
- * 
- * Credits: https://stackoverflow.com/a/28462221/7924557
  */
 void removeNewline(char *string) {
     string[strcspn(string, "\n")] = 0;
@@ -85,8 +83,6 @@ void removeNewline(char *string) {
 /**
  * Input a string of paths, separate on the spaces, and run concatenated
  * with the file path specified
- * 
- * Credits: https://stackoverflow.com/a/28462221/7924557
  */
 void splitAndSendPaths(char *string, char *n, char *m) {
     if (string[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
@@ -128,7 +124,6 @@ char *getSelfProcessPath() {
         return buff;
     }
     return "";  // Error
-    // TODO: handle error condition
 }
 
 void getAnalytics() {
@@ -146,33 +141,15 @@ void getAnalytics() {
 
 /**
  * Run program as a saparate process
- * 
- * Credits: https://stackoverflow.com/a/2605313/7924557
  */
 int runProgramAsProcess(char **path) {
     executableChecks(path[0]);
     system(strcat(path[0], " &"));
-    // execve("/bin/bash", path[0], path);
-    // int pipefd[2];
-    // pipe(pipefd);
-    // int pid = fork();
-    // if (pid == -1)  // Error in forking
-    //     return 1;
-    // else if (pid == 0) {     // Child section
-    //     close(pipefd[0]);    // close reading end in the child
-    //     dup2(pipefd[1], 1);  // send stdout to the pipe
-    //     dup2(pipefd[1], 2);  // send stderr to the pipe
-    //     execvp(path[0], path);
-    //     // system(path[0]);
-    //     close(pipefd[1]);
-    // }
     return 0;
 }
 
 /**
  * Run program as child and send stderr and stdout to pipe
- * 
- * Credits: https://stackoverflow.com/a/2605313/7924557
  */
 int runProgram(char **path) {
     executableChecks(path[0]);
@@ -182,15 +159,11 @@ int runProgram(char **path) {
     if (pid == -1)  // Error in forking
         return 1;
     else if (pid == 0) {   // Child section
-        close(pipefd[0]);  // close reading1/*  */ end in the child
-        // dup2(pipefd[1], 1);  // send stdout to the pipe
-        // dup2(pipefd[1], 2);  // send stderr to the pipe
+        close(pipefd[0]);
         execvp(path[0], path);
-        // system(path[0]);
         close(pipefd[1]);
     } else {
         wait(pid);
-        //printf("Waited\n");
     }
     return 0;
 }
@@ -224,7 +197,7 @@ int runProgramAndWait(char **path) {
  * e.g. /root/bin      -> /root/
  */
 char *baseName(char *path) {
-    char *tokens[PATH_MAX];  // TODO: replace PATH_MAX
+    char *tokens[PATH_MAX];
     char *token = strtok(path, "/");
     int i = 0;
     while (token != NULL) {
@@ -233,11 +206,9 @@ char *baseName(char *path) {
     }
 
     i = 0;
-    // TODO: replace MAX_INPUT_LENGHT with the real max
     char *outString = malloc(MAX_INPUT_LENGHT);
 
-    // Adds slash in "/root/bin/"
-    //                ^
+    // Adds slash in "/root/bin/"             ^
     strcat(outString, "/");
     while (tokens[i + 1] != NULL) {
         strcat(outString, tokens[i++]);
@@ -290,9 +261,6 @@ int executableChecks(char *path) {
  * Print error from runProgram() output function
  */
 void printError(int errNumber) {
-    // TODO: remove printing when the program runs correctly
-    // if (r == 0)
-    //     printf("Program tarted\n");
     if (SHOW_WARNING) {
         printf("Warning: ");
         if (errNumber == 1)
@@ -310,8 +278,6 @@ void printError(int errNumber) {
 
 /**
  * Returns if path is a file and the file is executable
- * 
- * Credits: https://stackoverflow.com/a/13098645/7924557
  */
 int pathIsExecutable(char *path) {
     struct stat sb;
@@ -320,8 +286,6 @@ int pathIsExecutable(char *path) {
 
 /**
  * Returns if path is a file
- * 
- * Credits: https://stackoverflow.com/a/230070/7924557
  */
 int pathIsFile(char *path) {
     struct stat sb;
@@ -330,8 +294,6 @@ int pathIsFile(char *path) {
 
 /**
  * Returns if path is a folder
- * 
- * Credits: https://stackoverflow.com/a/4553053/7924557
  */
 int pathIsFolder(char *path) {
     struct stat sb;
@@ -342,8 +304,6 @@ int pathIsFolder(char *path) {
 
 /**
  * Returns if path is a link
- * 
- * Credits: https://stackoverflow.com/a/3985085/7924557
  */
 int pathIsLink(char *path) {
     struct stat sb;
@@ -365,21 +325,14 @@ char *concatPaths(char *dir, char *file) {
 
 /**
  * Ignore signal and print warning.
- * 
- * Credits: https://stackoverflow.com/a/25526951/7924557
  */
 void ignoreSignal(int signal) {
-    if (SHOW_WARNING)
-        printf("SIGSR1 ignored from main\n");
 }
 
 /**
  * Reras
- * 
- * Credits: https://stackoverflow.com/a/25526951/7924557
  */
 void runReport(int signal) {
-    printf("Running reports...(sigusr2 main)\n");
     getAnalytics();
 }
 
@@ -401,12 +354,12 @@ int stringIsInt(char *string) {
 //clean buffers
 
 void clean(int msgKey, string path){
-    key_t key= ftok(path, msgKey); /* key to identify the queue */
+    key_t key= ftok(path, msgKey);
     if (key < 0) printf("key not gotten...\n");
 
-    int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
+    int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) printf("no access to queue...\n");
 
-    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+    if (msgctl(qid, IPC_RMID, NULL) < 0)
         printf("trouble removing queue...\n");
 }
