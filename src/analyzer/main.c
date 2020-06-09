@@ -165,7 +165,6 @@ int main(int argc, string argv[]) {
         execv(cmdList[0], cmdList);
     } else {
         //potremmo inserire una msg
-        // system("sleep 4");
         string back = recConfirm(6, "/root/src/main/main.c");
         while (strcmp(back, "r") != 0) {
             back = recConfirm(6, "/root/src/main/main.c");
