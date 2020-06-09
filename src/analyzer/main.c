@@ -9,10 +9,10 @@ string mS = "4";
 int main(int argc, string argv[]) {
     signal(SIGUSR2, ignoreSignal);
     signal(SIGUSR1, sendSignal);
-    BOOL flagMain=FALSE;
-    if(strcmp(argv[argc-1], "-a")){
+    BOOL flagMain = FALSE;
+    if (strcmp(argv[argc - 1], "-a")) {
         //flag main setted
-        flagMain=TRUE;
+        flagMain = TRUE;
         printf("Flag set\n");
     }
     //scrivo qui controllo degli argomenti per il C
@@ -99,7 +99,7 @@ int main(int argc, string argv[]) {
     //printf("nome corretto: ");
     for (i = n_arg; i < argc; i++) {
         int lunghezza_nome = strlen(arg[i]);
-        if (isTxt(arg[i], lunghezza_nome) == TRUE || isC(arg[i], lunghezza_nome) == TRUE ||
+        if (1 || isTxt(arg[i], lunghezza_nome) == TRUE || isC(arg[i], lunghezza_nome) == TRUE ||
             isCpp(arg[i], lunghezza_nome) == TRUE || isPy(arg[i], lunghezza_nome) == TRUE ||
             isJava(arg[i], lunghezza_nome) == TRUE) {
             filesOk[i] = TRUE;
@@ -181,8 +181,8 @@ int main(int argc, string argv[]) {
     pid_t CounterPid;
     CounterPid = fork();
     if (CounterPid == 0) {
-        if(flagMain==TRUE){
-            cmdList[--cmdListCount]="-a";
+        if (flagMain == TRUE) {
+            cmdList[--cmdListCount] = "-a";
             cmdList[cmdListCount++] = NULL;
         }
         execv(cmdList[0], cmdList);

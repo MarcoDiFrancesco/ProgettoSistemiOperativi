@@ -140,7 +140,7 @@ void getAnalytics() {
         return;
     else if (pid == 0) {  // Child section
         execvp(path[0], path);
-    }else{
+    } else {
         wait(pid);
     }
 }
@@ -171,7 +171,7 @@ int runProgramAsProcess(char **path) {
 }
 
 /**
- * Run program as child
+ * Run program as child and send stderr and stdout to pipe
  * 
  * Credits: https://stackoverflow.com/a/2605313/7924557
  */
@@ -182,8 +182,8 @@ int runProgram(char **path) {
     int pid = fork();
     if (pid == -1)  // Error in forking
         return 1;
-    else if (pid == 0) {     // Child section
-        close(pipefd[0]);    // close reading end in the child
+    else if (pid == 0) {   // Child section
+        close(pipefd[0]);  // close reading1/*  */ end in the child
         // dup2(pipefd[1], 1);  // send stdout to the pipe
         // dup2(pipefd[1], 2);  // send stderr to the pipe
         execvp(path[0], path);
@@ -377,7 +377,6 @@ void ignoreSignal(int signal) {
         printf("\nWarining: ignoring signal\n");
 }
 
-
 /**
  * Reras
  * 
@@ -387,8 +386,6 @@ void runReport(int signal) {
     printf("Running reports...\n");
     getAnalytics();
 }
-
-
 
 /**
  * Check if string is an integer or not

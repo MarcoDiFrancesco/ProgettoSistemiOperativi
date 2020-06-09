@@ -1,72 +1,71 @@
 #include "analyzer.h"
 
-BOOL isTxt(string file, int length){
+BOOL isTxt(string file, int length) {
     BOOL ret = FALSE;
-    if(file[length-1] == '\n' && file[length - 5] == '.' && file[length -4] == 't' && file[length - 3] == 'x' && file[length - 2] == 't'){
-        file[length-1] = '\0';
+    if (file[length - 1] == '\n' && file[length - 5] == '.' && file[length - 4] == 't' && file[length - 3] == 'x' && file[length - 2] == 't') {
+        file[length - 1] = '\0';
         return TRUE;
     }
-    if (file[length - 4] == '.' && file[length - 3] == 't' && 
+    if (file[length - 4] == '.' && file[length - 3] == 't' &&
         file[length - 2] == 'x' && file[length - 1] == 't') {
         ret = TRUE;
-    }  
+    }
     return ret;
 }
 
-BOOL isCpp(string file, int length){
+BOOL isCpp(string file, int length) {
     BOOL ret = FALSE;
-    if(file[length-1] == '\n' && file[length - 5] == '.' && file[length -4] == 'c' && file[length - 3] == 'p' && file[length - 2] == 'p'){
-        file[length-1] = '\0';
+    if (file[length - 1] == '\n' && file[length - 5] == '.' && file[length - 4] == 'c' && file[length - 3] == 'p' && file[length - 2] == 'p') {
+        file[length - 1] = '\0';
         return TRUE;
     }
-    if (file[length - 4] == '.' && file[length - 3] == 'c' && 
+    if (file[length - 4] == '.' && file[length - 3] == 'c' &&
         file[length - 2] == 'p' && file[length - 1] == 'p') {
         ret = TRUE;
-    }  
+    }
     return ret;
 }
 
-BOOL isC(string file, int length){
+BOOL isC(string file, int length) {
     BOOL ret = FALSE;
-    if(file[length-1] == '\n' && file[length - 3] == '.' && file[length - 2] == 'c'){
-        file[length-1] = '\0';
+    if (file[length - 1] == '\n' && file[length - 3] == '.' && file[length - 2] == 'c') {
+        file[length - 1] = '\0';
         return TRUE;
     }
     if (file[length - 2] == '.' && file[length - 1] == 'c') {
         ret = TRUE;
-    }  
+    }
     return ret;
 }
 
-BOOL isJava(string file, int length){
+BOOL isJava(string file, int length) {
     BOOL ret = FALSE;
-    if(file[length-1] == '\n' &&
-        file[length - 6] == '.' && file[length - 5] == 'j' && 
+    if (file[length - 1] == '\n' &&
+        file[length - 6] == '.' && file[length - 5] == 'j' &&
         file[length - 4] == 'a' && file[length - 3] == 'v' &&
-        file[length-2]=='a'){
-            file[length-1] = '\0';
+        file[length - 2] == 'a') {
+        file[length - 1] = '\0';
         return TRUE;
     }
-    if (file[length - 5] == '.' && file[length - 4] == 'j' && 
+    if (file[length - 5] == '.' && file[length - 4] == 'j' &&
         file[length - 3] == 'a' && file[length - 2] == 'v' &&
-        file[length-1]=='a') {
+        file[length - 1] == 'a') {
         ret = TRUE;
-    }  
+    }
     return ret;
 }
 
-BOOL isPy(string file, int length){
+BOOL isPy(string file, int length) {
     BOOL ret = FALSE;
-    if(file[length-1] == '\n' && file[length - 4] == '.' && file[length - 3] == 'p' && file[length - 2] == 'y'){
-        file[length-1] = '\0';
+    if (file[length - 1] == '\n' && file[length - 4] == '.' && file[length - 3] == 'p' && file[length - 2] == 'y') {
+        file[length - 1] = '\0';
         return TRUE;
     }
-    if (file[length - 3] == '.' && 
-        file[length - 2] == 'p' && 
+    if (file[length - 3] == '.' &&
+        file[length - 2] == 'p' &&
         file[length - 1] == 'y') {
-
         ret = TRUE;
-    }  
+    }
     return ret;
 }
 
@@ -163,12 +162,12 @@ node listFiles(char *path) {
     return files_list->next;  // First node is NULL, so return second
 }
 
-BOOL containsDot(string str){
+BOOL containsDot(string str) {
     int len = strlen(str);
     int i;
     BOOL ret = FALSE;
-    for(i=len-1; len>=0 && str[i] != '/'; i--){
-        if(str[i] == '.')
+    for (i = len - 1; len >= 0 && str[i] != '/'; i--) {
+        if (str[i] == '.')
             ret = TRUE;
     }
     return ret;
@@ -176,44 +175,44 @@ BOOL containsDot(string str){
 
 //funzioni messaggi per aggiungere roba
 
-void report_and_exit(const char* msg) {
-  perror(msg);
-  exit(-1); /* EXIT_FAILURE */
+void report_and_exit(const char *msg) {
+    perror(msg);
+    exit(-1); /* EXIT_FAILURE */
 }
 
-void sendConfirm(string messaggio, int projID){
+void sendConfirm(string messaggio, int projID) {
     key_t key = ftok(PathName2, projID);
-    if (key < 0) {      
+    if (key < 0) {
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
     }
 
     int qid = msgget(key, 0666 | IPC_CREAT);
-    if (qid < 0) 
+    if (qid < 0)
         report_and_exit("couldn't get queue id...");
 
     queuedMessage msg;
     strcpy(msg.payload, messaggio);
     msg.type = 1;
 
-    msgsnd(qid, &msg, strlen(msg.payload)+1, MSG_NOERROR | IPC_NOWAIT);
+    msgsnd(qid, &msg, strlen(msg.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
 }
 
-string recConfirm(int projID){
+string recConfirm(int projID) {
     key_t key = ftok(PathName2, projID);
-    if (key < 0) {      
+    if (key < 0) {
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
     }
 
     int qid = msgget(key, 0666 | IPC_CREAT);
-    if (qid < 0) 
+    if (qid < 0)
         report_and_exit("couldn't get queue id...");
 
     queuedMessage msg;
-    if (msgrcv(qid, &msg, MAX_MSG_SIZE, 1, MSG_NOERROR) < 0)   puts("AAAAAAAAAAAAAAAAAAAAAAAA trouble...");
+    if (msgrcv(qid, &msg, MAX_MSG_SIZE, 1, MSG_NOERROR) < 0) puts("AAAAAAAAAAAAAAAAAAAAAAAA trouble...");
 
-    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+    if (msgctl(qid, IPC_RMID, NULL) < 0) /* NULL = 'no flags' */
         report_and_exit("trouble removing queue...");
 
     string ret = malloc(strlen(msg.payload));
@@ -224,47 +223,50 @@ string recConfirm(int projID){
 
 //funzioni per aggiungere roba al volo
 
-string addThingsToCounter(){
+string addThingsToCounter() {
     printf("\nL'analisi dei file inseriti e' stata avviata...\nVuoi modificare i file? [f]\nVuoi modificare N o M? [n]\nNon modificare nulla (non potrai più modificare nulla in seguito)[x]\n");
-        char input;
+    char input;
+    scanf(" %c", &input);
+    while (input != 'f' && input != 'n' && input != 'x') {
+        printf("Inserisci solamente [f] o [n] o [x]\n");
+        fflush(stdin);
+        fflush(stdout);
         scanf(" %c", &input);
-        while(input != 'f' && input != 'n' && input != 'x'){
-            printf("Inserisci solamente [f] o [n] o [x]\n");
-            fflush(stdin);
-            fflush(stdout);
-            scanf(" %c", &input);
-        }
-        switch(input){
-            case 'f': return addFile();
-            case 'n': return changeNM();
-            case 'x': return "X";
-        }
+    }
+    switch (input) {
+        case 'f':
+            return addFile();
+        case 'n':
+            return changeNM();
+        case 'x':
+            return "X";
+    }
 }
 
-string addFile(){
+string addFile() {
     string input = malloc(MAXLEN);
-    string ret = malloc(MAXLEN +3);
-    strcat (ret, "-f ");
+    string ret = malloc(MAXLEN + 3);
+    strcat(ret, "-f ");
     BOOL space = TRUE;
     printf("Inserisci il file con il suo percorso: ");
-    while(space==TRUE){
+    while (space == TRUE) {
         fflush(stdin);
         fflush(stdout);
         fgets(input, MAXLEN, stdin);
         int i;
         space = FALSE;
-        for(i=0; i<strlen(input); i++){
-            if(input[i] == ' '){
+        for (i = 0; i < strlen(input); i++) {
+            if (input[i] == ' ') {
                 space = TRUE;
                 printf("Forse hai inserito due file\nInseriscine solo uno\n");
             }
         }
     }
     strcat(ret, input);
-    return ret; 
+    return ret;
 }
 
-string changeNM(){
+string changeNM() {
     char input;
     string input_str = malloc(7);
     string ret = malloc(10);
@@ -272,19 +274,19 @@ string changeNM(){
     int input_int;
     printf("Vuoi cambiare N o M? [n]/[m]\n");
     scanf(" %c", &input);
-    while(input != 'n' && input != 'm'){
+    while (input != 'n' && input != 'm') {
         printf("Inserisci solamente [n] o [m]\n");
         fflush(stdin);
         fflush(stdout);
         scanf(" %c", &input);
     }
     string tmp;
-    switch(input){
+    switch (input) {
         case 'n':
             strcat(ret, "n ");
             printf("inserisci n: ");
             fgets(input_str, 7, stdin);
-            while(stringIsInt(input_str) == FALSE){
+            while (stringIsInt(input_str) == FALSE) {
                 fgets(input_str, 7, stdin);
             }
             strcat(ret, input_str);
@@ -293,11 +295,11 @@ string changeNM(){
             strcat(ret, "m ");
             printf("inserisci m: ");
             fgets(input_str, 7, stdin);
-            while(stringIsInt(input_str) == FALSE){
+            while (stringIsInt(input_str) == FALSE) {
                 fgets(input_str, 7, stdin);
             }
             strcat(ret, input_str);
-            return ret;      
+            return ret;
     }
 }
 
@@ -317,7 +319,7 @@ int stringIsInt(char *string) {
 }
 
 void sendSignal(int signal) {
-    printf("Signal sent\n");
+    printf("Signal 1 sent\n");
     kill(getppid(), SIGUSR1);
 }
 
