@@ -67,8 +67,9 @@ int main() {
 
             splitAndSendPaths(choice11, choice12, choice13);
         } else if (!strcmp(mainChoice, "2")) {  // If choice equals 2
-            char *a[] = {clean_path};
-            runProgramAsProcess(a);
+            clean(ProjectId, PathName);
+            clean(3, PathName2);
+            clean(6, "/root/src/main/main.c");
             return 0;
         } else {
             printf("Non hai fatto una scelta corretta, inserisci il numero di una tra una delle seguenti funzioni:\n");

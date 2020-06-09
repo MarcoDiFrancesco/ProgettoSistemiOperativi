@@ -134,6 +134,9 @@ int main(int argc, string argv[]) {
             boolP = TRUE;
     }
 
+    sendConfirm("r", 6, "/root/src/main/main.c");
+    printf("Key 6 sent\n");
+
     fileIndex = 0;
     for (i = 0; i < N; i++) {
         string **buffer = readAndWaitN(p_c[i], f_Psize[i]);
@@ -143,10 +146,9 @@ int main(int argc, string argv[]) {
         fileIndex += f_Psize[i];
     }
     free(f_Psize);
-    string back = recConfirm(3);
+    string back = recConfirm(3, PathName2);
     while (strcmp(back, "y") != 0 && strcmp(back, "n") != 0) {
-        system("sleep 1");
-        back = recConfirm(3);
+        back = recConfirm(3, PathName2);
     }
     printf("Ho ricevuto gli ordini da analyzer\n");
     if (strcmp(back, "y") == 0) {

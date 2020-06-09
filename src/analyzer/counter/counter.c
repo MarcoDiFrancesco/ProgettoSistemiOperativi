@@ -512,8 +512,8 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
     }
     while (boolQ[index_p] == FALSE) {
         system("sleep 1");
-        printf(".");
-        fflush(stdout);
+        //printf(".");
+        //fflush(stdout);
         int tmp_count = 0;
         int i, index;
         for (j = 0; j < M; j++) {
@@ -577,7 +577,7 @@ void report_and_exit(const char *msg) {
 void sender(map data, int mapDim) {
     //signal handler
     signal(SIGUSR2, signalhandler);
-    system("sleep 1");
+    system("sleep 1");//dovremmo mandare messaggi
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {
         printf("err: %s\n", strerror(errno));
@@ -606,7 +606,6 @@ void sender(map data, int mapDim) {
             cantWrite = TRUE;
             printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
             while (cantWrite == TRUE) {
-                system("sleep 2");
                 msgError = msgsnd(qid, &msgName, strlen(msgName.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
                 if (msgError == 0) cantWrite = FALSE;
             }
@@ -675,8 +674,8 @@ void ignore(int sig){
 
 //funzioni messaggi per aggiungere roba
 
-void sendConfirm(string messaggio, int projID) {
-    key_t key = ftok(PathName, projID);
+void sendConfirm(string messaggio, int projID, string path) {
+    key_t key = ftok(path, projID);
     if (key < 0) {
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
@@ -694,8 +693,8 @@ void sendConfirm(string messaggio, int projID) {
         printf("Ho inviato %s (counter)\n", msg.payload);
 }
 
-string recConfirm(int projID) {
-    key_t key = ftok(PathName2, projID);
+string recConfirm(int projID, string path) {
+    key_t key = ftok(path, projID);
     if (key < 0) {
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");

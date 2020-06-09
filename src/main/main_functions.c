@@ -174,7 +174,7 @@ int runProgram(char **path) {
     executableChecks(path[0]);
     int pipefd[2];
     pipe(pipefd);
-    int pid = fork();
+    pid_t pid = fork();
     if (pid == -1)  // Error in forking
         return 1;
     else if (pid == 0) {   // Child section
@@ -392,4 +392,17 @@ int stringIsInt(char *string) {
         return TRUE;
     }
     return FALSE;
+}
+
+//clean buffers
+
+void clean(int msgKey, string path){
+    key_t key= ftok(path, msgKey); /* key to identify the queue */
+    if (key < 0) printf("key not gotten...\n");
+
+    int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
+    if (qid < 0) printf("no access to queue...\n");
+
+    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+        printf("trouble removing queue...\n");
 }

@@ -9,10 +9,20 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <assert.h>
+#include <ctype.h>
+#include <signal.h>
+#include <sys/ipc.h>
 
 #define FALSE 0
 #define TRUE 1
 typedef char *string;
+
+//define clean
+#define ProjectId 123
+#define PathName  "/root/src/analyzer/analyzer.h"  /* any existing, accessible file would do */
+#define PathName2  "/root/src/analyzer/analyzer.h"
+#define MAX_MSG_SIZE 100
 
 /**
  * Show warnings like "Detected another directory" or "Signal ignored".
@@ -75,5 +85,6 @@ char *concatPaths(char *dir, char *file);
 void runReport(int signal);
 void ignoreSignal(int signal);
 int stringIsInt(char *string);
+void clean(int msgKey, string path);
 
 #endif

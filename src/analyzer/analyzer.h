@@ -74,9 +74,9 @@ BOOL containsDot(string str);
 
 void report_and_exit(const char* msg);
 
-void sendConfirm(string messaggio, int projID);
+void sendConfirm(string messaggio, int projID, string path);
 
-string recConfirm(int projID);
+string recConfirm(int projID, string path);
 
 //funzioni per aggiungere roba al volo
 
@@ -90,4 +90,9 @@ BOOL stringIsInt(char *str);
 
 void sendSignal(int signal);
 void ignoreSignal(int signal);
+
+//funzionei per la pulizia
+
+void clean(int msgKey, string path);
+
 #endif

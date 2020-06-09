@@ -180,8 +180,8 @@ void report_and_exit(const char *msg) {
     exit(-1); /* EXIT_FAILURE */
 }
 
-void sendConfirm(string messaggio, int projID) {
-    key_t key = ftok(PathName2, projID);
+void sendConfirm(string messaggio, int projID, string path) {
+    key_t key = ftok(path, projID);
     if (key < 0) {
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
@@ -198,8 +198,8 @@ void sendConfirm(string messaggio, int projID) {
     msgsnd(qid, &msg, strlen(msg.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
 }
 
-string recConfirm(int projID) {
-    key_t key = ftok(PathName2, projID);
+string recConfirm(int projID, string path) {
+    key_t key = ftok(path, projID);
     if (key < 0) {
         printf("err: %s\n", strerror(errno));
         report_and_exit("couldn't get key...");
@@ -354,4 +354,17 @@ void sendSignal(int signal) {
 
 void ignoreSignal(int signal) {
     printf("Signal ignored from analyzer\n");
+}
+
+//funzioni per pulizia
+
+void clean(int msgKey, string path){
+    key_t key= ftok(path, msgKey); /* key to identify the queue */
+    if (key < 0) report_and_exit("key not gotten...");
+
+    int qid = msgget(key, 0666 | IPC_CREAT); /* access if created already */
+    if (qid < 0) report_and_exit("no access to queue...");
+
+    if (msgctl(qid, IPC_RMID, NULL) < 0)  /* NULL = 'no flags' */
+        report_and_exit("trouble removing queue...");
 }
