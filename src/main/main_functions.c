@@ -360,6 +360,51 @@ int stringIsInt(char *string) {
     return FALSE;
 }
 
+
+int isProcessNumberOk(char *string) {
+    char *newString;
+    int number;
+    if (string[0] == '\0')
+        number = 3;
+    else
+        number = atoi(string);
+    printf("-%s-, %d\n", string, number);
+    if (number > 15)
+        printf("Il numero di processi P e' troppo alto, scegli un numero minore o uguale a 15.\n");
+    else if(number <= 0)
+        printf("Il numero di processi P e' troppo basso, scegli un numero piu' grande di 0.\n");
+    else {
+        printf("return true v1");
+        return FALSE;
+    }
+        
+    return TRUE;
+}
+
+
+int isProcessNumberOkV2(char *string1, char *string2) {
+    char *newString;
+    int number1, number2;
+    if (string1[0] == '\0')
+        number1 = 3;
+    else
+        number1 = atoi(string1);
+
+    if (string2[0] == '\0')
+        number2 = 3;
+    else
+        number2 = atoi(string2);
+
+    printf("-%s-, -%s-, %d, %d\n", string1, string2, number1, number2);
+    if (number1 + (number1 * number2) >= 150) {
+        printf("Il numero di processi P*Q e' troppo alto, scegli un numero in modo che P*Q sia piu' piccolo di 150: ");
+    } else {
+        printf("return true v2");
+        return FALSE;
+    }
+    return TRUE;
+}
+
 //clean buffers
 
 void clean(int msgKey, string path) {

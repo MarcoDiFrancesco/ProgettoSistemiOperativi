@@ -50,22 +50,24 @@ int main() {
         if (!strcmp(mainChoice, "1")) {  // If choice equals 1
             printf("Inserisci percorsi di FILE che vuoi analizzare separati da spazio (in caso l'indirizzo non sia valido gli indirizzi verranno ignorati): ");
             fgets(choice11, MAX_INPUT_LENGHT, stdin);
-            removeNewline(choice12);
+            removeNewline(choice11);
 
             printf("Inserisci percorsi di CARTELLE che vuoi analizzare separati da spazio (in caso l'indirizzo non sia valido gli indirizzi verranno ignorati): ");
             fgets(choice14, MAX_INPUT_LENGHT, stdin);
-            removeNewline(choice11);
-
+            removeNewline(choice14);
+            int ok;
             do {
-                printf("Quanti il numero di processi P [default 3]: ");
+                printf("Specificare il numero di processi P [default 3]: ");
                 fgets(choice12, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice12);
+                ok = isProcessNumberOk(choice12);
             } while (!choice12[0] == '\0' && !stringIsInt(choice12));
 
             do {
-                printf("Quanti il numero di processi Q [default 4]: ");
+                printf("Specificare il numero di processi Q [default 4]: ");
                 fgets(choice13, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice13);
+                // printf("%d, %d, %d\n", choice13[0] != '\0',  !stringIsInt(choice13), isProcessNumberOkV2(choice12, choice13));
             } while (!choice13[0] == '\0' && !stringIsInt(choice13));
 
             splitAndSendPaths(choice11, choice12, choice13, choice14);

@@ -527,7 +527,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
  */
 int processQ(int *range, int *dims, char **fname, int f_Psize,
              int q_loop, int index, int pipe_q[]) {
-    puts("Processo Q creato");
+    puts("\tProcesso Q creato");
     int i, j;
     int **counter = processoQ_n(range, dims, fname, f_Psize,
                                 q_loop, index);

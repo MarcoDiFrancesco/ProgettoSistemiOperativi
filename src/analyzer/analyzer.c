@@ -263,6 +263,7 @@ string addFile(){
 string changeNM(){
     char input,
          placeholder;
+    BOOL boundary = FALSE;
     string input_str = malloc(7);
     string ret = malloc(10);
     strcpy(ret, "-");
@@ -280,11 +281,12 @@ string changeNM(){
     __fpurge(stdin);
     switch(input){
         case 'n':
+            boundary = TRUE;
             strcat(ret, "n ");
             printf("inserisci n: ");
             __fpurge(stdin);
             fgets(input_str, len, stdin);
-            while(stringIsInt(input_str) == FALSE){
+            while(stringIsInt(input_str, TRUE) == FALSE){
                 __fpurge(stdin);
                 fgets(input_str, 7, stdin);
             }
@@ -296,7 +298,7 @@ string changeNM(){
             printf("inserisci m: ");
             __fpurge(stdin);
             fgets(input_str, len, stdin);
-            while(stringIsInt(input_str) == FALSE){
+            while(stringIsInt(input_str, FALSE) == FALSE){
                 __fpurge(stdin);
                 fgets(input_str, 7, stdin);
             }
@@ -309,7 +311,7 @@ string changeNM(){
 /**
  * Check if string is a > 0 integer or not
  */
-BOOL stringIsInt(char *str) {
+BOOL stringIsInt(char *str, BOOL boundary) {
     int i,
         len = 0;
 
@@ -323,9 +325,18 @@ BOOL stringIsInt(char *str) {
         }
     }
 
-    if (ret == FALSE || atoi(str) < 1 || atoi(str) > MAXQ) {
+    if (ret == FALSE) {
+        printf("Inserisci un numero.\n");
+    }
+
+    if (boundary == FALSE && ret == TRUE && atoi(str) < 1) {
         ret = FALSE;
-        printf("Scrivi un numero maggiore di 0 e minore di %d\n", MAXQ);
+        printf("Scrivi un numero maggiore di 0.\n");
+    }
+
+    if (boundary == TRUE && ret == TRUE && (atoi(str) < 1 || atoi(str) > 15)) {
+        ret = FALSE;
+        printf("Scrivi un numero maggiore di 0 e minore di 15.\n");
     }
 
     __fpurge(stdin);

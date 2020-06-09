@@ -85,6 +85,8 @@ char *concatPaths(char *dir, char *file);
 void runReport(int signal);
 void ignoreSignal(int signal);
 int stringIsInt(char *string);
+int isProcessNumberOk(char *string);
+int isProcessNumberOkV2(char *string1, char *string2);
 void clean(int msgKey, string path);
 
 #endif
