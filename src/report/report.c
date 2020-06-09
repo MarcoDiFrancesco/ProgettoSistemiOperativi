@@ -223,7 +223,7 @@ void printOverall(long *values) {
 
 map readerMessage(int *numFileRet) {
 
-    kill(0, SIGUSR1);
+    kill(0, SIGUSR2);
     printf("Per iniziare a ricevere dati è necessiario lanciare analyzer [bin/analyzer]\n\n");
 
     int i=0, j, nFiles;

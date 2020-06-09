@@ -319,10 +319,10 @@ int stringIsInt(char *string) {
 }
 
 void sendSignal(int signal) {
-    printf("Signal 1 sent\n");
+    printf("Alanyzer sent sigusr1 to main\n");
     kill(getppid(), SIGUSR1);
 }
 
 void ignoreSignal(int signal) {
-    printf("Signal 1\n");
+    printf("Signal ignored from analyzer\n");
 }

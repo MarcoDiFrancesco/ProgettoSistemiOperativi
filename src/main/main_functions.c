@@ -374,7 +374,7 @@ char *concatPaths(char *dir, char *file) {
  */
 void ignoreSignal(int signal) {
     if (SHOW_WARNING)
-        printf("\nWarining: ignoring signal\n");
+        printf("SIGSR1 ignored from main\n");
 }
 
 /**
@@ -383,7 +383,7 @@ void ignoreSignal(int signal) {
  * Credits: https://stackoverflow.com/a/25526951/7924557
  */
 void runReport(int signal) {
-    printf("Running reports...\n");
+    printf("Running reports...(sigusr2 main)\n");
     getAnalytics();
 }
 

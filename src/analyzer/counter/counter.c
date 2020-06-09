@@ -500,7 +500,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
                 //printf("pid processo Q: %d vs quello che abbiamo %d\n", getpid(), QIds[index_p][j]);
                 return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, pipe_q[j]);
                 if (kill(getppid(), SIGUSR2) == 0) {
-                    //printf("Q ha mandato una signal qid : %d\n", getpid());
+                    printf("Q ha mandato una signal qid : %d\n", getpid());
                 } else {
                     //printf("!!!!Qerror  %s\n", strerror(errno));
                 }
@@ -576,8 +576,8 @@ void report_and_exit(const char *msg) {
 
 void sender(map data, int mapDim) {
     //signal handler
-    signal(SIGUSR1, sighandlerP);
-
+    signal(SIGUSR2, signalhandler);
+    system("sleep 1");
     key_t key = ftok(PathName, ProjectId);
     if (key < 0) {
         printf("err: %s\n", strerror(errno));
@@ -606,7 +606,7 @@ void sender(map data, int mapDim) {
             cantWrite = TRUE;
             printf("Limite di dati inviati raggiunto. Aspetta che il report li legga...\n");
             while (cantWrite == TRUE) {
-                //system("sleep 2");
+                system("sleep 2");
                 msgError = msgsnd(qid, &msgName, strlen(msgName.payload) + 1, MSG_NOERROR | IPC_NOWAIT);
                 if (msgError == 0) cantWrite = FALSE;
             }

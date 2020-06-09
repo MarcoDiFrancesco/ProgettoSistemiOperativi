@@ -99,7 +99,7 @@ int main(int argc, string argv[]) {
     //printf("nome corretto: ");
     for (i = n_arg; i < argc; i++) {
         int lunghezza_nome = strlen(arg[i]);
-        if (1 || isTxt(arg[i], lunghezza_nome) == TRUE || isC(arg[i], lunghezza_nome) == TRUE ||
+        if (isTxt(arg[i], lunghezza_nome) == TRUE || isC(arg[i], lunghezza_nome) == TRUE ||
             isCpp(arg[i], lunghezza_nome) == TRUE || isPy(arg[i], lunghezza_nome) == TRUE ||
             isJava(arg[i], lunghezza_nome) == TRUE) {
             filesOk[i] = TRUE;

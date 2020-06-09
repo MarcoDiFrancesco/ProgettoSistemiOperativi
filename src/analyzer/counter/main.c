@@ -7,7 +7,7 @@ int main(int argc, string argv[]) {
         flagMain=TRUE;
     }
 
-    printf("start counter\n");
+    printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa\n");
     if (argc < 4) {
         printf("Counter chiamato con argomenti insufficienti\n");
         return 1;
@@ -100,7 +100,7 @@ int main(int argc, string argv[]) {
                                         fileTotal, fileIndex, part, f_dim,
                                         i, file_per_p, f_Psize[i]);
                 if (kill(getppid(), SIGUSR2) == 0) {
-                    //printf("P ha mandato una signal qid : %d\n", getpid());
+                    printf("P ha mandato una signal qid : %d\n", getpid());
                 } else {
                     //printf("!!!!Perror  %s\n", strerror(errno));
                 }
@@ -189,7 +189,7 @@ int main(int argc, string argv[]) {
     printf("Numero di file analizzati: %d\n", fileTotal);
     if(flagMain==TRUE){
         kill(getppid(), SIGUSR1);
-        printf("sigsent\n");
+        printf("Counter sigusr1 to analyzer\n");
     }else{
         printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");
     }
