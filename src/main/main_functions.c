@@ -190,7 +190,7 @@ int runProgram(char **path) {
         close(pipefd[1]);
     } else {
         wait(pid);
-        printf("Waited\n");
+        //printf("Waited\n");
     }
     return 0;
 }

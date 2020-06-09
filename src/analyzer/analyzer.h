@@ -88,6 +88,8 @@ string changeNM();
 
 BOOL stringIsInt(char *str);
 
+BOOL fileIsValid(string fname);
+
 void sendSignal(int signal);
 void ignoreSignal(int signal);
 
