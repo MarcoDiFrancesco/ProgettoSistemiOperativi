@@ -2,7 +2,6 @@
 
 char analyzer_path[] = "/root/bin/analyzer";
 char counter_path[] = "/root/bin/counter";
-char clean_path[] = "/root/bin/cleanBuffer";
 char main_path[] = "/root/bin/main";
 char report_path[] = "/root/bin/report";
 
@@ -18,7 +17,6 @@ int main() {
 
     if (checkIntegrity(analyzer_path) ||
         checkIntegrity(counter_path) ||
-        checkIntegrity(clean_path) ||
         checkIntegrity(main_path) ||
         checkIntegrity(report_path)) {
         printf("Some files were modified, rebuilding...\n");
