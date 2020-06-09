@@ -86,6 +86,8 @@ string addFile();
 
 string changeNM();
 
+BOOL stringIsInt(char *str);
+
 void sendSignal(int signal);
 void ignoreSignal(int signal);
 #endif

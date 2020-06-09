@@ -223,99 +223,128 @@ string recConfirm(int projID) {
 
 //funzioni per aggiungere roba al volo
 
-string addThingsToCounter() {
+string addThingsToCounter(){
     printf("\nL'analisi dei file inseriti e' stata avviata...\nVuoi modificare i file? [f]\nVuoi modificare N o M? [n]\nNon modificare nulla (non potrai più modificare nulla in seguito)[x]\n");
-    char input;
-    scanf(" %c", &input);
-    while (input != 'f' && input != 'n' && input != 'x') {
-        printf("Inserisci solamente [f] o [n] o [x]\n");
-        fflush(stdin);
-        fflush(stdout);
+        char input;
         scanf(" %c", &input);
-    }
-    switch (input) {
-        case 'f':
-            return addFile();
-        case 'n':
-            return changeNM();
-        case 'x':
-            return "X";
-    }
+        while(input != 'f' && input != 'n' && input != 'x'){
+            printf("Inserisci solamente [f] o [n] o [x]\n");
+            __fpurge(stdin);
+            __fpurge(stdout);
+            scanf(" %c", &input);
+        }
+        switch(input){
+            case 'f': return addFile();
+            case 'n': return changeNM();
+            case 'x': return "X";
+        }
 }
 
-string addFile() {
+string addFile(){
     string input = malloc(MAXLEN);
-    string ret = malloc(MAXLEN + 3);
-    strcat(ret, "-f ");
+    string ret = malloc(MAXLEN +3);
+    strcpy (ret, "-f ");
     BOOL space = TRUE;
     printf("Inserisci il file con il suo percorso: ");
-    while (space == TRUE) {
-        fflush(stdin);
-        fflush(stdout);
+    while(space==TRUE){
+        __fpurge(stdin);
         fgets(input, MAXLEN, stdin);
         int i;
         space = FALSE;
-        for (i = 0; i < strlen(input); i++) {
-            if (input[i] == ' ') {
+        for(i=0; i<strlen(input); i++){
+            if(input[i] == ' '){
                 space = TRUE;
                 printf("Forse hai inserito due file\nInseriscine solo uno\n");
+                break;
             }
         }
     }
+    input[strlen(input) - 1] = '\0';
     strcat(ret, input);
-    return ret;
+    return ret; 
 }
 
-string changeNM() {
-    char input;
+string changeNM(){
+    char input,
+         placeholder;
     string input_str = malloc(7);
     string ret = malloc(10);
-    strcat(ret, "-");
-    int input_int;
+    strcpy(ret, "-");
+    int input_int,
+        len;
     printf("Vuoi cambiare N o M? [n]/[m]\n");
     scanf(" %c", &input);
-    while (input != 'n' && input != 'm') {
+    while(input != 'n' && input != 'm'){
         printf("Inserisci solamente [n] o [m]\n");
-        fflush(stdin);
-        fflush(stdout);
+        __fpurge(stdin);
+        __fpurge(stdout);
         scanf(" %c", &input);
     }
     string tmp;
-    switch (input) {
+    __fpurge(stdin);
+    switch(input){
         case 'n':
             strcat(ret, "n ");
             printf("inserisci n: ");
-            fgets(input_str, 7, stdin);
-            while (stringIsInt(input_str) == FALSE) {
+            __fpurge(stdin);
+            fgets(input_str, len, stdin);
+            while(stringIsInt(input_str) == FALSE){
+                __fpurge(stdin);
                 fgets(input_str, 7, stdin);
             }
+            input_str[strlen(input_str) - 1] = '\0';
             strcat(ret, input_str);
             return ret;
         case 'm':
             strcat(ret, "m ");
             printf("inserisci m: ");
-            fgets(input_str, 7, stdin);
-            while (stringIsInt(input_str) == FALSE) {
+            __fpurge(stdin);
+            fgets(input_str, len, stdin);
+            while(stringIsInt(input_str) == FALSE){
+                __fpurge(stdin);
                 fgets(input_str, 7, stdin);
             }
+            input_str[strlen(input_str) - 1] = '\0';
             strcat(ret, input_str);
-            return ret;
+            return ret;      
     }
 }
 
 /**
  * Check if string is a > 0 integer or not
  */
-int stringIsInt(char *string) {
-    char *newString;
-    long number = strtol(string, &newString, 10);  // Base 10
+BOOL stringIsInt(char *str) {
+    /*char *newString;
+    long number = strtol(str, &newString, 10);  // Base 10
 
-    if (*newString != '\0' || newString == string || number < 1) {
+    if (*newString != '\0' || number < 1) {
         printf("Scrivi un numero maggiore di 0\n");
     } else {
         return TRUE;
     }
-    return FALSE;
+    return FALSE;*/
+    int i,
+        len = 0;
+
+    BOOL ret = TRUE;
+    
+    len = strlen(str);
+    //printf("strlen %d\n", len);
+    for (i = 0; i < len - 1; ++i) {
+        //printf("%c ", str[i]);
+        if (isdigit(str[i]) == 0) {
+            ret = FALSE;
+            break;
+        }
+    }
+
+    if (ret == FALSE || atoi(str) < 1) {
+        printf("Scrivi un numero maggiore di 0\n");
+    }
+
+    __fpurge(stdin);
+    return ret;
+
 }
 
 void sendSignal(int signal) {

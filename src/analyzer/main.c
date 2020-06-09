@@ -16,13 +16,13 @@ int main(int argc, string argv[]) {
         printf("Flag set\n");
     }
     //scrivo qui controllo degli argomenti per il C
-    if (argc > 2 && strcmp(argv[1], "-n") == 0) {
+    if (argc > 2 && strcmp(argv[1], "-n") == 0 && atoi(argv[2]) > 0 && atoi(argv[2]) < MAXQ) {
         //printf("N1");
         n_arg++;
         nS = argv[2];
         N = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-n") == 0) {
+    } else if (argc > 4 && strcmp(argv[3], "-n") == 0 && atoi(argv[4]) > 0 && atoi(argv[4])  < MAXQ) {
         //printf("N2");
         n_arg++;
         nS = argv[4];
@@ -30,13 +30,13 @@ int main(int argc, string argv[]) {
         n_arg++;
     }
 
-    if (argc > 2 && strcmp(argv[1], "-m") == 0) {
+    if (argc > 2 && strcmp(argv[1], "-m") == 0 && atoi(argv[2]) > 0 && atoi(argv[2]) < MAXQ) {
         //printf("M1");
         n_arg++;
         mS = argv[2];
         M = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-m") == 0) {
+    } else if (argc > 4 && strcmp(argv[3], "-m") == 0 && atoi(argv[4]) > 0 && atoi(argv[4]) < MAXQ) {
         //printf("M2");
         n_arg++;
         mS = argv[4];
@@ -209,22 +209,31 @@ int main(int argc, string argv[]) {
                 allChanges = realloc(allChanges, (contchanges + 1) * sizeof(string));
                 allChanges[contchanges] = malloc(MAXLEN);
                 strcpy(pipemsg, addThingsToCounter());
-                strcpy(allChanges[contchanges], pipemsg);
-                contchanges++;
+
+                if (strcmp(pipemsg, "\n") != 0) {
+                    strcpy(allChanges[contchanges], pipemsg);
+                    contchanges++;
+                }
             } while (strcmp(pipemsg, "X") != 0);
 
+            for (i = 0; i < contchanges; i++) {
+                printf(">"); puts(allChanges[i]);
+            }
+
             string lastN = malloc(10);
+            strcpy(lastN, " ");
             string lastM = malloc(10);
+            strcpy(lastM, " ");
             for (i = contchanges - 1; i >= 0; i--) {
                 if (strcmp(lastN, " ") == 0 && allChanges[i][1] == 'n') {
                     strcpy(lastN, allChanges[i]);
                 }
-                if (strcmp(lastN, " ") == 0 && allChanges[i][1] == 'm') {
-                    strcpy(lastN, allChanges[i]);
+                if (strcmp(lastM, " ") == 0 && allChanges[i][1] == 'm') {
+                    strcpy(lastM, allChanges[i]);
                 }
             }
             string totalPipeMessage = malloc(sizeof(char) * contchanges * MAXLEN + 100);
-            strcat(totalPipeMessage, lastN);
+            strcpy(totalPipeMessage, lastN);
             strcat(totalPipeMessage, " ");
             strcat(totalPipeMessage, lastM);
             for (i = 0; i < contchanges - 1; i++) {
