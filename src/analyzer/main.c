@@ -44,7 +44,7 @@ int main(int argc, string argv[]) {
         n_arg++;
     }
 
-    int a, i;
+    int a, i, j;
     //printf("\n (%d) files inseriti =  %d",argc,  argc - n_arg);
 
     string *arg = malloc(sizeof(string) * argc);
@@ -145,7 +145,7 @@ int main(int argc, string argv[]) {
 
     string cmdList[fileTotal + 4];
     int cmdListCount = 1;
-    string cmd = malloc(sizeof(char) * fileTotal * 1000 + 100);
+    //string cmd = malloc(sizeof(char) * fileTotal * 1000 + 100);
     cmdList[0] = "/root/bin/counter";
     cmdList[cmdListCount++] = nS;
     cmdList[cmdListCount++] = mS;
@@ -213,22 +213,151 @@ int main(int argc, string argv[]) {
                     strcpy(lastM, allChanges[i]);
                 }
             }
+            int n_new_file = 0;
             string totalPipeMessage = malloc(sizeof(char) * contchanges * MAXLEN + 100);
             strcpy(totalPipeMessage, lastN);
             strcat(totalPipeMessage, " ");
             strcat(totalPipeMessage, lastM);
             for (i = 0; i < contchanges - 1; i++) {
                 if (allChanges[i][1] != 'n' && allChanges[i][1] != 'm') {
+                    n_new_file++;
                     strcat(totalPipeMessage, " ");
                     strcat(totalPipeMessage, allChanges[i]);
                 }
+            }       
+            printf("> new message: %s\n", totalPipeMessage);
+            printf("strlen pipemessage: %ld\n", strlen(totalPipeMessage));
+            i = 0;
+            BOOL flag_n,
+                 flag_m,
+                 flag_f = FALSE;
+            string new_n = malloc(7);
+            string new_m = malloc(7);
+            string *new_file_list = malloc(n_new_file);
+            int n_new_file_k = 0;
+            while(i < strlen(totalPipeMessage)){ //finchè non arrivo in fondo alla stringa
+                //finchè non trovo un carattere '-'
+                while(totalPipeMessage[i] != '-' && totalPipeMessage[i] != '\0'){
+                    //printf(".%c",totalPipeMessage[i]);
+                    i++;
+                }
+                //prendo l'elemento dopo il carattere '-'
+                char flag = totalPipeMessage[++i];
+                //vado dopo lo spazio
+                i += 2;
+                //controllo di che tipo è il flag
+                string new_file;
+                switch(flag){
+                    case 'n':
+                        flag_n = TRUE;
+                        j = 0;
+                        //mi salvo il contenuto finchè non raggiungo uno spazio
+                        while(totalPipeMessage[i] != ' ' && totalPipeMessage[i] != '\0'){
+                            new_n[j++] = totalPipeMessage[i++];
+                        }
+                        new_n[j] = '\0';
+                        //printf("\n");
+                        break;
+                    case 'm':
+                        flag_m = TRUE;
+                        j = 0;
+                        //mi salvo il contenuto finchè non raggiungo uno spazio
+                        while(totalPipeMessage[i] != ' ' && totalPipeMessage[i] != '\0'){
+                            new_m[j++] = totalPipeMessage[i++];
+                        }
+                        new_m[j] = '\0';
+                        printf("\n");
+                        break;
+                    case 'f':
+                        flag_f = TRUE;
+                        new_file = malloc(MAXLEN);
+                        j = 0;
+                        //mi salvo il contenuto finchè non raggiungo uno spazio
+                        while(totalPipeMessage[i] != ' ' && totalPipeMessage[i] != '\0'){
+                            new_file[j++] = totalPipeMessage[i++];
+                        }
+                        new_file[j] = '\0';
+                        if (access(new_file, F_OK) > -1 && fileIsValid(new_file) == TRUE){
+                            new_file_list[n_new_file_k] = malloc(MAXLEN);
+                            strcpy(new_file_list[n_new_file_k ++], new_file);
+                        }
+
+                        free(new_file);
+                        break;
+                }
             }
-            printf("> new message: %s", totalPipeMessage);
+
+            string new_cmdList[fileTotal + 4 + n_new_file_k + 2];
+
+            new_cmdList[0] = cmdList[0];
+
+            if (flag_n == TRUE) {
+                puts(new_n);
+                //strcpy(new_cmdList[1], new_n);
+                new_cmdList[1] = new_n;
+            } else {
+                //strcpy(new_cmdList[1], cmdList[1]);
+                new_cmdList[1] = cmdList[1];
+            }
+            if (flag_m == TRUE) {
+                puts(new_m);
+                //strcpy(new_cmdList[2], new_m);
+                new_cmdList[2] = new_m;
+            } else {
+                //strcpy(new_cmdList[2], cmdList[2]);
+                new_cmdList[2] = cmdList[2];
+            }
+            
+            string new_filetotal = malloc(MAXLEN); 
+            sprintf(new_filetotal, "%d", fileTotal + n_new_file_k);
+            //strcpy(new_cmdList[3], new_filetotal);
+            new_cmdList[3] = new_filetotal;
+
+            for(i=4; i<fileTotal+4; i++){
+                //strcpy(new_cmdList[i], cmdList[i]);
+                new_cmdList[i] = cmdList[i];
+            }
+
+            cmdListCount--;
+
+            printf("numero nuovi file inseriti: %d\n", n_new_file_k );
+            if(flag_f == TRUE){
+                for(i = 0; i < n_new_file_k ; i++){
+                    //printf("%d ", i);
+                    //puts(new_file_list[i]);
+                    //strcpy(new_cmdList[cmdListCount++], new_file_list[i]);
+                    puts(" OOOOOOOOOOOOOO nuovo file inserito");
+                    new_cmdList[cmdListCount++] = new_file_list[i];
+                }
+            }
+            //flag che vuoi tu
+            //new_cmdList[cmdListCount++] = NULL;
+            if (flagMain == TRUE) {
+                new_cmdList[cmdListCount++] = "-a";
+                puts("areo");
+            }
+            new_cmdList[cmdListCount] = NULL;
+
+            //debug
+            i=0;
+            while(new_cmdList[i]!=NULL){
+                puts(new_cmdList[i++]);
+            }
+            puts(new_cmdList[cmdListCount - 1]);
+            printf("I=%d\n",i);
+
+            CounterPid=fork();
+            if(CounterPid==0){
+                puts("ho lanciato counter di nuovo");
+                execv(new_cmdList[0], new_cmdList);
+            }else{
+                //cose che deve fare lanalyzer
+                sendConfirm("n", 3, PathName2);
+            }
         }
         waitpid(CounterPid, NULL, 0);
     }
-    free(cmd);
+    //free(cmd);
     free(files);
-    printf("Analyzer ended\n");
     return 0;
 }

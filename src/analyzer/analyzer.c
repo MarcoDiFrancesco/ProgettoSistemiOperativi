@@ -338,8 +338,9 @@ BOOL stringIsInt(char *str) {
         }
     }
 
-    if (ret == FALSE || atoi(str) < 1) {
-        printf("Scrivi un numero maggiore di 0\n");
+    if (ret == FALSE || atoi(str) < 1 || atoi(str) > MAXQ) {
+        ret = FALSE;
+        printf("Scrivi un numero maggiore di 0 e minore di %d\n", MAXQ);
     }
 
     __fpurge(stdin);
@@ -347,13 +348,24 @@ BOOL stringIsInt(char *str) {
 
 }
 
+BOOL fileIsValid(string fname) {
+    int len = strlen(fname);
+    BOOL ret = FALSE;
+    if (isTxt(fname, len) == TRUE || isC(fname, len) == TRUE ||
+        isCpp(fname, len) == TRUE || isPy(fname, len) == TRUE ||
+        isJava(fname, len) == TRUE) {
+            ret = TRUE;
+        }
+    return ret;
+}
+
 void sendSignal(int signal) {
-    printf("Alanyzer sent sigusr1 to main\n");
+    //printf("Alanyzer sent sigusr1 to main\n");
     kill(getppid(), SIGUSR1);
 }
 
 void ignoreSignal(int signal) {
-    printf("Signal ignored from analyzer\n");
+    //printf("Signal ignored from analyzer\n");
 }
 
 //funzioni per pulizia

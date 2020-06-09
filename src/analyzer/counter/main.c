@@ -7,7 +7,7 @@ int main(int argc, string argv[]) {
         flagMain=TRUE;
     }
 
-    printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa\n");
+    
     if (argc < 4) {
         printf("Counter chiamato con argomenti insufficienti\n");
         return 1;
@@ -63,7 +63,6 @@ int main(int argc, string argv[]) {
     for (k = 0; k < N; ++k) {
         f_Psize[k] = 0;
     }
-
     map fileData = malloc(fileTotal * sizeof(FileMap));
     int i;
     for (i = 0; i < fileTotal; i++) {
@@ -100,7 +99,7 @@ int main(int argc, string argv[]) {
                                         fileTotal, fileIndex, part, f_dim,
                                         i, file_per_p, f_Psize[i]);
                 if (kill(getppid(), SIGUSR2) == 0) {
-                    printf("P ha mandato una signal qid : %d\n", getpid());
+                    //printf("P ha mandato una signal qid : %d\n", getpid());
                 } else {
                     //printf("!!!!Perror  %s\n", strerror(errno));
                 }
@@ -117,7 +116,7 @@ int main(int argc, string argv[]) {
         }
     }
 
-    printf("Sto analizzando...");
+    printf("Sto analizzando");
     while (boolP == FALSE) {
         system("sleep 1");
         printf(".");
@@ -135,8 +134,6 @@ int main(int argc, string argv[]) {
     }
 
     sendConfirm("r", 6, "/root/src/main/main.c");
-    printf("Key 6 sent\n");
-
     fileIndex = 0;
     for (i = 0; i < N; i++) {
         string **buffer = readAndWaitN(p_c[i], f_Psize[i]);
@@ -152,8 +149,8 @@ int main(int argc, string argv[]) {
     }
     printf("Ho ricevuto gli ordini da analyzer\n");
     if (strcmp(back, "y") == 0) {
-        puts("lol mi ammazzo");
-        exit(0);
+        //puts("lol mi ammazzo");
+        return 0;
     }
     /*
     msgsnd(ho finito con nowait);
@@ -191,12 +188,12 @@ int main(int argc, string argv[]) {
     printf("Numero di file analizzati: %d\n", fileTotal);
     if(flagMain==TRUE){
         kill(getppid(), SIGUSR1);
-        printf("Counter sigusr1 to analyzer\n");
+        //printf("Counter sigusr1 to analyzer\n");
     }else{
         printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");
     }
     sender(fileData, fileTotal);
-    printf("Dati inviati con successo!\n");
+    //printf("Dati inviati con successo!\n");
 
     //libero spazio in memoria
     free(part);

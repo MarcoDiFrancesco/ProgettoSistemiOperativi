@@ -500,7 +500,7 @@ int processP(pid_t c_son, int pipe_c[][2], int pipe_q[][2], string *file_P,
                 //printf("pid processo Q: %d vs quello che abbiamo %d\n", getpid(), QIds[index_p][j]);
                 return_value = processQ(part, fdim, file_P, f_Psize, j, fileIndex, pipe_q[j]);
                 if (kill(getppid(), SIGUSR2) == 0) {
-                    printf("Q ha mandato una signal qid : %d\n", getpid());
+                    //printf("Q ha mandato una signal qid : %d\n", getpid());
                 } else {
                     //printf("!!!!Qerror  %s\n", strerror(errno));
                 }
