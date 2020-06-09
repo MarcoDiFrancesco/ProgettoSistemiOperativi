@@ -49,21 +49,23 @@ int main() {
         removeNewline(mainChoice);
 
         if (!strcmp(mainChoice, "1")) {  // If choice equals 1
-            printf("Inserisci il percorso delle cartelle che vuoi analizzare: ");
-            fgets(choice11, MAX_INPUT_LENGHT, stdin);
-            removeNewline(choice11);
+            do {
+                printf("Inserisci percorsi di cartelle che vuoi analizzare separati da spazio, in caso l'indirizzo non sia valido gli indirizzi verranno ignorati: ");
+                fgets(choice11, MAX_INPUT_LENGHT, stdin);
+                removeNewline(choice11);
+            } while (choice11[0] == '\0');
 
             do {
-                printf("Quanti il numero di processi P: ");
+                printf("Quanti il numero di processi P [default 3]: ");
                 fgets(choice12, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice12);
-            } while (!stringIsInt(choice12));
+            } while (!choice12[0] == '\0' && !stringIsInt(choice12));
 
             do {
-                printf("Quanti il numero di processi Q: ");
+                printf("Quanti il numero di processi Q [default 4]: ");
                 fgets(choice13, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice13);
-            } while (!stringIsInt(choice13));
+            } while (!choice13[0] == '\0' && !stringIsInt(choice13));
 
             splitAndSendPaths(choice11, choice12, choice13);
         } else if (!strcmp(mainChoice, "2")) {  // If choice equals 2
