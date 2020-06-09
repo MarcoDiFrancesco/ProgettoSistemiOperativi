@@ -669,6 +669,10 @@ void sigHandlerQ(int sig) {
     }
 }
 
+void ignore(int sig){
+    printf("IGNORED SG1\n");
+}
+
 //funzioni messaggi per aggiungere roba
 
 void sendConfirm(string messaggio, int projID) {

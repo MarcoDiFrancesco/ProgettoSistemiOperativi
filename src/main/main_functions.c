@@ -109,6 +109,7 @@ void splitAndSendPaths(char *string, char *n, char *m) {
         argumentsV[argumentsC++] = singlePath;
         singlePath = strtok(NULL, " ");
     }
+    argumentsV[argumentsC++] = "-a";
     argumentsV[argumentsC++] = NULL;
     runProgram(argumentsV);
     // char *a[] = {analyzer_path, arguments};

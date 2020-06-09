@@ -7,8 +7,8 @@ string nS = "3";
 string mS = "4";
 
 int main(int argc, string argv[]) {
-    signal(1, ignoreSignal);
-    signal(SIGUSR2, sendSignal);
+    signal(SIGUSR2, ignoreSignal);
+    signal(SIGUSR1, sendSignal);
     BOOL flagMain=FALSE;
     if(strcmp(argv[argc-1], "-a")){
         //flag main setted
@@ -169,7 +169,7 @@ int main(int argc, string argv[]) {
     string cmdList[fileTotal + 4];
     int cmdListCount = 1;
     string cmd = malloc(sizeof(char) * fileTotal * 1000 + 100);
-    cmdList[0] = "./bin/counter";
+    cmdList[0] = "/root/bin/counter";
     cmdList[cmdListCount++] = nS;
     cmdList[cmdListCount++] = mS;
     cmdList[cmdListCount++] = str;
@@ -187,7 +187,7 @@ int main(int argc, string argv[]) {
         }
         execv(cmdList[0], cmdList);
     } else {
-        system("sleep 5");
+        system("sleep 4");
         fflush(stdout);
         printf("\nvuoi inserire roba nuova testina di cazz0? [y/n]\n");
         char input;
@@ -237,20 +237,8 @@ int main(int argc, string argv[]) {
         }
         waitpid(CounterPid, NULL, 0);
     }
-
-    /*
-    msgrcv(hai finito?)
-    if(si)
-        roba dei file nuovi
-        if (sì)
-            msgsnd(file)
-            
-        else
-            msgsnd(continua)
-    */
-
     free(cmd);
     free(files);
-    printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+    printf("Analyzer ended\n");
     return 0;
 }

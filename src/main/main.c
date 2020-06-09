@@ -9,8 +9,8 @@ int main() {
             signal(i, ignoreSignal);
         }
     }
-    signal(1, ignoreSignal);
-    signal(SIGUSR2, runReport);
+    signal(SIGUSR2, ignoreSignal);
+    signal(SIGUSR1, runReport);
 
     char *fullProcessPath = getSelfProcessPath();
     char *processPath = baseName(fullProcessPath);

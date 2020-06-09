@@ -5,7 +5,6 @@ int main(int argc, string argv[]) {
     if(strcmp(argv[argc-1], "-a")){
         //flag main setted
         flagMain=TRUE;
-        printf("Flag set\n");
     }
 
     printf("start counter\n");
@@ -189,12 +188,13 @@ int main(int argc, string argv[]) {
     printf("\n\n");
     printf("Numero di file analizzati: %d\n", fileTotal);
     if(flagMain==TRUE){
-        kill(getppid(), SIGUSR2);
+        kill(getppid(), SIGUSR1);
+        printf("sigsent\n");
     }else{
         printf("Per inviare i dati è necessario lanciare il report [bin/report]\n");
     }
     sender(fileData, fileTotal);
-    //printf("Dati inviati con successo!\n");
+    printf("Dati inviati con successo!\n");
 
     //libero spazio in memoria
     free(part);

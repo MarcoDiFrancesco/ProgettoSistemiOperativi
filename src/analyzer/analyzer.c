@@ -318,7 +318,7 @@ int stringIsInt(char *string) {
 
 void sendSignal(int signal) {
     printf("Signal sent\n");
-    kill(getppid(), SIGUSR2);
+    kill(getppid(), SIGUSR1);
 }
 
 void ignoreSignal(int signal) {
