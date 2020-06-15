@@ -84,8 +84,8 @@ void removeNewline(char *string) {
  * Input a string of paths, separate on the spaces, and run concatenated
  * with the file path specified
  */
-void splitAndSendPaths(char *string, char *n, char *m) {
-    if (string[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
+void splitAndSendPaths(char *files, char *n, char *m, char *folders) {
+    if (files[MAX_INPUT_LENGHT - 2] != '\0' && SHOW_WARNING)
         printf("Warning: hai superato il limite di %d caratteri, l'ulima path potrebbe non essere considerata\n", MAX_INPUT_LENGHT);
     int argumentsC = 0;
     char *argumentsV[MAX_ARG_STRLEN];  // *4 in case the path is "a" there is " -c " chars
@@ -94,18 +94,33 @@ void splitAndSendPaths(char *string, char *n, char *m) {
     if (n[0] != '\0') {
         argumentsV[argumentsC++] = "-n";
         argumentsV[argumentsC++] = n;
+    } else {
+        argumentsV[argumentsC++] = "-n";
+        argumentsV[argumentsC++] = "3";
     }
     if (m[0] != '\0') {
         argumentsV[argumentsC++] = "-m";
         argumentsV[argumentsC++] = m;
+    } else {
+        argumentsV[argumentsC++] = "-m";
+        argumentsV[argumentsC++] = "4";
     }
-    char *singlePath;                  // Contains the splited path, e.g. /root/test/file.txt
-    singlePath = strtok(string, " ");  // Split in space
-    while (singlePath != NULL) {
+
+    char *singlePathFolders;                   // Contains the splited path, e.g. /root/src
+    singlePathFolders = strtok(folders, " ");  // Split in space
+    while (singlePathFolders != NULL) {
         argumentsV[argumentsC++] = "-c";
+        argumentsV[argumentsC++] = singlePathFolders;
+        singlePathFolders = strtok(NULL, " ");
+    }
+
+    char *singlePath;                 // Contains the splited files, e.g. /root/src/main/main.c
+    singlePath = strtok(files, " ");  // Split in space
+    while (singlePath != NULL) {
         argumentsV[argumentsC++] = singlePath;
         singlePath = strtok(NULL, " ");
     }
+
     argumentsV[argumentsC++] = "-a";
     argumentsV[argumentsC++] = NULL;
     runProgram(argumentsV);
@@ -158,7 +173,7 @@ int runProgram(char **path) {
     pid_t pid = fork();
     if (pid == -1)  // Error in forking
         return 1;
-    else if (pid == 0) {   // Child section
+    else if (pid == 0) {  // Child section
         close(pipefd[0]);
         execvp(path[0], path);
         close(pipefd[1]);
@@ -351,15 +366,61 @@ int stringIsInt(char *string) {
     return FALSE;
 }
 
+
+int isProcessNumberOk(char *string) {
+    char *newString;
+    int number;
+    if (string[0] == '\0')
+        number = 3;
+    else
+        number = atoi(string);
+    printf("-%s-, %d\n", string, number);
+    if (number > 15) {
+        printf("Il numero di processi P e' troppo alto, scegli un numero minore o uguale a 15.\n");
+        return FALSE;
+    } else if(number <= 0) {
+        printf("Il numero di processi P e' troppo basso, scegli un numero piu' grande di 0.\n");
+        return FALSE;
+    }else{
+        return TRUE;
+    }
+        
+    return FALSE;
+}
+
+
+int isProcessNumberOkV2(char *string1, char *string2) {
+    char *newString;
+    int number1, number2;
+    if (string1[0] == '\0')
+        number1 = 3;
+    else
+        number1 = atoi(string1);
+
+    if (string2[0] == '\0')
+        number2 = 4;
+    else
+        number2 = atoi(string2);
+
+    if (number1 + (number1 * number2) >= 165) {
+        printf("Il numero di processi P*Q e' troppo alto, scegli un numero in modo che P*Q sia piu' piccolo di 150\n");
+        return FALSE;
+    } else if (number2 <= 0) {
+        printf("Il numero di processi Q e' troppo basso, scegli un numero di processi piu' grande di 1\n");
+        return FALSE;
+    }
+    return TRUE;
+}
+
 //clean buffers
 
-void clean(int msgKey, string path){
-    key_t key= ftok(path, msgKey);
+void clean(int msgKey, string path) {
+    key_t key = ftok(path, msgKey); /* key to identify the queue */
     if (key < 0) printf("key not gotten...\n");
 
     int qid = msgget(key, 0666 | IPC_CREAT);
     if (qid < 0) printf("no access to queue...\n");
 
-    if (msgctl(qid, IPC_RMID, NULL) < 0)
+    if (msgctl(qid, IPC_RMID, NULL) < 0) /* NULL = 'no flags' */
         printf("trouble removing queue...\n");
 }

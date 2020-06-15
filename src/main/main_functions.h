@@ -66,7 +66,7 @@ node addNode(node head, char *new_str);
 char *concat(const char *s1, const char *s2, const char *s3);
 node listFiles(char *path);
 void removeNewline(char *string);
-void splitAndSendPaths(char *string, char *n, char *m);
+void splitAndSendPaths(char *files, char *n, char *m, char *folders);
 char *getSelfProcessPath();
 void getAnalytics();
 int runProgramAsProcess(char **path);
@@ -85,6 +85,8 @@ char *concatPaths(char *dir, char *file);
 void runReport(int signal);
 void ignoreSignal(int signal);
 int stringIsInt(char *string);
+int isProcessNumberOk(char *string);
+int isProcessNumberOkV2(char *string1, char *string2);
 void clean(int msgKey, string path);
 
 #endif

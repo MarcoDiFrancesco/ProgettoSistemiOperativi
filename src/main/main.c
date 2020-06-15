@@ -1,13 +1,9 @@
 #include "main_functions.h"
 
-#ifndef BINARY_PATHS
-#define BINARY_PATHS
 char analyzer_path[] = "/root/bin/analyzer";
 char counter_path[] = "/root/bin/counter";
-char clean_path[] = "/root/bin/cleanBuffer";
 char main_path[] = "/root/bin/main";
 char report_path[] = "/root/bin/report";
-#endif
 
 int main() {
     if (!DEBUG) {
@@ -21,7 +17,6 @@ int main() {
 
     if (checkIntegrity(analyzer_path) ||
         checkIntegrity(counter_path) ||
-        checkIntegrity(clean_path) ||
         checkIntegrity(main_path) ||
         checkIntegrity(report_path)) {
         printf("Some files were modified, rebuilding...\n");
@@ -32,6 +27,7 @@ int main() {
     char choice11[MAX_INPUT_LENGHT];
     char choice12[MAX_INPUT_LENGHT];
     char choice13[MAX_INPUT_LENGHT];
+    char choice14[MAX_INPUT_LENGHT];
     char choice2[MAX_INPUT_LENGHT];
 
     while (1) {
@@ -40,6 +36,7 @@ int main() {
         memset(choice11, 0, sizeof choice11);
         memset(choice12, 0, sizeof choice12);
         memset(choice13, 0, sizeof choice13);
+        memset(choice14, 0, sizeof choice14);
 
         printf("Cosa vuoi fare ora?\n");
         printf("1. Aggiungi file da analizzare\n");
@@ -48,27 +45,29 @@ int main() {
         fgets(mainChoice, MAX_INPUT_LENGHT, stdin);
         removeNewline(mainChoice);
 
-        if (!strcmp(mainChoice, "1")) {
-            do {
-                printf("Inserisci percorsi di cartelle che vuoi analizzare separati da spazio, in caso l'indirizzo non sia valido gli indirizzi verranno ignorati: ");
-                fgets(choice11, MAX_INPUT_LENGHT, stdin);
-                removeNewline(choice11);
-            } while (choice11[0] == '\0');
+        if (!strcmp(mainChoice, "1")) {  // If choice equals 1
+            printf("Inserisci percorsi di FILE che vuoi analizzare separati da spazio (in caso l'indirizzo non sia valido gli indirizzi verranno ignorati): ");
+            fgets(choice11, MAX_INPUT_LENGHT, stdin);
+            removeNewline(choice11);
 
+            printf("Inserisci percorsi di CARTELLE che vuoi analizzare separati da spazio (in caso l'indirizzo non sia valido gli indirizzi verranno ignorati): ");
+            fgets(choice14, MAX_INPUT_LENGHT, stdin);
+            removeNewline(choice14);
+            int ok;
             do {
-                printf("Quanti il numero di processi P [default 3]: ");
+                printf("Specificare il numero di processi P [default 3]: ");
                 fgets(choice12, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice12);
-            } while (!choice12[0] == '\0' && !stringIsInt(choice12));
+            } while (!choice12[0] == '\0' && (!stringIsInt(choice12) || !isProcessNumberOk(choice12)));
 
             do {
-                printf("Quanti il numero di processi Q [default 4]: ");
+                printf("Specificare il numero di processi Q [default 4]: ");
                 fgets(choice13, MAX_INPUT_LENGHT, stdin);
                 removeNewline(choice13);
-            } while (!choice13[0] == '\0' && !stringIsInt(choice13));
+            } while (!choice13[0] == '\0' && (!stringIsInt(choice13) || !isProcessNumberOkV2(choice12, choice13)));
 
-            splitAndSendPaths(choice11, choice12, choice13);
-        } else if (!strcmp(mainChoice, "2")) {
+            splitAndSendPaths(choice11, choice12, choice13, choice14);
+        } else if (!strcmp(mainChoice, "2")) {  // If choice equals 2
             clean(ProjectId, PathName);
             clean(3, PathName2);
             clean(6, "/root/src/main/main.c");

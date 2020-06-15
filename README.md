@@ -80,6 +80,8 @@ It's possible to run the program in two ways:
 - Using main binary (`/root/bin/main`)
 - Running the program Analyzer (`/root/bin/analyzer`), then running Report (`/root/bin/report`)
 
+The files that will be analyzed are `.txt`, `.cpp`, `.c`, `.java` and `.py`.
+
 ### Main
 
 To run **main** run `/root/bin/main`.  
@@ -134,7 +136,7 @@ This program has limits that we couldn't solve in time:
 - Max analyzable files is 500 (limited by the message to [Report](#Report))
 - Max analyzable files in [Counter](#Counter) is 3077
 - You can only add files on the fly but it's not possible to add folder once the program is started
-- Max lenght of the analyzable path is 48 char
-- Max number of [Q](#Q) process is 10000
-- There is one `sleep` in the [P](#P) process to slow down the control of the termination of all the [Q](#Q) process
+- Max lenght of the analyzable path is 48 characters
+- Max number of total process is ( N = 15 ) and ( N + M*N <= 150)
+- There is one `sleep()` in the [P](#P) process to slow down the control of the termination of all the [Q](#Q) process
 - It's possible to run the programs only if they're placed under `/root/bin/`

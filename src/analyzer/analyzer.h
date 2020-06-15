@@ -27,7 +27,6 @@
 #define FALSE 0
 #define TRUE 1
 #define MAXLEN 12*sizeof(int)
-#define MAXQ 10000
 #define FILTER_BY_TYPE 1
 #define MAXFILE 500
 
@@ -82,7 +81,7 @@ string addFile();
 
 string changeNM();
 
-BOOL stringIsInt(char *str);
+BOOL stringIsInt(char *str, BOOL boundary);
 
 BOOL fileIsValid(string fname);
 

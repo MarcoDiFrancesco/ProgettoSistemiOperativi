@@ -13,31 +13,37 @@ int main(int argc, string argv[]) {
     if (strcmp(argv[argc - 1], "-a")) {
         //flag main setted
         flagMain = TRUE;
-        printf("Flag set\n");
     }
     //scrivo qui controllo degli argomenti per il C
-    if (argc > 2 && strcmp(argv[1], "-n") == 0 && atoi(argv[2]) > 0 && atoi(argv[2]) < MAXQ) {
+    if (argc > 2 && strcmp(argv[1], "-n") == 0 && atoi(argv[2]) > 0 && atoi(argv[2]) < 15) {
         n_arg++;
         nS = argv[2];
         N = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-n") == 0 && atoi(argv[4]) > 0 && atoi(argv[4])  < MAXQ) {
+    } else if (argc > 4 && strcmp(argv[3], "-n") == 0 && atoi(argv[4]) > 0 && atoi(argv[4]) < 15) {
         n_arg++;
         nS = argv[4];
         N = atoi(argv[4]);
         n_arg++;
     }
 
-    if (argc > 2 && strcmp(argv[1], "-m") == 0 && atoi(argv[2]) > 0 && atoi(argv[2]) < MAXQ) {
+    if (argc > 2 && strcmp(argv[1], "-m") == 0 && atoi(argv[2]) > 0) {
         n_arg++;
         mS = argv[2];
         M = atoi(argv[2]);
         n_arg++;
-    } else if (argc > 4 && strcmp(argv[3], "-m") == 0 && atoi(argv[4]) > 0 && atoi(argv[4]) < MAXQ) {
+    } else if (argc > 4 && strcmp(argv[3], "-m") == 0 && atoi(argv[4]) > 0) {
         n_arg++;
         mS = argv[4];
         M = atoi(argv[4]);
         n_arg++;
+    }
+
+    if(N * (N+M) > 150){
+        N = 3;
+        M = 4;
+        nS = "3";
+        mS = "4";
     }
 
     int a, i, j;
@@ -79,9 +85,9 @@ int main(int argc, string argv[]) {
     int fileErrati = 0;
     for (i = n_arg; i < argc; i++) {
         int lunghezza_nome = strlen(arg[i]);
-        if (isTxt(arg[i], lunghezza_nome) == TRUE || isC(arg[i], lunghezza_nome) == TRUE ||
+        if ((isTxt(arg[i], lunghezza_nome) == TRUE || isC(arg[i], lunghezza_nome) == TRUE ||
             isCpp(arg[i], lunghezza_nome) == TRUE || isPy(arg[i], lunghezza_nome) == TRUE ||
-            isJava(arg[i], lunghezza_nome) == TRUE) {
+            isJava(arg[i], lunghezza_nome) == TRUE) && FILTER_BY_TYPE) {
             filesOk[i] = TRUE;
         } else {
             filesOk[i] = FALSE;
@@ -98,7 +104,7 @@ int main(int argc, string argv[]) {
             }
         }
     }
-    int const fileTotal = argc - n_arg - fileErrati - fileInesistenti;
+    int fileTotal = argc - n_arg - fileErrati - fileInesistenti;
     if (fileTotal < 1) {
         printf("non ho ricevuto alcun file valido\n");
 
@@ -112,13 +118,24 @@ int main(int argc, string argv[]) {
         }
     }
 
+    BOOL outOfBoundary = FALSE;
     int next = 0;
     for (i = n_arg; i < argc; i++) {
-        if (filesOk[i] == TRUE && next <= MAXFILE) {
+        if (filesOk[i] == TRUE && outOfBoundary == FALSE) {
             files[next] = arg[i];
             next++;
+            if (outOfBoundary == FALSE && next >= MAXFILE)
+                outOfBoundary = TRUE;
         }
+        if (filesOk[i] == TRUE && outOfBoundary == TRUE)
+            next++;
     }
+
+    if (outOfBoundary == TRUE) {
+        printf("Il numero di file inserito eccede il limite di %d files,\npertanto gli ultimi %d files non saranno analizzati.\n", MAXFILE, next - MAXFILE);
+        fileTotal = MAXFILE;
+    }
+
     if (fileTotal < N) {
         N = fileTotal;
         nS = malloc(sizeof(MAXLEN));
@@ -221,9 +238,9 @@ int main(int argc, string argv[]) {
                 }
             }       
             i = 0;
-            BOOL flag_n,
-                 flag_m,
-                 flag_f = FALSE;
+            BOOL flag_n = FALSE;
+            BOOL flag_m = FALSE;
+            BOOL flag_f = FALSE;
             string new_n = malloc(7);
             string new_m = malloc(7);
             string *new_file_list = malloc(n_new_file);
@@ -281,6 +298,22 @@ int main(int argc, string argv[]) {
 
             new_cmdList[0] = cmdList[0];
 
+            if (flag_n == TRUE || flag_m == TRUE) {
+                if (flag_n == TRUE && flag_m == TRUE) {
+                    if ((atoi(new_n) + atoi(new_n)*atoi(new_m)) >= 165) {
+                        flag_n = FALSE;
+                        flag_m = FALSE;
+                        printf("ATTENZIONE\nStai cercando di creare troppi processi:\nverranno usati i valori di N=%d e M=%d precedentemente inseriti.\n", atoi(cmdList[1]), atoi(cmdList[2]));
+                    }
+                }
+                if(flag_n == FALSE && flag_m == TRUE) {
+                    if ((atoi(cmdList[1]) + atoi(cmdList[1])*atoi(new_m)) >= 165) {
+                        flag_m = FALSE;
+                        printf("ATTENZIONE\nStai cercando di creare troppi processi:\nverranno usati i valori di N=%d e M=%d precedentemente inseriti.\n", atoi(cmdList[1]), atoi(cmdList[2]));
+                    }
+                }
+            }
+
             if (flag_n == TRUE) {
                 puts(new_n);
                 new_cmdList[1] = new_n;
@@ -313,7 +346,6 @@ int main(int argc, string argv[]) {
             //flag che vuoi tu;
             if (flagMain == TRUE) {
                 new_cmdList[cmdListCount++] = "-a";
-                puts("areo");
             }
             new_cmdList[cmdListCount] = NULL;
 
