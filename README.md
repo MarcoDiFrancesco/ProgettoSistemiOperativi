@@ -80,7 +80,7 @@ It's possible to run the program in two ways:
 - Using main binary (`/root/bin/main`)
 - Running the program Analyzer (`/root/bin/analyzer`), then running Report (`/root/bin/report`)
 
-The files that will be analyzed are `.py`
+The files that will be analyzed are `.txt`, `.cpp`, `.c`, `.java` and `.py`.
 
 If you don't want this fearure, you can set `FILTER_BY_TYPE` to `0` in `src/analyzer/analyzer.h`.
 
