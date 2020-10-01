@@ -69,6 +69,11 @@ BOOL isPy(string file, int length) {
     return ret;
 }
 
+BOOL isOk(string file, int length){ 
+    if(isPy(file, length) && isJava(file, length) && isC(file, length) && isCpp(file, length) && isTxt(file, length)) return true;
+    return false;
+}
+
 //funzioni per cartelle
 
 node createNode() {
