@@ -82,6 +82,8 @@ It's possible to run the program in two ways:
 
 The files that will be analyzed are `.txt`, `.cpp`, `.c`, `.java` and `.py`.
 
+If you don't want this fearure, you can set `FILTER_BY_TYPE` to `0` in `src/analyzer/analyzer.h`.
+
 ### Main
 
 To run **main** run `/root/bin/main`.  
